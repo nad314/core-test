@@ -21,8 +21,6 @@ typedef core::matrixs matrixs;
 
 //core parts
 #include <timer/timer.h>
-#include <theme/theme.h>
-#include <core/buttonWindow.h>
 
 //core test
 #include <window/renderWindow.h>

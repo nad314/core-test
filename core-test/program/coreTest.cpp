@@ -3,7 +3,6 @@
 
 int coreTest::onLoad() {
 	InitCommonControls();
-	theme::initStyles();
 	if (!wnd.goToHomeDirectory())
 		return 1;
 	mesh.importgdev("data/wyvern-low.gdev");
@@ -21,7 +20,6 @@ int coreTest::onDispose() {
 int coreTest::onStart() {
 	wnd.open(inputProc);
 	SetWindowLongA(wnd.hWnd, GWL_USERDATA, (LONG)this);
-	theme::setWindowStyle(wnd);
 	
 	renderWindow& rwnd = static_cast<renderWindow&>(wnd.getRenderWindow());
 	if (rwnd == NULL)

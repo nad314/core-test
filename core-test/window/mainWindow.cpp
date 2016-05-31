@@ -10,7 +10,6 @@ void mainWindow::onOpened() {
 	rwnd.setParent(this);
 	rwnd.open(inputProcChild);
 	hStatusBar = CreateStatusWindowA(WS_VISIBLE | WS_CHILD, "Status Bar", *this, 0);
-	btn.open(10, 10, 80, 20, *this);
 }
 
 void mainWindow::onClosing() {
@@ -27,7 +26,7 @@ void mainWindow::onResize() {
 	if (!GetClientRect(hWnd, &r) )
 		return;
 	printf("%d, %d\n", r.right-r.left, r.bottom - r.top);
-	rwnd.move(r.right-r.left, r.bottom-r.top);
+	rwnd.move(r.right-r.left, r.bottom-r.top-20);
 }
 
 void mainWindow::setStatusbarText(const char* text) {

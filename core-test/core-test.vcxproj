@@ -118,7 +118,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="core\buttonWindow.cpp" />
     <ClCompile Include="model\simdMesh.cpp" />
     <ClCompile Include="program\coreTest.cpp" />
     <ClCompile Include="program\coreTest.events.cpp" />
@@ -126,15 +125,12 @@
     <ClCompile Include="model\mesh.cpp" />
     <ClCompile Include="render\render.cpp" />
     <ClCompile Include="render\view.cpp" />
-    <ClCompile Include="theme\theme.cpp" />
     <ClCompile Include="window\mainWindow.cpp" />
     <ClCompile Include="window\renderWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="core\buttonWindow.h" />
     <ClInclude Include="model\simdMesh.h" />
     <ClInclude Include="program\coreTest.h" />
-    <ClInclude Include="theme\theme.h" />
     <ClInclude Include="window\mainWindow.h" />
     <ClInclude Include="program\main.h" />
     <ClInclude Include="model\mesh.h" />

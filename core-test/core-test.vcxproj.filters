@@ -42,12 +42,6 @@
     <ClCompile Include="program\coreTest.events.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="theme\theme.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\buttonWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="model\mesh.h">
@@ -75,12 +69,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="window\renderWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="theme\theme.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\buttonWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
