@@ -20,6 +20,7 @@ int coreTest::onDispose() {
 int coreTest::onStart() {
 	wnd.open(inputProc);
 	SetWindowLongA(wnd.hWnd, GWL_USERDATA, (LONG)this);
+	theme::setWindowStyle(wnd);
 	
 	renderWindow& rwnd = static_cast<renderWindow&>(wnd.getRenderWindow());
 	if (rwnd == NULL)
@@ -27,8 +28,7 @@ int coreTest::onStart() {
 
 	gl.createContext(rwnd);
 	gl.init(rwnd);
-	gl.setVsync(1);
-
+	gl.setVsync(0);
 	onResize();
 	return 0;
 }

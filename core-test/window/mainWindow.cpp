@@ -1,7 +1,7 @@
 #include <main>
 
 void mainWindow::onOpening() {
-	setStyle(WS_OVERLAPPED | WS_SYSMENU | WS_CLIPCHILDREN);
+	setStyle( WS_OVERLAPPED | WS_SYSMENU | WS_CLIPCHILDREN );
 	setTitle("Core Renderer");
 	setClass("CoreRenderer");
 }
@@ -9,7 +9,7 @@ void mainWindow::onOpening() {
 void mainWindow::onOpened() {
 	rwnd.setParent(this);
 	rwnd.open(inputProcChild);
-	hStatusBar = CreateStatusWindow(WS_CHILD|WS_VISIBLE, "Status Bar", hWnd, 1);
+	hStatusBar = CreateStatusWindowA(WS_VISIBLE | WS_CHILD, "Status Bar", *this, 0);
 }
 
 void mainWindow::onClosing() {

@@ -1,7 +1,7 @@
 #pragma once
 
 class mainWindow final : public core::window {
-private:
+public:
 	renderWindow rwnd;
 	HWND hStatusBar;
 public:
@@ -13,5 +13,7 @@ public:
 
 	void onResize();
 	void setStatusbarText(const char* text);
+
+	inline HWND& getStatusBar() { return hStatusBar; }
 };
 

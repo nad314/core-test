@@ -36,6 +36,7 @@
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -124,12 +125,14 @@
     <ClCompile Include="model\mesh.cpp" />
     <ClCompile Include="render\render.cpp" />
     <ClCompile Include="render\view.cpp" />
+    <ClCompile Include="theme\theme.cpp" />
     <ClCompile Include="window\mainWindow.cpp" />
     <ClCompile Include="window\renderWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="model\simdMesh.h" />
     <ClInclude Include="program\coreTest.h" />
+    <ClInclude Include="theme\theme.h" />
     <ClInclude Include="window\mainWindow.h" />
     <ClInclude Include="program\main.h" />
     <ClInclude Include="model\mesh.h" />
@@ -137,6 +140,9 @@
     <ClInclude Include="render\view.h" />
     <ClInclude Include="timer\timer.h" />
     <ClInclude Include="window\renderWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="main" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
