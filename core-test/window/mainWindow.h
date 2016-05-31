@@ -4,6 +4,7 @@ class mainWindow final : public core::window {
 public:
 	renderWindow rwnd;
 	HWND hStatusBar;
+	buttonWindow btn;
 public:
 	inline core::window& getRenderWindow() { return rwnd; }
 	void onOpening() override;

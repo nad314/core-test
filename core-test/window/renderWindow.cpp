@@ -10,10 +10,10 @@ void renderWindow::onOpening() {
 
 void renderWindow::move(int xw, int yw) {
 	int borderSize = 4;
-	yw -= 22;
+	yw -= 62;
 	xw -= borderSize*2;
 	yw -= borderSize*2;
-	MoveWindow(hWnd, borderSize, borderSize, xw, yw, true);
+	MoveWindow(hWnd, borderSize, borderSize+40, xw, yw, true);
 	width = xw; 
 	height = yw;
 }

@@ -2,6 +2,7 @@
 #undef _MBCS
 #endif
 #define _UNICODE
+
 /*
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
@@ -20,6 +21,8 @@ typedef core::matrixs matrixs;
 
 //core parts
 #include <timer/timer.h>
+#include <theme/theme.h>
+#include <core/buttonWindow.h>
 
 //core test
 #include <window/renderWindow.h>
@@ -28,7 +31,6 @@ typedef core::matrixs matrixs;
 #include <model/simdMesh.h>
 #include <render/view.h>
 #include <render/render.h>
-#include <theme/theme.h>
 
 #include <program/coreTest.h>
 

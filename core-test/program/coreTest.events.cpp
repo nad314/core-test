@@ -9,8 +9,10 @@ LRESULT CALLBACK inputProc(HWND hwnd, UINT msg, WPARAM wP, LPARAM lP) {
 	if (!ptr)
 		return DefWindowProcW(hwnd, msg, wP, lP);
 	mainWindow &wnd = ptr->getWnd();
+
 	switch (msg) {
-		case WM_SIZE: wnd.width = LOWORD(lP); wnd.height = HIWORD(lP); ptr->onResize(); break;
+	case WM_SIZE: wnd.width = LOWORD(lP); wnd.height = HIWORD(lP); ptr->onResize(); break;
+	case WM_DRAWITEM: theme::drawControl((LPDRAWITEMSTRUCT)lP); break;
 	}
 	return DefWindowProcW(hwnd, msg, wP, lP);
 }

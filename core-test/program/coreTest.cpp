@@ -3,6 +3,7 @@
 
 int coreTest::onLoad() {
 	InitCommonControls();
+	theme::initStyles();
 	if (!wnd.goToHomeDirectory())
 		return 1;
 	mesh.importgdev("data/wyvern-low.gdev");

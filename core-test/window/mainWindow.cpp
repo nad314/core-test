@@ -10,6 +10,7 @@ void mainWindow::onOpened() {
 	rwnd.setParent(this);
 	rwnd.open(inputProcChild);
 	hStatusBar = CreateStatusWindowA(WS_VISIBLE | WS_CHILD, "Status Bar", *this, 0);
+	btn.open(10, 10, 80, 20, *this);
 }
 
 void mainWindow::onClosing() {
