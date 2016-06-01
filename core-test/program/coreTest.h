@@ -12,7 +12,7 @@ private:
 	pView view;
 	pRenderer rend;
 	bool done = 0;
-
+	core::font font;
 public:
 	int onLoad() override;
 	int onDispose() override;

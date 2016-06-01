@@ -17,12 +17,15 @@ LRESULT CALLBACK inputProc(HWND hwnd, UINT msg, WPARAM wP, LPARAM lP) {
 }
 
 LRESULT CALLBACK inputProcChild(HWND hwnd, UINT msg, WPARAM wP, LPARAM lP) {
+	core::window* obj = static_cast<core::window*>((void*)GetWindowLongA(hwnd, GWL_USERDATA));
+	if (!obj) return DefWindowProcW(hwnd, msg, wP, lP);
+	renderWindow& wnd = static_cast<renderWindow&>(*obj);
 	switch (msg) {
 	case WM_CLOSE: PostQuitMessage(0); return 0;
+	case WM_MOUSEMOVE: wnd.moveMouse(LOWORD(lP), HIWORD(lP)); break;
 	}
 	return DefWindowProcW(hwnd, msg, wP, lP);
 }
-
 
 void coreTest::onResize() {
 	wnd.onResize();

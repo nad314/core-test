@@ -8,6 +8,9 @@ int coreTest::onLoad() {
 	mesh.importgdev("data/wyvern-low.gdev");
 	mesh.normalize();
 	img.make(wnd.getX(), wnd.getY(), 32);
+	if (font.load("C:\\Windows\\Fonts\\segoeuib.ttf", 9.6))
+		return 1;
+	font.setColor(core::vector4<byte>(255, 255, 255, 255));
 	return 0;
 }
 
@@ -20,7 +23,7 @@ int coreTest::onDispose() {
 int coreTest::onStart() {
 	wnd.open(inputProc);
 	SetWindowLongA(wnd.hWnd, GWL_USERDATA, (LONG)this);
-	
+
 	renderWindow& rwnd = static_cast<renderWindow&>(wnd.getRenderWindow());
 	if (rwnd == NULL)
 		return 1;
@@ -40,16 +43,16 @@ int coreTest::onStop() {
 
 int coreTest::main() {
 	char text[256];
-	core::timer<int> timer;
+	core::timer<float> timer;
 	core::timer<float> globalTimer;
 	globalTimer.start();
 	int nframes(0);
-	int renderTime(0);
+	float renderTime(0);
 
 	memset(text, 0, 256);
 
 	while (!done) {
-		if (wnd.peekMessage(done)||wnd.getRenderWindow().peekMessage())
+		if (wnd.peekMessage(done) || wnd.getRenderWindow().peekMessage())
 			continue;
 
 		view.rotation.init().rotate(globalTimer.update()*0.05f, 0.0f, 1.0f, 0.0f);
@@ -62,10 +65,14 @@ int coreTest::main() {
 
 		renderTime += timer;
 		++nframes;
+		sprintf(text, "%.3fms avg, %.3fms cur", renderTime / nframes, timer.ms());
+		timer.start();
+		font.render(text, view.img, 10, 10);
+		timer.stop();
 		gl.drawImage(view.img);
 		gl.swapBuffers(wnd.getRenderWindow());
 
-		sprintf(text, "%dms avg, %dms cur", renderTime / nframes, timer.ms());
+		sprintf(text, "%.3fms font render", timer.ms());
 		wnd.setStatusbarText(text);
 	}
 	return 0;

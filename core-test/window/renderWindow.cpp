@@ -16,3 +16,7 @@ void renderWindow::move(int xw, int yw) {
 	width = xw; 
 	height = yw;
 }
+
+void renderWindow::moveMouse(const int& x, const int& y) {
+	mouse = core::vec2i(x, height-y);
+}
