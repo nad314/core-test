@@ -6,31 +6,21 @@ int coreTest::onLoad() {
 		return 1;
 	mesh.importgdev("data/wyvern-low.gdev");
 	mesh.normalize();
-	img.make(wnd.getX(), wnd.getY(), 32);
 	if (font.load("C:\\Windows\\Fonts\\segoeui.ttf", 10))
 		return 1;
 	font.setColor(core::vector4<byte>(255, 255, 255, 255));
+	wnd.setModule(this);
 	return 0;
 }
 
 int coreTest::onDispose() {
-	img.free();
 	mesh.free();
 	return 0;
 }
 
 int coreTest::onStart() {
-	wnd.open(inputProc);
-	SetWindowLongA(wnd.hWnd, GWL_USERDATA, (LONG)this);
-
-	renderWindow& rwnd = static_cast<renderWindow&>(wnd.getRenderWindow());
-	if (rwnd == NULL)
-		return 1;
-
-	gl.createContext(rwnd);
-	gl.init(rwnd);
-	gl.setVsync(0);
-	onResize();
+	wnd.open();
+	wnd.onResize(core::eventInfo(NULL, 0, NULL, NULL));
 	return 0;
 }
 
@@ -65,16 +55,8 @@ int coreTest::main() {
 		renderTime += timer;
 		++nframes;
 		sprintf(text, "%.3fms avg, %.3fms cur", renderTime / nframes, timer.ms());
-		timer.start();
-		font.render(text, view.img, 10, 10);
-		timer.stop();
-		timer2.start();
-		font.renderSIMD(text, view.img, 10, 14+font.height());
-		timer2.stop();
 		gl.drawImageInverted(view.img);
 		gl.swapBuffers(wnd.getRenderWindow());
-
-		sprintf(text, "%.3fms, %.3f font render", timer.ms(), timer2.ms());
 		wnd.setStatusbarText(text);
 	}
 	return 0;
