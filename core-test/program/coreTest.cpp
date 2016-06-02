@@ -1,6 +1,5 @@
 #include <main>
 
-
 int coreTest::onLoad() {
 	InitCommonControls();
 	if (!wnd.goToHomeDirectory())
@@ -8,7 +7,7 @@ int coreTest::onLoad() {
 	mesh.importgdev("data/wyvern-low.gdev");
 	mesh.normalize();
 	img.make(wnd.getX(), wnd.getY(), 32);
-	if (font.load("C:\\Windows\\Fonts\\segoeuib.ttf", 9.6))
+	if (font.load("C:\\Windows\\Fonts\\segoeui.ttf", 10))
 		return 1;
 	font.setColor(core::vector4<byte>(255, 255, 255, 255));
 	return 0;
@@ -43,7 +42,7 @@ int coreTest::onStop() {
 
 int coreTest::main() {
 	char text[256];
-	core::timer<float> timer;
+	core::timer<float> timer, timer2;
 	core::timer<float> globalTimer;
 	globalTimer.start();
 	int nframes(0);
@@ -69,10 +68,13 @@ int coreTest::main() {
 		timer.start();
 		font.render(text, view.img, 10, 10);
 		timer.stop();
-		gl.drawImage(view.img);
+		timer2.start();
+		font.renderSIMD(text, view.img, 10, 14+font.height());
+		timer2.stop();
+		gl.drawImageInverted(view.img);
 		gl.swapBuffers(wnd.getRenderWindow());
 
-		sprintf(text, "%.3fms font render", timer.ms());
+		sprintf(text, "%.3fms, %.3f font render", timer.ms(), timer2.ms());
 		wnd.setStatusbarText(text);
 	}
 	return 0;
