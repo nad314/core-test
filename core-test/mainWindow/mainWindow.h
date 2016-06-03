@@ -6,6 +6,7 @@ public:
 	RenderWindow rwnd;
 	HWND hStatusBar;
 public:
+	MainWindow() {}
 	inline core::Window& getRenderWindow() { return rwnd; }
 	inline void setModule(core::Module* m) { mp = m; }
 	void onOpening() override;

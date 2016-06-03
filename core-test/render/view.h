@@ -1,16 +1,17 @@
-struct pView {
-	core::Image img;
+struct pView : public core::SIMD {
+	vec4s simdViewVec;
+	vec4s v05 = vec4s(vec4(0.5f, 0.5f, 1.0f, 1.0f));
+	vec4s v06 = vec4s(vec4(0.5f, -0.5f, 1.0f, 1.0f));
+	vec4s nvs = vec4s(vec4(0,0,0,0));
+	vec4s vvs;
+
 	matrixf projection;
 	matrixf	translation;
 	matrixf rotation;
 	matrixf mat;
 	float fov;
 	vec4 viewVec;
-	vec4s simdViewVec;
-	vec4s v05 = vec4s(vec4(0.5f, 0.5f, 1.0f, 1.0f));
-	vec4s v06 = vec4s(vec4(0.5f, -0.5f, 1.0f, 1.0f));
-	vec4s nvs = vec4s(vec4(0,0,0,0));
-	vec4s vvs;
+	core::Image img;
 	
 	void make (const int width, const int height);
 	void clear();

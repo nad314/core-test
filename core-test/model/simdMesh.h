@@ -4,9 +4,9 @@ struct simdMesh {
 	core::buffer<core::vec4s> vecs;
 	core::buffer<polygon> polys;
 
-	simdMesh() : vecs(), polys() {}
-	~simdMesh() { free(); }
-	inline void free() { vecs.free(); polys.free(); }
+	simdMesh() {}
+	~simdMesh() { dispose(); }
+	inline void dispose() { vecs.clear(); polys.clear(); }
 
 	inline simdMesh &operator = (const basicMesh &m) {
 		polys = m.polys;

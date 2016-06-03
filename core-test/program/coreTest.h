@@ -1,12 +1,11 @@
 #pragma once
 
-class CoreTest final : public core::Module {
+class CoreTest final : public core::Module, public core::SIMD {
 private:
 	MainWindow wnd;
 	simdMesh mesh;
 	pView view;
 	bool done = 0;
-	core::Font font;
 	core::Timer<float> timer;
 	core::Timer<float> globalTimer;
 
@@ -20,4 +19,5 @@ public:
 
 	inline MainWindow& getWnd() { return wnd; }
 	void onResize();
+
 };

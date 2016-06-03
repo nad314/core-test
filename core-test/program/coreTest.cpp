@@ -1,20 +1,18 @@
 #include <main>
 
 int CoreTest::onLoad() {
+	printf("CoreTest::onLoad()\n");
 	InitCommonControls();
 	if (!wnd.goToHomeDirectory())
 		return 1;
 	mesh.importgdev("data/wyvern-low.gdev");
 	mesh.normalize();
-	if (font.load("segoeui.ttf", 10))
-		return 1;
-	font.setColor(core::vector4<byte>(255, 255, 255, 255));
 	wnd.setModule(this);
 	return 0;
 }
 
 int CoreTest::onDispose() {
-	mesh.free();
+	mesh.dispose();
 	return 0;
 }
 
@@ -62,7 +60,7 @@ int CoreTest::main() {
 		renderTime += timer;
 		++nframes;
 		sprintf(text, "%.3fms avg, %.3fms cur", renderTime / nframes, timer.ms());
-
+		core::Font::get().print("Hello World", view.img, 20, 20);
 		GL::drawImageInverted(view.img);
 		GL::swapBuffers(wnd.getRenderWindow());
 		wnd.setStatusbarText(text);

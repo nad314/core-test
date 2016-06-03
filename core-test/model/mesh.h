@@ -34,10 +34,10 @@ struct basicMesh {
 	
 	inline void pushp (polygon p) {polys.push_back(p);}
 	inline void pushv (core::vec4 v) {vecs.push_back(v);}
-	inline void free() {vecs.free(); polys.free();}
+	inline void dispose() {vecs.clear(); polys.clear();}
 	
 	basicMesh():vecs(), polys(){};
-	~basicMesh(){polys.free(); vecs.free();}			
+	~basicMesh(){polys.clear(); vecs.clear();}			
 };
 
 

@@ -8,7 +8,7 @@ void basicMesh::importObj( char* path ) {
 	int i,j;
 	FILE *f;
 	if(!(f=fopen(path, "r"))){ddprintf("Error opening OBJ file\n"); return;}
-	free();
+	dispose();
 	memset (&v, 0, 16);
 	while (!feof(f)) {
 		fgets( s, sizeof(s), f );
