@@ -3,6 +3,6 @@
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR message, int nCmdShow) {
 int main(void){
-	CoreTest coreTest;
-	return coreTest.run();
+	core::Init()(new CoreTest);
+	return 0;
 }
