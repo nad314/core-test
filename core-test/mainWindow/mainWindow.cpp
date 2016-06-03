@@ -9,15 +9,12 @@ void mainWindow::onOpening() {
 void mainWindow::onOpened() {
 	rwnd.setParent(this);
 	rwnd.open();
-	hStatusBar = CreateStatusWindowA(WS_VISIBLE | WS_CHILD | SBARS_SIZEGRIP, "Status Bar", *this, 0);
+	hStatusBar = CreateStatusWindowA(WS_VISIBLE | WS_CHILD, "Status Bar", *this, 0);
 
-	coreTest* ct = static_cast<coreTest*>(mp);
-	if (ct) {
-		core::glDevice& gl = ct->gl;
-		gl.createContext(rwnd);
-		gl.init(rwnd);
-		gl.setVsync(0);
-	}
+	gl::createContext(rwnd);
+	gl::init(rwnd);
+	gl::setVsync(0);
+
 }
 
 void mainWindow::onClosing() {

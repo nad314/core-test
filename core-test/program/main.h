@@ -4,7 +4,7 @@
 #define _UNICODE
 
 #include <core>
-#include <chrono>
+using namespace core::opengl;
 typedef core::vec4 vec4;
 typedef core::matrixf matrixf;
 typedef core::vec4s vec4s;
@@ -14,11 +14,10 @@ typedef core::matrixs matrixs;
 #include<CommCtrl.h>
 
 //core parts
-#include <timer/timer.h>
 
 //core test
-#include <window/renderWindow.h>
-#include <window/mainWindow.h>
+#include <renderWindow/renderWindow.h>
+#include <mainWindow/mainWindow.h>
 #include <model/mesh.h>
 #include <model/simdMesh.h>
 #include <render/view.h>

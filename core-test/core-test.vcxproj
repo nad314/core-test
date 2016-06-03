@@ -122,24 +122,22 @@
   <ItemGroup>
     <ClCompile Include="model\simdMesh.cpp" />
     <ClCompile Include="program\coreTest.cpp" />
-    <ClCompile Include="program\coreTest.events.cpp" />
     <ClCompile Include="program\main.cpp" />
     <ClCompile Include="model\mesh.cpp" />
     <ClCompile Include="render\render.cpp" />
     <ClCompile Include="render\view.cpp" />
-    <ClCompile Include="window\mainWindow.cpp" />
-    <ClCompile Include="window\renderWindow.cpp" />
+    <ClCompile Include="mainWindow\mainWindow.cpp" />
+    <ClCompile Include="renderWindow\renderWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="model\simdMesh.h" />
     <ClInclude Include="program\coreTest.h" />
-    <ClInclude Include="window\mainWindow.h" />
+    <ClInclude Include="mainWindow\mainWindow.h" />
     <ClInclude Include="program\main.h" />
     <ClInclude Include="model\mesh.h" />
     <ClInclude Include="render\render.h" />
     <ClInclude Include="render\view.h" />
-    <ClInclude Include="timer\timer.h" />
-    <ClInclude Include="window\renderWindow.h" />
+    <ClInclude Include="renderWindow\renderWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />

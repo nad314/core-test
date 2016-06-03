@@ -27,19 +27,16 @@
     <ClCompile Include="program\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="window\mainWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="program\coreTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="model\simdMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="window\renderWindow.cpp">
+    <ClCompile Include="renderWindow\renderWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="program\coreTest.events.cpp">
+    <ClCompile Include="mainWindow\mainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,13 +50,7 @@
     <ClInclude Include="render\view.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="timer\timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="program\main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="window\mainWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="program\coreTest.h">
@@ -68,7 +59,10 @@
     <ClInclude Include="model\simdMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="window\renderWindow.h">
+    <ClInclude Include="renderWindow\renderWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mainWindow\mainWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

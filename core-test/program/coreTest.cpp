@@ -25,15 +25,22 @@ int coreTest::onStart() {
 }
 
 int coreTest::onStop() {
-	gl.deleteContext(wnd);
+	gl::deleteContext(wnd);
 	wnd.close();
 	return 0;
 }
 
+void coreTest::onResize() {
+	renderWindow& rwnd = static_cast<renderWindow&>(wnd.getRenderWindow());
+	if (!rwnd)
+		return;
+	view.make(rwnd.getX(), rwnd.getY());
+	view.home();
+	gl::init(rwnd);
+}
+
 int coreTest::main() {
 	char text[256];
-	core::timer<float> timer, timer2;
-	core::timer<float> globalTimer;
 	globalTimer.start();
 	int nframes(0);
 	float renderTime(0);
@@ -55,8 +62,8 @@ int coreTest::main() {
 		renderTime += timer;
 		++nframes;
 		sprintf(text, "%.3fms avg, %.3fms cur", renderTime / nframes, timer.ms());
-		gl.drawImageInverted(view.img);
-		gl.swapBuffers(wnd.getRenderWindow());
+		gl::drawImageInverted(view.img);
+		gl::swapBuffers(wnd.getRenderWindow());
 		wnd.setStatusbarText(text);
 	}
 	return 0;

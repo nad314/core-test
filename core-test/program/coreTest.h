@@ -8,8 +8,9 @@ private:
 	pRenderer rend;
 	bool done = 0;
 	core::font font;
-public:
-	core::glDevice gl;
+	core::timer<float> timer;
+	core::timer<float> globalTimer;
+
 public:
 	int onLoad() override;
 	int onDispose() override;
