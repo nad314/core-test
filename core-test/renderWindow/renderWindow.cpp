@@ -1,6 +1,6 @@
 #include <main>
 
-void renderWindow::onOpening() {
+void RenderWindow::onOpening() {
 	setTitle("Core Frame");
 	setClass("CoreFrame");
 	setStyle(WS_CHILD | WS_VISIBLE);
@@ -8,7 +8,7 @@ void renderWindow::onOpening() {
 	setFlags(0);
 }
 
-void renderWindow::move(int xw, int yw) {
+void RenderWindow::move(int xw, int yw) {
 	int borderSize = 0;
 	xw -= borderSize*2;
 	yw -= borderSize*2;
@@ -17,6 +17,6 @@ void renderWindow::move(int xw, int yw) {
 	height = yw;
 }
 
-void renderWindow::moveMouse(const int& x, const int& y) {
+void RenderWindow::moveMouse(const int& x, const int& y) {
 	mouse = core::vec2i(x, height-y);
 }

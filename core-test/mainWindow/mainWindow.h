@@ -1,13 +1,13 @@
 #pragma once
 
-class mainWindow final : public core::window {
+class MainWindow final : public core::Window {
 public:
-	core::module* mp; //module pointer
-	renderWindow rwnd;
+	core::Module* mp; //module pointer
+	RenderWindow rwnd;
 	HWND hStatusBar;
 public:
-	inline core::window& getRenderWindow() { return rwnd; }
-	inline void setModule(core::module* m) { mp = m; }
+	inline core::Window& getRenderWindow() { return rwnd; }
+	inline void setModule(core::Module* m) { mp = m; }
 	void onOpening() override;
 	void onOpened() override;
 	void onClosing() override;

@@ -1,5 +1,5 @@
 struct pView {
-	core::image img;
+	core::Image img;
 	matrixf projection;
 	matrixf	translation;
 	matrixf rotation;

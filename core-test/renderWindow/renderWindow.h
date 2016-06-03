@@ -1,5 +1,5 @@
 #pragma once
-class renderWindow final : public core::window{
+class RenderWindow final : public core::Window{
 private:
 public:
 	core::vec2i mouse;

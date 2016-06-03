@@ -1,15 +1,14 @@
 #pragma once
 
-class coreTest final : public core::module {
+class CoreTest final : public core::Module {
 private:
-	mainWindow wnd;
+	MainWindow wnd;
 	simdMesh mesh;
 	pView view;
-	pRenderer rend;
 	bool done = 0;
-	core::font font;
-	core::timer<float> timer;
-	core::timer<float> globalTimer;
+	core::Font font;
+	core::Timer<float> timer;
+	core::Timer<float> globalTimer;
 
 public:
 	int onLoad() override;
@@ -19,6 +18,6 @@ public:
 	int onStop() override;
 	int main() override;
 
-	inline mainWindow& getWnd() { return wnd; }
+	inline MainWindow& getWnd() { return wnd; }
 	void onResize();
 };
