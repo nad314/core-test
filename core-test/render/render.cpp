@@ -1,24 +1,9 @@
 #include <main>
 
 namespace core {
-	void Renderer::drawModel(basicMesh &mesh, pView* pview) {
+	void Renderer::drawPoints(simdMesh &mesh, View* pview) {
 		if (!pview)return;
-		pView &view = *pview;
-		Image &img = view.img;
-		static const vector3<byte> color = vector3<byte>(255, 255, 255);
-		vec4 v;
-		view.clear();
-
-		for (int i = 0; i < mesh.vecs.size(); ++i) {
-			v = view.project(view.mat*mesh.vecs[i]);
-			if (v.x >= 0.0f && v.x < img.width && v.y >= 0.0f && v.y<img.height && v.z>0.0f)
-				putPixel((int)v.x, (int)v.y, color, img);
-		}
-	}
-
-	void Renderer::drawPoints(simdMesh &mesh, pView* pview) {
-		if (!pview)return;
-		pView &view = *pview;
+		View &view = *pview;
 		Image &img = view.img;
 		view.clear();
 		_mm_prefetch(reinterpret_cast<const char*>(static_cast<vec4s*>(mesh.vecs)), _MM_HINT_T0);
@@ -35,4 +20,55 @@ namespace core {
 			memcpy(mp + mi.m128i_i32[0] + mi.m128i_i32[1] *w, &clr, 4);
 		}
 	}
+
+	bool Renderer::clearImage(Image& img, vec4b color) {
+		if (img.bits != 32 || img.width == 0 || img.height == 0)
+			return false;
+		float* data = reinterpret_cast<float*>(img.data);
+		int mod = img.width*img.height % 4;
+		int to = img.width*img.height - mod;
+		float clr = *(float*)&color;
+		__m128 xmm0 = _mm_set1_ps(clr);
+		for (int i = 0; i < to; i+=4)
+			_mm_storeu_ps(data + i, xmm0);
+		for (int i = to; i < to + mod; ++i)
+			*(data + i) = clr;
+		return true;
+	}
+
+	bool Renderer::drawRect(vec4i rect, vec4b color, Image &img) {
+		if (img.bits != 32 || img.width == 0 || img.height == 0)
+			return false;
+		if (rect.z < rect.x || rect.w < rect.y)
+			return false;
+		--rect.w;
+		--rect.z;
+		float clr = *(float*)&color;
+		__m128 xmm0 = _mm_set1_ps(clr);
+
+		float* data = reinterpret_cast<float*>(img.data);
+		data += img.width * (int)rect.y;
+		float* data2 = data + img.width * (int)(rect.w-rect.y);
+		int mod = img.width % 4;
+		int to = (int)rect.z - mod;
+		for (int i = rect.x; i < to; i += 4) {
+			_mm_storeu_ps(data + i, xmm0);
+			_mm_storeu_ps(data2 + i, xmm0);
+		}
+		for (int i = to; i < to + mod; ++i) {
+			*(data + i) = clr;
+			*(data2 + i) = clr;
+		}
+		
+		data += rect.x;
+		data2 = data + rect.z - rect.x;
+		to = (rect.w - rect.y)*img.width;
+		for (int i = 0; i < to; i += img.width) {
+			*(data + i) = clr;
+			*(data2 + i) = clr;
+		}
+
+		return true;
+	}
+
 }

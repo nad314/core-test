@@ -3,9 +3,7 @@
 class CoreTest final : public core::Module, public core::SIMD {
 private:
 	MainWindow wnd;
-	simdMesh mesh;
-	pView view;
-	bool done = 0;
+	core::simdMesh mesh;
 	core::Timer<float> timer;
 	core::Timer<float> globalTimer;
 
@@ -16,8 +14,4 @@ public:
 	int onStart() override;
 	int onStop() override;
 	int main() override;
-
-	inline MainWindow& getWnd() { return wnd; }
-	void onResize();
-
 };

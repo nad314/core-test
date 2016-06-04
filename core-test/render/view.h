@@ -1,4 +1,4 @@
-struct pView : public core::SIMD {
+struct View : public core::SIMD {
 	vec4s simdViewVec;
 	vec4s v05 = vec4s(vec4(0.5f, 0.5f, 1.0f, 1.0f));
 	vec4s v06 = vec4s(vec4(0.5f, -0.5f, 1.0f, 1.0f));

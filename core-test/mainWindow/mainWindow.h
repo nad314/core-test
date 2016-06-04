@@ -1,21 +1,16 @@
 #pragma once
 
-class MainWindow final : public core::Window {
+class MainWindow final : public core::Form {
 public:
-	core::Module* mp; //module pointer
 	RenderWindow rwnd;
-	HWND hStatusBar;
+
 public:
 	MainWindow() {}
 	inline core::Window& getRenderWindow() { return rwnd; }
-	inline void setModule(core::Module* m) { mp = m; }
 	void onOpening() override;
 	void onOpened() override;
 	void onClosing() override;
 	
 	int onResize(const core::eventInfo &e) override;
-	void setStatusbarText(const char* text);
-
-	inline HWND& getStatusBar() { return hStatusBar; }
 };
 

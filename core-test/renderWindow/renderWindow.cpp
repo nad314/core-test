@@ -4,12 +4,27 @@ void RenderWindow::onOpening() {
 	setTitle("Core Frame");
 	setClass("CoreFrame");
 	setStyle(WS_CHILD | WS_VISIBLE);
-	setExStyle(WS_EX_CLIENTEDGE);
 	setFlags(0);
 }
 
+void RenderWindow::onOpened() {
+	if (width == 0 || height == 0) 
+		return;
+	view.make(width, height);
+	view.home();
+}
+
+int RenderWindow::onResize(const core::eventInfo& e) {
+	Window::onResize(e);
+	if (width == 0 || height == 0)
+		return e;
+	view.make(width, height);
+	view.home();
+	GL::init(*this);
+}
+
 void RenderWindow::move(int xw, int yw) {
-	int borderSize = 0;
+	int borderSize = 8;
 	xw -= borderSize*2;
 	yw -= borderSize*2;
 	MoveWindow(hWnd, borderSize, borderSize, xw, yw, true);
@@ -17,6 +32,3 @@ void RenderWindow::move(int xw, int yw) {
 	height = yw;
 }
 
-void RenderWindow::moveMouse(const int& x, const int& y) {
-	mouse = core::vec2i(x, height-y);
-}
