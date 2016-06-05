@@ -39,6 +39,12 @@
     <ClCompile Include="form\form.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="control\control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="control\button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\render.h">
@@ -63,6 +69,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="form\form.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="control\control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="control\button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

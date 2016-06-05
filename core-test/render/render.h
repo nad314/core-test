@@ -18,6 +18,7 @@ namespace core {
 
 		static bool clearImage(Image& img, vec4b color);
 		static bool drawRect(vec4i rect, vec4b color, Image &img);
+		static bool fillRect(vec4i rect, vec4b color, Image &img);
 
 	};
 }

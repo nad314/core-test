@@ -40,13 +40,16 @@ int CoreTest::main() {
 		if (wnd.peekMessage(done) || wnd.getRenderWindow().peekMessage())
 			continue;
 
+		if (GetAsyncKeyState(VK_ESCAPE))
+			done = true;
+		
 		rw.view.rotation.init().rotate(globalTimer.update()*0.05f, 0.0f, 1.0f, 0.0f);
 		rw.view.updateMatrix();
 		rw.view.clear();
 
 		timer.start();
 		core::Renderer::drawPoints(mesh, &rw.view);
-		core::Renderer::drawRect(rw.getClientRect(), core::vec4b(0, 122, 204, 255), rw);
+		core::Renderer::drawRect(rw.getClientRect(), core::vec4b(31, 31, 31, 255), rw);
 		timer.stop();
 
 		renderTime += timer;

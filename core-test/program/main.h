@@ -9,12 +9,16 @@ typedef core::vec4 vec4;
 typedef core::matrixf matrixf;
 typedef core::vec4s vec4s;
 typedef core::matrixs matrixs;
+typedef core::Color Color;
 
 //core components
 #include <model/simdMesh.h>
 #include <render/view.h>
 #include <render/render.h>
+#include <control/control.h>
 #include <form/form.h>
+#include <control/button.h>
+
 
 //CoreTest components
 #include <renderWindow/renderWindow.h>

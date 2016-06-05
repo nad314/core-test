@@ -3,13 +3,14 @@ namespace core {
 	class Form : public Window {
 	protected:
 		Image img;
-	private:
+		buffer<Control*> items;
 		int flags;
 		vec4b backColor;
 		vec4b foreColor;
 
 	public:
-		inline Image& Image() { return img; }
+		inline Image& image() { return img; }
+		inline operator Image&() { return img; }
 
 		void onOpened() override;
 		void onClosing() override;
@@ -21,8 +22,12 @@ namespace core {
 		inline void validate() { flags |= 1; }
 		inline bool valid() { return flags & 1;  }
 
-		virtual void onStartPaint();
-		virtual void onControlPaint();
-		virtual void onEndPaint();
+		inline void push(Control& c) {
+			items.push_back(&c);
+		}
+
+		virtual void onStartPaint(const eventInfo& e);
+		virtual void onControlPaint(const eventInfo& e);
+		virtual void onEndPaint(const eventInfo& e);
 	};
 }

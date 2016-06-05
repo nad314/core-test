@@ -71,4 +71,28 @@ namespace core {
 		return true;
 	}
 
+
+	bool Renderer::fillRect(vec4i rect, vec4b color, Image &img) {
+		if (img.bits != 32 || img.width == 0 || img.height == 0)
+			return false;
+		if (rect.z < rect.x || rect.w < rect.y)
+			return false;
+		--rect.w;
+		--rect.z;
+		float clr = *(float*)&color;
+		__m128 xmm0 = _mm_set1_ps(clr);
+
+		for (int i = rect.y; i < rect.w; ++i) {
+			float* data = reinterpret_cast<float*>(img.data) + img.width * i;
+			int mod = img.width % 4;
+			int to = (int)rect.z - mod;
+			for (int i = rect.x; i < to; i += 4)
+				_mm_storeu_ps(data + i, xmm0);
+			for (int i = to; i < to + mod; ++i)
+				*(data + i) = clr;
+		}
+
+		return true;
+	}
+
 }

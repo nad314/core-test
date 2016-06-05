@@ -23,11 +23,12 @@ int RenderWindow::onResize(const core::eventInfo& e) {
 	GL::init(*this);
 }
 
+
 void RenderWindow::move(int xw, int yw) {
 	int borderSize = 8;
 	xw -= borderSize*2;
-	yw -= borderSize*2;
-	MoveWindow(hWnd, borderSize, borderSize, xw, yw, true);
+	yw -= borderSize*2+30;
+	MoveWindow(hWnd, borderSize, borderSize+30, xw, yw, true);
 	width = xw; 
 	height = yw;
 }
