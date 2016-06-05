@@ -28,30 +28,52 @@ namespace core {
 
 	int Form::onPaint(const eventInfo& e) {
 		Window::onPaint(e);
-		GL::pushCurrent();
-		GL::makeCurrent(*this);
-		GL::init(*this);
 		onStartPaint(e);
 		onControlPaint(e);
 		onEndPaint(e);
+		GL::pushCurrent();
+		GL::makeCurrent(*this);
+		GL::init(*this);
 		GL::drawImageInverted(img);
 		GL::swapBuffers(*this);
 		GL::popCurrent();
 		return 0;
 	}
 
+	int Form::onMouseMove(const eventInfo& e) {
+		for (auto& i : items)
+			if (i->onMouseMove(e))
+				return e;
+		return e;
+	}
+
+	int Form::onLButtonDown(const eventInfo& e) {
+		for (auto& i : items)
+			if (i->onLButtonDown(e))
+				return e;
+		return e;
+	}
+
+	int Form::onLButtonUp(const eventInfo& e) {
+		for (auto& i : items)
+			if (i->onLButtonUp(e))
+				return e;
+		return e;
+	}
+
 	void Form::onStartPaint(const eventInfo& e) {
 		if (!valid()) {
-			validate();
 			Renderer::clearImage(img, backColor);
 		}
 	}
 
 	void Form::onControlPaint(const eventInfo& e) {
 		for (auto& i : items)
-			i->onPaint(e);
+			if (!(i->flags&1)||!valid())
+				i->onPaint(e);
 	}
 
 	void Form::onEndPaint(const eventInfo& e) {
+		validate();
 	}
 }

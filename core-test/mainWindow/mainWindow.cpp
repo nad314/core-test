@@ -2,7 +2,7 @@
 
 void MainWindow::onOpening() {
 	Form::onOpening();
-	setStyle( WS_POPUP );
+	setStyle( WS_POPUP | WS_CLIPCHILDREN );
 	setTitle("Core Renderer");
 	setClass("CoreRenderer");
 }
@@ -17,8 +17,10 @@ void MainWindow::onOpened() {
 	GL::setVsync(0);
 	Reshape();
 
-	closeButton.make(core::vec4i(width-85, 5, width-5, 25), "Close", *this);
+	closeButton.make(core::vec4i(width - 67, 5, width - 7, 25), "Close", *this, []()->void { PostQuitMessage(0); });
 	push(closeButton);
+
+	Theme::setFormColor(*this);
 }
 
 void MainWindow::onClosing() {
@@ -39,16 +41,20 @@ int MainWindow::onResize(const core::eventInfo &e) {
 int MainWindow::onDefault(const core::eventInfo &e) {
 	switch (e.msg) {
 	case WM_LBUTTONDBLCLK: if (LOWORD(e.lP) < 25 && HIWORD(e.lP) < 25)PostQuitMessage(0); return e;
-	case WM_LBUTTONDOWN: SendMessage(hWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0); return e;
 	case WM_NCHITTEST: return onNcHitTest(e);
 	}
 	return e;
 }
 
+int MainWindow::onLButtonDown(const core::eventInfo &e) {
+	Form::onLButtonDown(e);
+	if (LOWORD(e.lP)<400) 
+		SendMessage(hWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+	return 0;
+}
+
 void MainWindow::onEndPaint(const core::eventInfo& e) {
-	core::Renderer::fillRect(core::vec4i(1, 1, width-100, 30), core::vec4b(45, 45, 48, 255), img);
+	core::Renderer::fillRect(core::vec4i(1, 1, 300, 30), core::vec4b(45, 45, 48, 255), img);
 	core::Renderer::print("Core Renderer", img, 12, 12);
 	core::Renderer::drawRect(getClientRect(), core::vec4b(0, 122, 204, 255), *this);
 }
-
-

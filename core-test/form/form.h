@@ -23,6 +23,10 @@ namespace core {
 		void onClosing() override;
 		int onResize (const eventInfo& e) override;
 		int onPaint (const eventInfo& e) override;
+		int onMouseMove(const eventInfo& e) override;
+		int onLButtonDown(const eventInfo& e) override;
+		int onLButtonUp(const eventInfo& e) override;
+
 
 		//validation for redrawing
 		inline void __invalidate() { flags &= ~1; } //redraw everything on next draw
