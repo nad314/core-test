@@ -3,6 +3,14 @@
 namespace core {
 	class Control {
 	protected:
+		Color foreColor;
+		Color backColor;
+		Color backColorHover;
+		Color foreColorHover;
+		Color foreColorActivated;
+		Color backColorActivated;
+		Color borderColor;
+
 	public:
 		vec4i rect;
 
@@ -16,6 +24,15 @@ namespace core {
 		virtual int onRightButtonDown(const eventInfo& e);
 		virtual int onRightButtonUp(const eventInfo& e);
 		virtual int onPaint(const eventInfo& e);
+
+		virtual void setForeColor(Color color);
+		virtual void setBackColor(Color color);
+		virtual void setForeColorHover(Color color);
+		virtual void setBackColorHover(Color color);
+		virtual void setForeColorActivated(Color color);
+		virtual void setBackColorActivated(Color color);
+		virtual void setBorderColor(Color color);
+
 	};
 }
 

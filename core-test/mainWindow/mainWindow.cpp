@@ -18,7 +18,7 @@ void MainWindow::onOpened() {
 	Reshape();
 
 	closeButton.make(core::vec4i(width-85, 5, width-5, 25), "Close", *this);
-	//push(closeButton);
+	push(closeButton);
 }
 
 void MainWindow::onClosing() {

@@ -123,6 +123,7 @@
     <ClCompile Include="control\button.cpp" />
     <ClCompile Include="control\control.cpp" />
     <ClCompile Include="form\form.cpp" />
+    <ClCompile Include="form\form.styles.cpp" />
     <ClCompile Include="model\simdMesh.cpp" />
     <ClCompile Include="program\coreTest.cpp" />
     <ClCompile Include="program\main.cpp" />
@@ -130,6 +131,7 @@
     <ClCompile Include="render\view.cpp" />
     <ClCompile Include="mainWindow\mainWindow.cpp" />
     <ClCompile Include="renderWindow\renderWindow.cpp" />
+    <ClCompile Include="theme\theme.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="control\button.h" />
@@ -142,6 +144,7 @@
     <ClInclude Include="render\render.h" />
     <ClInclude Include="render\view.h" />
     <ClInclude Include="renderWindow\renderWindow.h" />
+    <ClInclude Include="theme\theme.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />

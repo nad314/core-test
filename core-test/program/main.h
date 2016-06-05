@@ -21,6 +21,7 @@ typedef core::Color Color;
 
 
 //CoreTest components
+#include <theme/theme.h>
 #include <renderWindow/renderWindow.h>
 #include <mainWindow/mainWindow.h>
 #include <program/coreTest.h>

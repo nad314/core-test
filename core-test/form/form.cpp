@@ -22,7 +22,7 @@ namespace core {
 		if (width>0&&height>0)
 			img.make(width, height, 32);
 		img.clear();
-		invalidate();
+		__invalidate();
 		return 0;
 	}
 
@@ -54,5 +54,4 @@ namespace core {
 
 	void Form::onEndPaint(const eventInfo& e) {
 	}
-
 }
