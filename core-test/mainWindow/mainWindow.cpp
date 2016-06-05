@@ -2,7 +2,7 @@
 
 void MainWindow::onOpening() {
 	Form::onOpening();
-	setStyle( WS_POPUP | WS_CLIPCHILDREN );
+	setStyle( WS_POPUP );
 	setTitle("Core Renderer");
 	setClass("CoreRenderer");
 }
@@ -35,6 +35,7 @@ int MainWindow::onResize(const core::eventInfo &e) {
 	core::vec4i r = getClientRect();
 	rwnd.move(r.z-r.x, r.w-r.y);
 	//MoveWindow(hStatusBar, 0, r.bottom-20, r.right-r.left, 20, true);
+	//onPaint(e);
 	return e;
 }
 
@@ -57,4 +58,11 @@ void MainWindow::onEndPaint(const core::eventInfo& e) {
 	core::Renderer::fillRect(core::vec4i(1, 1, 300, 30), core::vec4b(45, 45, 48, 255), img);
 	core::Renderer::print("Core Renderer", img, 12, 12);
 	core::Renderer::drawRect(getClientRect(), core::vec4b(0, 122, 204, 255), *this);
+	core::Renderer::drawRect(rwnd.getChildRect().expand(1), core::Color(31, 31, 31, 255), *this);
+}
+
+int MainWindow::onPaint(const core::eventInfo& e) {
+	Form::onPaint(e);
+	//GL::swapBuffers(rwnd);
+	return 0;
 }

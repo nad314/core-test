@@ -49,7 +49,6 @@ int CoreTest::main() {
 
 		timer.start();
 		core::Renderer::drawPoints(mesh, &rw.view);
-		core::Renderer::drawRect(rw.getClientRect(), core::vec4b(31, 31, 31, 255), rw);
 		timer.stop();
 
 		renderTime += timer;

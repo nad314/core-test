@@ -121,6 +121,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="control\button.cpp" />
+    <ClCompile Include="control\buttonObject.cpp" />
     <ClCompile Include="control\control.cpp" />
     <ClCompile Include="form\form.cpp" />
     <ClCompile Include="form\form.styles.cpp" />
@@ -135,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="control\button.h" />
+    <ClInclude Include="control\buttonObject.h" />
     <ClInclude Include="control\control.h" />
     <ClInclude Include="form\form.h" />
     <ClInclude Include="model\simdMesh.h" />

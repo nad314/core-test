@@ -10,6 +10,7 @@ typedef core::matrixf matrixf;
 typedef core::vec4s vec4s;
 typedef core::matrixs matrixs;
 typedef core::Color Color;
+typedef core::Rect Rect;
 
 //core components
 #include <model/simdMesh.h>
@@ -17,6 +18,7 @@ typedef core::Color Color;
 #include <render/render.h>
 #include <control/control.h>
 #include <form/form.h>
+#include <control/buttonObject.h>
 #include <control/button.h>
 
 

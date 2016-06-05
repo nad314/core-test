@@ -2,28 +2,22 @@
 
 namespace core {
 	using buttonFunc = void(*)(Form& form);
-	class Button : public Control {
+	class Button : public ButtonObject {
 	protected:
 		std::string text;
-		Form* form;
-		vec4i textRect;
-		inline void invalidate() { __invalidate();  form->invalidate(); }
+		Rect textRect;
 
 	public:
-		buttonFunc onClick;
-		Button() :Control(), text("Button"), form(NULL), onClick(NULL) {}
-		Button(const vec4i& r):Control(r), text("Button"), form(NULL), onClick(NULL) {}
-		Button(const vec4i& r, const std::string t, Form& f) : Control(r), text(t), form(&f), onClick(NULL) {}
+		Button() :ButtonObject(), text("Button") {}
+		Button(const vec4i& r):ButtonObject(r), text("Button") {}
+		Button(const vec4i& r, const std::string t, Form& f) : ButtonObject(r, f), text(t) {}
 
 		void make(const vec4i& r, const std::string t, Form& f);
 		void make(const vec4i& r, const std::string t, Form& f, buttonFunc func);
 
-		virtual int onMouseMove(const eventInfo& e) override;
-		virtual int onLButtonDown(const eventInfo& e) override;
-		virtual int onLButtonUp(const eventInfo& e) override;
-		virtual int onRightButtonDown(const eventInfo& e) override;
-		virtual int onRightButtonUp(const eventInfo& e) override;
-		virtual int onPaint(const eventInfo& e) override;
+		void computeTextRect();
+		void setText(const std::string& t);
 
+		virtual int onPaint(const eventInfo& e) override;
 	};
 }

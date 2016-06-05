@@ -14,6 +14,7 @@ public:
 	int onResize(const core::eventInfo& e) override;
 	int onDefault(const core::eventInfo& e) override;
 	void onEndPaint(const core::eventInfo& e) override;
+	int onPaint(const core::eventInfo& e) override;
 	int onLButtonDown(const core::eventInfo& e) override;
 };
 

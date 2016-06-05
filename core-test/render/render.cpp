@@ -39,17 +39,22 @@ namespace core {
 	bool Renderer::drawRect(vec4i rect, vec4b color, Image &img) {
 		if (img.bits != 32 || img.width == 0 || img.height == 0)
 			return false;
+		if (rect.x >= img.width || rect.z < 0 || rect.y >= img.height || rect.w < 0)
+			return false;		
+		rect.w = std::min(--rect.w, (int)img.height-1);
+		rect.z = std::min(--rect.z, (int)img.width-1);
+		rect.x = std::max(rect.x, 0);
+		rect.y = std::max(rect.y, 0);
 		if (rect.z < rect.x || rect.w < rect.y)
 			return false;
-		--rect.w;
-		--rect.z;
+
 		float clr = *(float*)&color;
 		__m128 xmm0 = _mm_set1_ps(clr);
 
 		float* data = reinterpret_cast<float*>(img.data);
 		data += img.width * (int)rect.y;
 		float* data2 = data + img.width * (int)(rect.w-rect.y);
-		int mod = img.width % 4;
+		int mod = (rect.z-rect.x) % 4;
 		int to = (int)rect.z - mod;
 		for (int i = rect.x; i < to; i += 4) {
 			_mm_storeu_ps(data + i, xmm0);
@@ -75,23 +80,27 @@ namespace core {
 	bool Renderer::fillRect(vec4i rect, vec4b color, Image &img) {
 		if (img.bits != 32 || img.width == 0 || img.height == 0)
 			return false;
+		if (rect.x >= img.width || rect.z < 0 || rect.y >= img.height || rect.w < 0)
+			return false;
+		rect.w = std::min(--rect.w, (int)img.height-1);
+		rect.z = std::min(--rect.z, (int)img.width-1);
+		rect.x = std::max(rect.x, 0);
+		rect.y = std::max(rect.y, 0);
 		if (rect.z < rect.x || rect.w < rect.y)
 			return false;
-		--rect.w;
-		--rect.z;
+
 		float clr = *(float*)&color;
 		__m128 xmm0 = _mm_set1_ps(clr);
 
 		for (int i = rect.y; i < rect.w; ++i) {
 			float* data = reinterpret_cast<float*>(img.data) + img.width * i;
-			int mod = img.width % 4;
+			int mod = (rect.z-rect.x) % 4;
 			int to = (int)rect.z - mod;
 			for (int i = rect.x; i < to; i += 4)
 				_mm_storeu_ps(data + i, xmm0);
 			for (int i = to; i < to + mod; ++i)
 				*(data + i) = clr;
 		}
-
 		return true;
 	}
 

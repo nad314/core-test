@@ -4,7 +4,7 @@ namespace core {
 
 	void Button::make(const vec4i& r, const std::string t, Form& f) {
 		rect = r;
-		text = t;
+		setText(t);
 		form = &f;
 		flags = 0;
 	}
@@ -14,32 +14,23 @@ namespace core {
 		onClick = func;
 	}
 
-
-	int Button::onMouseMove(const eventInfo& e) { 
-		int f = flags;
-		int x = LOWORD(e.lP);
-		int y = HIWORD(e.lP);
-		if (x > rect.x && x<rect.z && y>rect.y && y < rect.w)
-			__hover();
-		else __unhover();
-		if (f != flags) {
-			invalidate();
-			return true;
-		}
-		return false;
+	void Button::computeTextRect() {
+		int w = Font::get().width(text.c_str());
+		int h = Font::get().height();
+		textRect = Rect(rect.x + rect.z, rect.y + rect.w, rect.x + rect.z, rect.y + rect.w) / 2 + Rect(-w / 2, -h / 2, w / 2, h / 2);
 	}
 
-	int Button::onLButtonDown(const eventInfo& e) { if (flags & 2) {  __activate(); invalidate(); } return 0; }
-	int Button::onLButtonUp(const eventInfo& e) { if (flags & 2 && onClick)onClick(*form); if(flags&2 || flags&4)invalidate();  __deactivate(); return 0; }
-	int Button::onRightButtonDown(const eventInfo& e) { return 0; }
-	int Button::onRightButtonUp(const eventInfo& e) { return 0; }
+	void Button::setText(const std::string& t) {
+		text = t;
+		computeTextRect();
+	}
+
+
 	int Button::onPaint(const eventInfo& e) { 
-		if (form == NULL) return 1;
+		if (ButtonObject::onPaint(e))
+			return 1;
 		Font& f = Font::get();
-		Renderer::fillRect(rect, (flags&4)?backColorActivated:((flags&2)?backColorHover:backColor), form->image());
-		Renderer::drawRect(rect, borderColor, form->image());
-		Renderer::print(text.c_str(), form->image(), (rect.x + rect.z)/2 - f.width(text.c_str())/2, (rect.y + rect.w)/2 - f.height()/2);
-		__validate();
+		Renderer::print(text.c_str(), form->image(), textRect.x, textRect.y);
 		return 0; 
 	}
 }
