@@ -17,7 +17,7 @@ void MainWindow::onOpened() {
 	GL::setVsync(0);
 	Reshape();
 
-	closeButton.make(core::vec4i(width - 67, 5, width - 7, 25), "Close", *this, []()->void { PostQuitMessage(0); });
+	closeButton.make(core::vec4i(width - 67, 5, width - 7, 25), "Close", *this, [](Form& f)->void { PostQuitMessage(0); });
 	push(closeButton);
 
 	Theme::setFormColor(*this);
@@ -48,7 +48,7 @@ int MainWindow::onDefault(const core::eventInfo &e) {
 
 int MainWindow::onLButtonDown(const core::eventInfo &e) {
 	Form::onLButtonDown(e);
-	if (LOWORD(e.lP)<400) 
+	if (LOWORD(e.lP)<700) 
 		SendMessage(hWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 	return 0;
 }

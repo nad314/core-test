@@ -23,6 +23,8 @@ namespace core {
 			img.make(width, height, 32);
 		img.clear();
 		__invalidate();
+		for (auto& i : items)
+			i->onResize(e);
 		return 0;
 	}
 

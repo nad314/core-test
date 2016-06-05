@@ -25,12 +25,15 @@ namespace core {
 		Control(const vec4i& r) :rect(r), flags(0) {}
 		~Control() {}
 
+		virtual inline void move(const vec4i& r) { rect = r; }
+
 		virtual int onMouseMove(const eventInfo& e);
 		virtual int onRightButtonDown(const eventInfo& e);
 		virtual int onRightButtonUp(const eventInfo& e);
 		virtual int onPaint(const eventInfo& e);
 		virtual int onLButtonDown(const eventInfo& e);
 		virtual int onLButtonUp(const eventInfo& e);
+		virtual int onResize(const eventInfo& e);
 
 		virtual void setForeColor(Color color);
 		virtual void setBackColor(Color color);

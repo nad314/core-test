@@ -28,8 +28,9 @@ namespace core {
 		}
 		return false;
 	}
-	int Button::onLButtonDown(const eventInfo& e) { if (flags & 2) { if (onClick)onClick();  __activate(); invalidate(); } return 0; }
-	int Button::onLButtonUp(const eventInfo& e) { __deactivate(); if(flags&2)invalidate(); return 0; }
+
+	int Button::onLButtonDown(const eventInfo& e) { if (flags & 2) {  __activate(); invalidate(); } return 0; }
+	int Button::onLButtonUp(const eventInfo& e) { if (flags & 2 && onClick)onClick(*form); if(flags&2 || flags&4)invalidate();  __deactivate(); return 0; }
 	int Button::onRightButtonDown(const eventInfo& e) { return 0; }
 	int Button::onRightButtonUp(const eventInfo& e) { return 0; }
 	int Button::onPaint(const eventInfo& e) { 

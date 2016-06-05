@@ -7,6 +7,7 @@ namespace core {
 	int Control::onRightButtonDown(const eventInfo& e) { return 0; }
 	int Control::onRightButtonUp(const eventInfo& e) { return 0; }
 	int Control::onPaint(const eventInfo& e) { return 0; }
+	int Control::onResize(const eventInfo& e) { return 0; }
 
 	void Control::setForeColor(Color color) { foreColor = color; }
 	void Control::setBackColor(Color color) { backColor = color; }

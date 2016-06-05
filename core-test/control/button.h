@@ -1,7 +1,7 @@
 #pragma once
 
 namespace core {
-	using buttonFunc = void(*)();
+	using buttonFunc = void(*)(Form& form);
 	class Button : public Control {
 	protected:
 		std::string text;
