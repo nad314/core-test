@@ -109,8 +109,8 @@ namespace core {
 		Rect pos(0, 0, imgFrom.width, imgFrom.height);
 		if (rect.x < 0) { pos.x -= rect.x; rect.x = 0; }
 		if (rect.y < 0) { pos.y -= rect.y; rect.y = 0; }
-		rect.z = std::min(std::min(rect.z, (int)imgTo.width), rect.x+(int)imgFrom.width);
-		rect.w = std::min(std::min(rect.w, (int)imgTo.height), rect.y+(int)imgFrom.height);
+		rect.z = std::min(std::min(rect.z, (int)imgTo.width), rect.x + (int)imgFrom.width);
+		rect.w = std::min(std::min(rect.w, (int)imgTo.height), rect.y + (int)imgFrom.height);
 		pos.z = std::min(pos.x + rect.z - rect.x, pos.z);
 		pos.w = std::min(pos.y + rect.w - rect.y, pos.w);
 
@@ -130,7 +130,7 @@ namespace core {
 		for (i = pos.y; i < pos.w; ++i) {
 			for (j = 0; j < to; j+=4)
 				_mm_storeu_ps((float*)(dataTo + j), _mm_loadu_ps((float*)(dataFrom + j)));
-			for (j = to; j < rect.z; ++j)
+			for (j = to; j < pos.z; ++j)
 				*(dataTo + j) = *(dataFrom + j);
 			dataFrom += imgFrom.width;
 			dataTo += imgTo.width;

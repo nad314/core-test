@@ -3,7 +3,8 @@
 class MainWindow final : public core::Form {
 public:
 	RenderWindow rwnd;
-	core::Button closeButton;
+	core::ImageButton closeButton;
+	core::ImageButton minButton;
 public:
 	MainWindow() {}
 	inline core::Window& getRenderWindow() { return rwnd; }

@@ -17,10 +17,16 @@ void MainWindow::onOpened() {
 	GL::setVsync(0);
 	Reshape();
 
-	closeButton.make(core::vec4i(width - 67, 5, width - 7, 25), "Close", *this, [](Form& f)->void { PostQuitMessage(0); });
+	closeButton.make(core::vec4i(width - 35, 0, width - 7, 28), &core::Resource::closeImage, *this, [](Form& f)->void {  PostQuitMessage(0); });
+	minButton.make(core::vec4i(width - 35 - 29, 0, width - 7 - 29, 28), &core::Resource::minimizeImage, *this, [](Form& f)->void { ShowWindow(f, SW_MINIMIZE); });
 	push(closeButton);
+	push(minButton);
 
 	Theme::setFormColor(*this);
+	closeButton.setBackColor(backColor);
+	closeButton.setBackColorHover(controlBackColor);
+	minButton.setBackColor(backColor);
+	minButton.setBackColorHover(controlBackColor);
 }
 
 void MainWindow::onClosing() {

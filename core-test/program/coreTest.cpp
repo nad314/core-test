@@ -5,6 +5,10 @@ int CoreTest::onLoad() {
 		return 1;
 	mesh.importgdev("data/wyvern-low.gdev");
 	mesh.normalize();
+
+	core::Resource::Util::imageToString("D:/code/art/x4_28.tga", "D:/code/art/x4_28.txt");
+	core::Resource::Util::imageToString("D:/code/art/_3_28.tga", "D:/code/art/_3_28.txt");
+
 	return 0;
 }
 
