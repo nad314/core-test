@@ -7,5 +7,7 @@ namespace core {
 	public:
 		void onOpened() override;
 		void setFormTitle(const char* t) override;
+
+		int onNcHitTest(const eventInfo& e) override;
 	};
 }

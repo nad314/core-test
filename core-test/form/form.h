@@ -24,11 +24,13 @@ namespace core {
 
 		void onOpened() override;
 		void onClosing() override;
-		int onResize (const eventInfo& e) override;
-		int onPaint (const eventInfo& e) override;
-		int onMouseMove(const eventInfo& e) override;
-		int onLButtonDown(const eventInfo& e) override;
-		int onLButtonUp(const eventInfo& e) override;
+		virtual int onResize (const eventInfo& e) override;
+		virtual int onPaint (const eventInfo& e) override;
+		virtual int onMouseMove(const eventInfo& e) override;
+		virtual int onLButtonDown(const eventInfo& e) override;
+		virtual int onLButtonUp(const eventInfo& e) override;
+		virtual int onLButtonDblClk(const eventInfo& e) override;
+		virtual int onActivate(const eventInfo& e) override;
 
 
 		//validation for redrawing

@@ -34,6 +34,7 @@ namespace core {
 		virtual int onLButtonDown(const eventInfo& e);
 		virtual int onLButtonUp(const eventInfo& e);
 		virtual int onResize(const eventInfo& e);
+		virtual int onLButtonDblClk(const eventInfo& e);
 
 		virtual void setForeColor(Color color);
 		virtual void setBackColor(Color color);

@@ -40,10 +40,27 @@ namespace core {
 	}
 
 	int WindowFrame::onLButtonDown(const eventInfo& e) {
-		if (LOWORD(e.lP)<form->width-65)
+		if (LOWORD(e.lP)<form->width-65 && HIWORD(e.lP)<33)
 			SendMessage(*form, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 		if (closeButton.onLButtonDown(e) || minButton.onLButtonDown(e))
 			flags &= ~1;
+		return 0;
+	}
+
+	int WindowFrame::onLButtonDblClk(const eventInfo& e) {
+		Control::onLButtonDblClk(e);
+		if (HIWORD(e.lP) < 33) {
+			if (LOWORD(e.lP) < 32) {
+				PostQuitMessage(0);
+				return 1;
+			} else if (LOWORD(e.lP)<form->width - 65) {
+				if (form->isMaximized())
+					ShowWindow(*form, SW_SHOWNORMAL);
+				else
+					ShowWindow(*form, SW_MAXIMIZE);
+				return 1;
+			}
+		}
 		return 0;
 	}
 

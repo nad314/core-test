@@ -37,26 +37,7 @@ int MainWindow::onResize(const core::eventInfo &e) {
 	return e;
 }
 
-int MainWindow::onDefault(const core::eventInfo &e) {
-	switch (e.msg) {
-	case WM_LBUTTONDBLCLK: if (LOWORD(e.lP) < 25 && HIWORD(e.lP) < 25)PostQuitMessage(0); return e;
-	case WM_NCHITTEST: return onNcHitTest(e);
-	}
-	return e;
-}
-
-int MainWindow::onLButtonDown(const core::eventInfo &e) {
-	WindowForm::onLButtonDown(e);
-	return 0;
-}
-
 void MainWindow::onEndPaint(const core::eventInfo& e) {
-	core::Renderer::drawRect(getClientRect(), core::vec4b(0, 122, 204, 255), *this);
+	core::Renderer::drawRect(getClientRect(), active?core::vec4b(0, 122, 204, 255): core::vec4b(84, 84, 84, 255), *this);
 	core::Renderer::drawRect(rwnd.getChildRect().expand(1), core::Color(31, 31, 31, 255), *this);
-}
-
-int MainWindow::onPaint(const core::eventInfo& e) {
-	WindowForm::onPaint(e);
-	//GL::swapBuffers(rwnd);
-	return 0;
 }

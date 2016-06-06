@@ -20,7 +20,7 @@ namespace core {
 		int onLButtonDown(const eventInfo& e) override;
 		int onLButtonUp(const eventInfo& e) override;
 		int onResize(const eventInfo& e) override;
-
+		int onLButtonDblClk(const eventInfo& e) override;
 
 		void setForeColor(Color color) override;
 		void setBackColor(Color color) override;

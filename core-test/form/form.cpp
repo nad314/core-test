@@ -83,4 +83,16 @@ namespace core {
 		setTitle(t);
 	}
 
+	int Form::onLButtonDblClk(const eventInfo& e) {
+		for (auto& i : items)
+			if (i->onLButtonDblClk(e))
+				return e;
+		return e;
+	}
+
+	int Form::onActivate(const eventInfo& e) {
+		invalidate();
+		return Window::onActivate(e);
+	}
+
 }

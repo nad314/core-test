@@ -10,4 +10,9 @@ namespace core {
 		Form::setFormTitle(t);
 		frame.setTitle(t);
 	}
+
+	int WindowForm::onNcHitTest(const eventInfo& e) {
+		Form::onNcHitTest(e);
+		return parseNcHitTest(e);
+	}
 }
