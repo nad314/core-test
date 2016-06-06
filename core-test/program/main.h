@@ -4,6 +4,7 @@
 #define _UNICODE
 
 #include <core>
+#include <core-forms>
 using namespace core::opengl;
 typedef core::vec4 vec4;
 typedef core::matrixf matrixf;
@@ -16,13 +17,6 @@ typedef core::Rect Rect;
 #include <model/simdMesh.h>
 #include <render/view.h>
 #include <render/render.h>
-#include <control/control.h>
-#include <form/form.h>
-#include <control/buttonObject.h>
-#include <control/button.h>
-#include <control/imageButton.h>
-#include <control/windowFrame.h>
-#include <form/windowForm.h>
 
 
 //CoreTest components

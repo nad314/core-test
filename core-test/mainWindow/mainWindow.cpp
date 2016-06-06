@@ -2,7 +2,6 @@
 
 void MainWindow::onOpening() {
 	Form::onOpening();
-	setStyle( WS_POPUP );
 	setTitle("Core Renderer");
 	setClass("CoreRenderer");
 }

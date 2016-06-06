@@ -1,7 +1,7 @@
 #pragma once
 
 class MainWindow final : public core::WindowForm {
-public:
+private:
 	RenderWindow rwnd;
 public:
 	MainWindow() {}
