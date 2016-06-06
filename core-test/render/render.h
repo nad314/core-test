@@ -20,6 +20,9 @@ namespace core {
 		static bool drawRect(vec4i rect, vec4b color, Image &img);
 		static bool fillRect(vec4i rect, vec4b color, Image &img);
 
+		static bool drawImage(Rect rect, Image& imgFrom, Image& imgTo);
+		static bool blendImage(Rect rect, Image& imgFrom, Image& imgTo);
+
 	};
 }
 

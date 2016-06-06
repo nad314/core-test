@@ -55,6 +55,7 @@ int CoreTest::main() {
 		++nframes;
 		sprintf(text, "%.3fms avg, %.3fms cur", renderTime / nframes, timer.ms());
 		core::Renderer::print(text, rw, 10, rw.height - 10 - core::Font::get().height());
+		
 
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);

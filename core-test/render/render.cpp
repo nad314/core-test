@@ -104,4 +104,90 @@ namespace core {
 		return true;
 	}
 
+	bool Renderer::drawImage(Rect rect, Image& imgFrom, Image& imgTo) {
+		int i, j;
+		Rect pos(0, 0, imgFrom.width, imgFrom.height);
+		if (rect.x < 0) { pos.x -= rect.x; rect.x = 0; }
+		if (rect.y < 0) { pos.y -= rect.y; rect.y = 0; }
+		rect.z = std::min(std::min(rect.z, (int)imgTo.width), rect.x+(int)imgFrom.width);
+		rect.w = std::min(std::min(rect.w, (int)imgTo.height), rect.y+(int)imgFrom.height);
+		pos.z = std::min(pos.x + rect.z - rect.x, pos.z);
+		pos.w = std::min(pos.y + rect.w - rect.y, pos.w);
+
+		int* dataFrom = ((int*)imgFrom.data) + imgFrom.width*pos.y + pos.x;
+		int* dataTo = ((int*)imgTo.data) + imgTo.width*rect.y + rect.x;
+
+		pos.z -= pos.x;
+
+		__m128i xmm0, xmm1, xmm2, xmm3;
+		int alpha;
+
+		int div = pos.z / 4;
+		int mod = pos.z % 4;
+		int to = pos.z - mod;
+
+
+		for (i = pos.y; i < pos.w; ++i) {
+			for (j = 0; j < to; j+=4)
+				_mm_storeu_ps((float*)(dataTo + j), _mm_loadu_ps((float*)(dataFrom + j)));
+			for (j = to; j < rect.z; ++j)
+				*(dataTo + j) = *(dataFrom + j);
+			dataFrom += imgFrom.width;
+			dataTo += imgTo.width;
+		}
+
+		return true;
+	}
+
+
+	bool Renderer::blendImage(Rect rect, Image& imgFrom, Image& imgTo) {
+		int i, j;
+		Rect pos(0, 0, imgFrom.width, imgFrom.height);
+		if (rect.x < 0) { pos.x -= rect.x; rect.x = 0; }
+		if (rect.y < 0) { pos.y -= rect.y; rect.y = 0; }
+		rect.z = std::min(std::min(rect.z, (int)imgTo.width), rect.x + (int)imgFrom.width);
+		rect.w = std::min(std::min(rect.w, (int)imgTo.height), rect.y + (int)imgFrom.height);
+		pos.z = std::min(pos.x + rect.z - rect.x, pos.z);
+		pos.w = std::min(pos.y + rect.w - rect.y, pos.w);
+
+		int* dataFrom = ((int*)imgFrom.data) + imgFrom.width*pos.y + pos.x;
+		int* dataTo = ((int*)imgTo.data) + imgTo.width*rect.y + rect.x;
+
+		pos.z -= pos.x;
+
+		__m128i xmm0, xmm1, xmm2, xmm3;
+		int alpha;
+
+		for (i = pos.y; i < pos.w; ++i) {
+			for (j = 0; j < pos.z; ++j) {
+				alpha = (*(dataFrom + j)) & 0xff000000;
+				xmm1 = _mm_cvtsi32_si128(alpha | alpha >> 8 | alpha >> 16 | alpha >> 24);
+				xmm1 = _mm_unpacklo_epi8(xmm1, _mm_setzero_si128());
+				xmm1 = _mm_unpacklo_epi16(xmm1, _mm_setzero_si128());
+				xmm3 = _mm_sub_epi32(_mm_set1_epi32(255), xmm1);
+
+				xmm0 = _mm_cvtsi32_si128(*(dataFrom + j));
+				xmm0 = _mm_unpacklo_epi8(xmm0, _mm_setzero_si128());
+				xmm0 = _mm_unpacklo_epi16(xmm0, _mm_setzero_si128());
+				xmm0 = _mm_mullo_epi32(xmm0, xmm1);
+				xmm0 = _mm_srli_epi32(xmm0, 8);
+
+				xmm2 = _mm_cvtsi32_si128(*(dataTo + j));
+				xmm2 = _mm_unpacklo_epi8(xmm2, _mm_setzero_si128());
+				xmm2 = _mm_unpacklo_epi16(xmm2, _mm_setzero_si128());
+				xmm2 = _mm_mullo_epi32(xmm2, xmm3);
+				xmm2 = _mm_srli_epi32(xmm2, 8);
+
+				xmm0 = _mm_add_epi32(xmm0, xmm2);
+
+				*(dataTo + j) = xmm0.m128i_i32[0] | xmm0.m128i_i32[1] << 8 | xmm0.m128i_i32[2] << 16 | xmm0.m128i_i32[0] << 24;
+
+			}
+			dataFrom += imgFrom.width;
+			dataTo += imgTo.width;
+		}
+
+		return true;
+	}
+
 }
