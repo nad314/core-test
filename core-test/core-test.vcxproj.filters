@@ -57,6 +57,12 @@
     <ClCompile Include="control\imageButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="control\windowFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="form\windowForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\render.h">
@@ -96,6 +102,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="control\imageButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="control\windowFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="form\windowForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

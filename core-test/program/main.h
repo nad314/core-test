@@ -21,6 +21,8 @@ typedef core::Rect Rect;
 #include <control/buttonObject.h>
 #include <control/button.h>
 #include <control/imageButton.h>
+#include <control/windowFrame.h>
+#include <form/windowForm.h>
 
 
 //CoreTest components

@@ -1,10 +1,8 @@
 #pragma once
 
-class MainWindow final : public core::Form {
+class MainWindow final : public core::WindowForm {
 public:
 	RenderWindow rwnd;
-	core::ImageButton closeButton;
-	core::ImageButton minButton;
 public:
 	MainWindow() {}
 	inline core::Window& getRenderWindow() { return rwnd; }

@@ -78,4 +78,9 @@ namespace core {
 	void Form::onEndPaint(const eventInfo& e) {
 		validate();
 	}
+
+	void Form::setFormTitle(const char* t) {
+		setTitle(t);
+	}
+
 }

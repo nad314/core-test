@@ -8,7 +8,8 @@ void MainWindow::onOpening() {
 }
 
 void MainWindow::onOpened() {
-	Form::onOpened();
+	WindowForm::onOpened();
+
 	rwnd.setParent(this);
 	rwnd.open();
 
@@ -17,25 +18,16 @@ void MainWindow::onOpened() {
 	GL::setVsync(0);
 	Reshape();
 
-	closeButton.make(core::vec4i(width - 35, 0, width - 7, 28), &core::Resource::closeImage, *this, [](Form& f)->void {  PostQuitMessage(0); });
-	minButton.make(core::vec4i(width - 35 - 29, 0, width - 7 - 29, 28), &core::Resource::minimizeImage, *this, [](Form& f)->void { ShowWindow(f, SW_MINIMIZE); });
-	push(closeButton);
-	push(minButton);
-
 	Theme::setFormColor(*this);
-	closeButton.setBackColor(backColor);
-	closeButton.setBackColorHover(controlBackColor);
-	minButton.setBackColor(backColor);
-	minButton.setBackColorHover(controlBackColor);
 }
 
 void MainWindow::onClosing() {
-	Form::onClosing();
+	WindowForm::onClosing();
 	rwnd.close();
 }
 
 int MainWindow::onResize(const core::eventInfo &e) {
-	Form::onResize(e);
+	WindowForm::onResize(e);
 	if (width < 1 || height < 1)
 		return e;
 	core::vec4i r = getClientRect();
@@ -54,21 +46,17 @@ int MainWindow::onDefault(const core::eventInfo &e) {
 }
 
 int MainWindow::onLButtonDown(const core::eventInfo &e) {
-	Form::onLButtonDown(e);
-	if (LOWORD(e.lP)<700) 
-		SendMessage(hWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+	WindowForm::onLButtonDown(e);
 	return 0;
 }
 
 void MainWindow::onEndPaint(const core::eventInfo& e) {
-	core::Renderer::fillRect(core::vec4i(1, 1, 300, 32), core::vec4b(45, 45, 48, 255), img);
-	core::Renderer::print("Core Renderer", img, 12, 12);
 	core::Renderer::drawRect(getClientRect(), core::vec4b(0, 122, 204, 255), *this);
 	core::Renderer::drawRect(rwnd.getChildRect().expand(1), core::Color(31, 31, 31, 255), *this);
 }
 
 int MainWindow::onPaint(const core::eventInfo& e) {
-	Form::onPaint(e);
+	WindowForm::onPaint(e);
 	//GL::swapBuffers(rwnd);
 	return 0;
 }

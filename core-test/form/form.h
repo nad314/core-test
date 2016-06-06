@@ -5,6 +5,7 @@ namespace core {
 		Image img;
 		buffer<Control*> items;
 		int flags;
+	public:
 		Color backColor;
 		Color foreColor;
 		Color controlBackColor;
@@ -18,6 +19,8 @@ namespace core {
 	public:
 		inline Image& image() { return img; }
 		inline operator Image&() { return img; }
+
+		virtual void setFormTitle(const char* t);
 
 		void onOpened() override;
 		void onClosing() override;
