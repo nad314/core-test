@@ -14,7 +14,6 @@ void MainWindow::onOpened() {
 
 	GL::createContext(rwnd);
 	GL::init(rwnd);
-	GL::setVsync(0);
 	Reshape();
 
 	Theme::setFormColor(*this);
@@ -31,8 +30,6 @@ int MainWindow::onResize(const core::eventInfo &e) {
 		return e;
 	core::vec4i r = getClientRect();
 	rwnd.move(r.z-r.x, r.w-r.y);
-	//MoveWindow(hStatusBar, 0, r.bottom-20, r.right-r.left, 20, true);
-	//onPaint(e);
 	return e;
 }
 
