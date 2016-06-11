@@ -97,8 +97,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -128,7 +128,6 @@
     <ClCompile Include="render\view.cpp" />
     <ClCompile Include="mainWindow\mainWindow.cpp" />
     <ClCompile Include="renderWindow\renderWindow.cpp" />
-    <ClCompile Include="theme\theme.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="model\simdMesh.h" />
@@ -138,7 +137,6 @@
     <ClInclude Include="render\render.h" />
     <ClInclude Include="render\view.h" />
     <ClInclude Include="renderWindow\renderWindow.h" />
-    <ClInclude Include="theme\theme.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />

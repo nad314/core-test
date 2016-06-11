@@ -36,9 +36,6 @@
     <ClCompile Include="mainWindow\mainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="theme\theme.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\render.h">
@@ -60,9 +57,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mainWindow\mainWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="theme\theme.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

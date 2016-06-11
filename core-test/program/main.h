@@ -18,9 +18,7 @@ typedef core::Rect Rect;
 #include <render/view.h>
 #include <render/render.h>
 
-
 //CoreTest components
-#include <theme/theme.h>
 #include <renderWindow/renderWindow.h>
 #include <mainWindow/mainWindow.h>
 #include <program/coreTest.h>

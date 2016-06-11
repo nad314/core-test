@@ -16,7 +16,7 @@ void MainWindow::onOpened() {
 	GL::init(rwnd);
 	Reshape();
 
-	Theme::setFormColor(*this);
+	core::Theme::setFormColor(*this);
 }
 
 void MainWindow::onClosing() {
