@@ -1,10 +1,9 @@
 #include <main>
 
 void MainWindow::onOpening() {
-	Form::onOpening();
+	WindowForm::onOpening();
 	setTitle("Core Renderer");
 	setClass("CoreRenderer");
-	setStyle(WS_POPUP);
 }
 
 void MainWindow::onOpened() {
