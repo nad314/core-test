@@ -3,6 +3,9 @@
 #endif
 #define _UNICODE
 
+#include <thread>
+#include <mutex>
+
 #include <core>
 #include <core-forms>
 using namespace core::opengl;

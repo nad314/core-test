@@ -11,10 +11,9 @@ void MainWindow::onOpened() {
 
 	rwnd.setParent(this);
 	rwnd.open();
-
-	GL::createContext(rwnd);
-	GL::init(rwnd);
-	Reshape();
+	core::vec4i r = getClientRect();
+	rwnd.move(r.z - r.x, r.w - r.y);
+	//Reshape();
 }
 
 void MainWindow::onClosing() {

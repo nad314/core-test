@@ -12,6 +12,8 @@ void RenderWindow::onOpened() {
 		return;
 	view.make(width, height);
 	view.home();
+	GL::createContext(*this);
+	GL::init(*this);
 }
 
 int RenderWindow::onResize(const core::eventInfo& e) {
@@ -20,7 +22,7 @@ int RenderWindow::onResize(const core::eventInfo& e) {
 		return e;
 	view.make(width, height);
 	view.home();
-	GL::init(*this);
+	GL::ortho(*this);
 }
 
 

@@ -3,7 +3,7 @@
 int CoreTest::onLoad() {
 	if (!wnd.goToHomeDirectory())
 		return 1;
-	mesh.importgdev("data/wyvern-low.gdev");
+	mesh.importgdev("data/panther.gdev");
 	mesh.normalize();
 	return 0;
 }
@@ -36,8 +36,20 @@ int CoreTest::main() {
 	RenderWindow& rw = static_cast<RenderWindow&>(wnd.getRenderWindow());
 	if (!rw)done = 1;
 
+	/*
+	int threads = std::thread::hardware_concurrency();
+	std::thread *thread = new std::thread[threads];
+	int step = mesh.vecs.count() / threads;
+	
+	for (int i = 0; i < threads - 1; ++i) {
+		thread[i] = std::thread(core::Renderer::drawPointThread, mesh, &rw.view, i*step, (i + 1)*step, &done);
+	}*/
+
+	int threads = 1;
+	int step = 0;
+
 	while (!done) {
-		if (wnd.peekMessage(done) || wnd.getRenderWindow().peekMessage())
+		if (wnd.peekMessageAsync(done))
 			continue;
 
 		if (GetAsyncKeyState(VK_ESCAPE))
@@ -48,17 +60,25 @@ int CoreTest::main() {
 		rw.view.clear();
 
 		timer.start();
-		core::Renderer::drawPoints(mesh, &rw.view);
+		core::Renderer::invalidate();
+		core::Renderer::drawPointRange( mesh, &rw.view, (threads-1)*step, mesh.vecs.count());
 		timer.stop();
 
 		renderTime += timer;
 		++nframes;
-		sprintf(text, "%.3fms avg, %.3fms cur", renderTime / nframes, timer.ms());
+		sprintf(text, "%d Points: %.3fms avg, %.3fms cur", mesh.vecs.count(), renderTime / nframes, timer.ms());
 		core::Renderer::print(text, rw, 10, rw.height - 10 - core::Font::get().height());
 		
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);
 	}
+	/*
+	for (int i = 0; i < threads - 1; ++i)
+		thread[i].join();
+
+	delete[] thread;
+	*/
+
 	return 0;
 }
 
