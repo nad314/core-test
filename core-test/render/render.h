@@ -12,15 +12,25 @@ namespace core {
 
 		static void raytrace(PolyOctree& octree, View* view);
 
-		static inline bool rayBoxIntersectionTest(const vec4& r0, const vec4& r1, const vec4& p, const vec4& q) {
-			vec4 rd = vec4(1.0f) / r1;
-			vec4 v0 = (p - r0)*rd;
-			vec4 v1 = (q - r0)*rd;
+		static inline bool rayBoxIntersectionTest(const Ray& ray, const vec4& p, const vec4& q) {
+			vec4 v0 = (p - ray.r0)*ray.invr1;
+			vec4 v1 = (q - ray.r0)*ray.invr1;
 
 			float tmin = std::max(std::max(std::min(v0.x, v1.x), std::min(v0.y, v1.y)), std::min(v0.z, v1.z));
 			float tmax = std::min(std::min(std::max(v0.x, v1.x), std::max(v0.y, v1.y)), std::max(v0.z, v1.z));
 			return (tmax > 0 && tmin < tmax);
 		}
+
+		static inline float rayBoxIntersectionTestF(const Ray& ray, const vec4& p, const vec4& q) {
+			vec4 v0 = (p - ray.r0)*ray.invr1;
+			vec4 v1 = (q - ray.r0)*ray.invr1;
+
+			float tmin = std::max(std::max(std::min(v0.x, v1.x), std::min(v0.y, v1.y)), std::min(v0.z, v1.z));
+			float tmax = std::min(std::min(std::max(v0.x, v1.x), std::max(v0.y, v1.y)), std::max(v0.z, v1.z));
+			if (tmax<0 || tmin>tmax) return -1.0f;
+			return tmin;
+		}
+
 	};
 }
 

@@ -24,26 +24,26 @@ namespace core {
 		node[0]->p = vec4(p.x, p.y, p.z, 1.0f);
 		node[0]->q = vec4(c.x, c.y, c.z, 1.0f);
 
-		node[1]->p = vec4(c.x, p.y, p.z, 1.0f);
-		node[1]->q = vec4(q.x, c.y, c.z, 1.0f);
+		node[4]->p = vec4(c.x, p.y, p.z, 1.0f);
+		node[4]->q = vec4(q.x, c.y, c.z, 1.0f);
 
-		node[2]->p = vec4(p.x, c.y, p.z, 1.0f);
-		node[2]->q = vec4(c.x, q.y, c.z, 1.0f);
+		node[1]->p = vec4(p.x, c.y, p.z, 1.0f);
+		node[1]->q = vec4(c.x, q.y, c.z, 1.0f);
 
-		node[3]->p = vec4(c.x, c.y, p.z, 1.0f);
-		node[3]->q = vec4(q.x, q.y, c.z, 1.0f);
+		node[5]->p = vec4(c.x, c.y, p.z, 1.0f);
+		node[5]->q = vec4(q.x, q.y, c.z, 1.0f);
 
-		node[4]->p = vec4(p.x, p.y, c.z, 1.0f);
-		node[4]->q = vec4(c.x, c.y, q.z, 1.0f);
+		node[3]->p = vec4(p.x, p.y, c.z, 1.0f);
+		node[3]->q = vec4(c.x, c.y, q.z, 1.0f);
 
-		node[5]->p = vec4(c.x, p.y, c.z, 1.0f);
-		node[5]->q = vec4(q.x, c.y, q.z, 1.0f);
+		node[7]->p = vec4(c.x, p.y, c.z, 1.0f);
+		node[7]->q = vec4(q.x, c.y, q.z, 1.0f);
 
-		node[6]->p = vec4(p.x, c.y, c.z, 1.0f);
-		node[6]->q = vec4(c.x, q.y, q.z, 1.0f);
+		node[2]->p = vec4(p.x, c.y, c.z, 1.0f);
+		node[2]->q = vec4(c.x, q.y, q.z, 1.0f);
 
-		node[7]->p = vec4(c.x, c.y, c.z, 1.0f);
-		node[7]->q = vec4(q.x, q.y, q.z, 1.0f);
+		node[6]->p = vec4(c.x, c.y, c.z, 1.0f);
+		node[6]->q = vec4(q.x, q.y, q.z, 1.0f);
 		for (int i = 0; i < 8; ++i)
 			node[i]->build(points);
 		points.clear();
@@ -52,24 +52,36 @@ namespace core {
 				node[i]->sub();
 	}
 
-	float PolyOctree::Node::rayIntersectionT(const vec4& r0, const vec4& r1) const {
-		if (!Renderer::rayBoxIntersectionTest(r0, r1, p, q))
+	float PolyOctree::Node::rayIntersectionT(Ray& ray) const {
+		float dtb = Renderer::rayBoxIntersectionTestF(ray, p, q);
+		if (dtb < 0.0f || dtb>ray.d)
 			return -1.0f;
 		float d = -1.0f;
 		if (hasNodes) {
 			for (int i = 0; i < 8; ++i) {
-				float dist = node[i]->rayIntersectionT(r0, r1);
+				float dist = node[i]->rayIntersectionT(ray);
 				if (dist > 0 && (dist < d || d < 0.0f))
 					d = dist;
 			}
 			return d;
 		}
 		else {
+			/*
+			if (points.size() > 0) {
+				ray.d = dtb;
+				return dtb;
+			}
+			return -1.0f;*/
+
+			d = std::min(ray.d, d);
+
 			for (int i = 0; i < points.size(); i += 3) {
-				float dist = Math::rayPlaneT(r0.xyz(), r1.xyz(), planes[i / 3]);
+				float dist = Math::rayPlaneT(ray.r0.xyz(), ray.r1.xyz(), planes[i / 3]);
 				if (dist > 0 && (dist < d || d < 0.0f))
-					if (Math::pointInTriangle((r0 + r1*dist) * 100, points[i] * 100, points[i + 1] * 100, points[i + 2] * 100))
-						d = dist;
+					if (Math::pointInTriangle((ray.r0 + ray.r1*dist) * 100, points[i] * 100, points[i + 1] * 100, points[i + 2] * 100)) {
+						ray.d = d = dist;
+						ray.plane = planes[i / 3];
+					}
 			}
 			return d;
 		}

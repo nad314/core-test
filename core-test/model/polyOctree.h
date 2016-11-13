@@ -1,6 +1,17 @@
 #pragma once
 
 namespace core {
+
+	struct Ray {
+		vec4 r0;
+		vec4 r1;
+		vec4 invr1;
+		float d;
+		vec4 plane;
+
+		Ray(vec4 v0, vec4 v1) : r0(v0), r1(v1) { invr1 = vec4(1.0f) / r1; d = 100.0f; }
+	};
+
 	class PolyOctree {
 	private:
 		struct Node {
@@ -20,7 +31,7 @@ namespace core {
 
 			void build(buffer<vec4>& buff);
 			void sub();
-			float rayIntersectionT(const vec4& r0, const vec4& r1) const;
+			float rayIntersectionT(Ray& ray) const;
 		};
 
 	public:
