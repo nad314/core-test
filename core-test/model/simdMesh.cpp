@@ -106,7 +106,7 @@ namespace core {
 		}
 	}
 
-	void simdMesh::bbox(vec4s& p, vec4s& q) {
+	void simdMesh::bbox(vec4s& p, vec4s& q) const {
 		if (!vecs.size())
 			return;
 

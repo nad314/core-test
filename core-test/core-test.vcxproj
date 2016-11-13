@@ -119,6 +119,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="model\polyOctree.cpp" />
     <ClCompile Include="model\simdMesh.cpp" />
     <ClCompile Include="program\coreTest.cpp" />
     <ClCompile Include="program\main.cpp" />
@@ -128,6 +129,7 @@
     <ClCompile Include="renderWindow\renderWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="model\polyOctree.h" />
     <ClInclude Include="model\simdMesh.h" />
     <ClInclude Include="program\coreTest.h" />
     <ClInclude Include="mainWindow\mainWindow.h" />

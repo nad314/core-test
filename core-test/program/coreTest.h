@@ -4,6 +4,7 @@ class CoreTest final : public core::Module, public core::SIMD {
 private:
 	MainWindow wnd;
 	core::simdMesh mesh;
+	core::PolyOctree octree;
 	core::Timer<float> timer;
 	core::Timer<float> globalTimer;
 

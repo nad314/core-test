@@ -6,6 +6,7 @@ int CoreTest::onLoad() {
 	mesh.importgdev("data/panther.gdev");
 	mesh.normalize();
 	mesh.bbox(p, q);
+	octree.build(mesh);
 	return 0;
 }
 
@@ -49,6 +50,9 @@ int CoreTest::main() {
 	int threads = 1;
 	int step = 0;
 
+	glClear(GL_COLOR_BUFFER_BIT);
+	GL::swapBuffers(rw);
+
 	while (!done) {
 		if (wnd.peekMessageAsync(done))
 			continue;
@@ -62,8 +66,8 @@ int CoreTest::main() {
 
 		timer.start();
 		core::Renderer::invalidate();
-		//core::Renderer::drawPointRange( mesh, &rw.view, (threads-1)*step, mesh.vecs.count());
-		core::Renderer::raytrace(p, q, &rw.view);
+		core::Renderer::raytrace(octree, &rw.view);
+		//core::Renderer::drawPointRange(mesh, &rw.view, (threads - 1)*step, mesh.vecs.count());
 		timer.stop();
 
 		renderTime += timer;
