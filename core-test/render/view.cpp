@@ -6,6 +6,8 @@ void View::make (const int width, const int height) {
 	viewVec = vec4(width, height, 0.5f, 0.0f);
 	simdViewVec = viewVec;
 	vvs = vec4s(vec4(width-1, height-1, 1.0f, 0.0f));
+
+	v09 = vec4s(vec4(width, height, 1.0f, 1.0f));
 }
 
 void View::clear() {
@@ -27,6 +29,18 @@ vec4 View::project (const vec4 &v) {
 	r.x=(v.x*r.w*0.5+0.5)*img.width+0;
 	r.y=(v.y*r.w*0.5+0.5)*img.height+0;
 	r.z=(1.0+v.z*r.w)*0.5;
+	return r;
+}
+
+vec4 View::unproject(const vec4& v) {
+	if (v.w == 0.0f)
+		return vec4(0.0f);
+	vec4 r = v / vec4((float)img.width, (float)img.height, 1.0f, 1.0f) - vec4(0.5f, 0.5f, 0.0f, 0.0f);
+	r /= vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	r.x /= r.w;
+	r.y /= r.w;
+	r.z = (r.z - 1.0f) / r.w;
+	r.w = 1.0f;
 	return r;
 }
 

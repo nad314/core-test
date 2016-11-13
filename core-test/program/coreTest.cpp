@@ -5,6 +5,7 @@ int CoreTest::onLoad() {
 		return 1;
 	mesh.importgdev("data/panther.gdev");
 	mesh.normalize();
+	mesh.bbox(p, q);
 	return 0;
 }
 
@@ -61,7 +62,8 @@ int CoreTest::main() {
 
 		timer.start();
 		core::Renderer::invalidate();
-		core::Renderer::drawPointRange( mesh, &rw.view, (threads-1)*step, mesh.vecs.count());
+		//core::Renderer::drawPointRange( mesh, &rw.view, (threads-1)*step, mesh.vecs.count());
+		core::Renderer::raytrace(p, q, &rw.view);
 		timer.stop();
 
 		renderTime += timer;

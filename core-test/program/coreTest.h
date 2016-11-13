@@ -7,6 +7,8 @@ private:
 	core::Timer<float> timer;
 	core::Timer<float> globalTimer;
 
+	vec4s p, q;
+
 public:
 	int onLoad() override;
 	int onDispose() override;

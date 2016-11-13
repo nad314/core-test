@@ -105,4 +105,15 @@ namespace core {
 			i.w1();
 		}
 	}
+
+	void simdMesh::bbox(vec4s& p, vec4s& q) {
+		if (!vecs.size())
+			return;
+
+		p = q = vecs[0];
+		for (auto& i : vecs) {
+			p = p.min(i);
+			q = q.max(i);
+		}
+	}
 }

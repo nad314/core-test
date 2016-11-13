@@ -37,6 +37,7 @@ namespace core {
 		void normalize();
 		inline void pushp(polygon p) { polys.push_back(p); }
 		inline void pushv(const vec4s& v) { vecs.push_back(v); }
-
+			
+		void bbox(vec4s& p, vec4s& q);
 	};
 }
