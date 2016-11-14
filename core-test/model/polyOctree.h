@@ -1,5 +1,5 @@
 #pragma once
-
+#include <queue>
 namespace core {
 
 	struct Ray {
@@ -9,14 +9,17 @@ namespace core {
 		float d;
 		vec4 plane;
 
-		Ray(vec4 v0, vec4 v1) : r0(v0), r1(v1) { invr1 = vec4(1.0f) / r1; d = 100.0f; }
+		Ray(vec4 v0, vec4 v1) : r0(v0), r1(v1) { 
+			invr1 = vec4(1.0f) / r1; d = 100.0f; 
+		}
 	};
 
 	class PolyOctree {
-	private:
+	public:
 		struct Node {
 			static const int maxPolys = 16;
 			static const short maxDepth = 8;
+			static Node* lastNode;
 
 			vec4 p, q;
 			vec4 pp, qq;
@@ -30,6 +33,20 @@ namespace core {
 			Node() { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0; }
 			Node(vec4 pp, vec4 qq) :p(pp), q(qq) { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0; }
 			~Node() { for (byte i = 0; i < 8; ++i) { delete node[i]; node[i] = NULL; } }
+
+			Node& operator = (const Node& n) {
+				p = n.p;
+				q = n.q;
+				pp = n.pp;
+				qq = n.qq;
+				memcpy(node, n.node, sizeof(node));
+				memcpy(nodeBuff, n.nodeBuff, sizeof(node));
+				depth = n.depth;
+				hasNodes = n.hasNodes;
+				points = n.points;
+				planes = n.planes;
+				return *this;
+			}
 
 			void build(buffer<vec4>& buff);
 			void sub();
@@ -56,10 +73,28 @@ namespace core {
 					std::swap(node[3], node[7]);
 				}
 			}
+
+			int count();
+
+			void unlink() {
+				if(hasNodes)
+					for (int i = 0; i < 8; ++i) {
+						node[i]->unlink();
+						node[i] = NULL;
+					}
+			}
+
+			void cacheSort(Node* mem, int& pos, int depth) const;
+
 		};
 
 	public:
-		Node root;
+		Node* root;
 		void build(simdMesh& mesh);
+		void cacheSort();
+		float rayIntersectionT(Ray& ray) const;
+
+		PolyOctree() : root(NULL) {}
+		~PolyOctree() { root->unlink(); delete[] root; root = NULL; }
 	};
 }

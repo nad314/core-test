@@ -61,8 +61,8 @@ namespace core {
 		p.store(pp);
 		q.store(qq);
 		*/
-		pp = octree.root.p;
-		qq = octree.root.q;
+		pp = octree.root->p;
+		qq = octree.root->q;
 		vector4<byte> color(255, 255, 255, 255);
 		uint clr = *reinterpret_cast<const uint*>(&color);
 		const int w = img.width;
@@ -70,22 +70,29 @@ namespace core {
 		matrixf inv = view.mat;
 		inv.invert();
 
+		const int square = 16;
+
 		vec4 lightPos = view.mat*vec4(0.0f, 0.0f, -2.0f, 1.0f);
-		for (int i = 0; i < img.height; ++i) {
-			for (int j = 0; j < w; ++j) {
-				vec4 rr0 = inv*view.unproject(vec4((float)j, (float)img.height-i, 0.0f, 1.0f));
-				vec4 rr1 = inv*view.unproject(vec4((float)j, (float)img.height - i, 1.0f, 1.0f));
-				rr0 /= rr0.w;
-				rr1 /= rr1.w;
-				rr1 = (rr1 - rr0).normalize3d();
-				Ray ray(rr0, rr1);
-				if (octree.root.rayIntersectionT(ray) > 0.0f) {
-					byte b = (byte)(std::max(0.0f, Math::dot3(ray.plane, (lightPos - (rr0 + rr1*ray.d)).normalize3d()))*255.0f);
-					color = vec4b(b, b, b, 255);
-					clr = *reinterpret_cast<const uint*>(&color);
-					memcpy(mp + j + i * w, &clr, 4);
+		for (int gy = 0; gy<img.height; gy+= square)
+			for(int gx = 0; gx<w; gx+= square) {
+				const int mx = std::min(gx + square, w);
+				const int my = std::min(gy + square, (int)img.height);
+				for (int i = gy; i < my; ++i) {
+					for (int j = gx; j < mx; ++j) {
+						vec4 rr0 = inv*view.unproject(vec4((float)j, (float)img.height - i, 0.0f, 1.0f));
+						vec4 rr1 = inv*view.unproject(vec4((float)j, (float)img.height - i, 1.0f, 1.0f));
+						rr0 /= rr0.w;
+						rr1 /= rr1.w;
+						rr1 = (rr1 - rr0).normalize3d();
+						Ray ray(rr0, rr1);
+						if (octree.rayIntersectionT(ray) > 0.0f) {
+							byte b = (byte)(std::max(0.0f, Math::dot3(ray.plane, (lightPos - (rr0 + rr1*ray.d)).normalize3d()))*255.0f);
+							color = vec4b(b, b, b, 255);
+							clr = *reinterpret_cast<const uint*>(&color);
+							memcpy(mp + j + i * w, &clr, 4);
+						}
+					}
 				}
-			}
 		}
 	}
 }
