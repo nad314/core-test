@@ -12,6 +12,16 @@ namespace core {
 			}
 	}
 
+	void PolyOctree::Node::bbox() {
+		if (points.count() < 1)
+			return;
+		pp = qq = points[0];
+		for (auto& i : points) {
+			pp = pp.min(i);
+			qq = qq.max(i);
+		}
+	}
+
 	void PolyOctree::Node::sub() {
 		if (depth >= maxDepth || points.count()<maxPolys*3)
 			return;
@@ -44,16 +54,33 @@ namespace core {
 
 		node[6]->p = vec4(c.x, c.y, c.z, 1.0f);
 		node[6]->q = vec4(q.x, q.y, q.z, 1.0f);
+		
+		/*
 		for (int i = 0; i < 8; ++i)
 			node[i]->build(points);
+			*/
+		
+		for (int i = 0; i < points.count(); i+=3) {
+			for (int j = 0; j < 8; ++j) {
+				if (Math::triangleAABBIntersrction(points[i], points[i + 1], points[i + 2], node[j]->p, node[j]->q)) {
+					node[j]->points.push_back(points[i]);
+					node[j]->points.push_back(points[i+1]);
+					node[j]->points.push_back(points[i+2]);
+					node[j]->planes.push_back(Math::plane(points[i].xyz(), points[i + 1].xyz(), points[i + 2].xyz()));
+					break;
+				}
+			}
+		}
 		points.clear();
 		planes.clear();
-		for (int i = 0; i < 8; ++i)
-				node[i]->sub();
+		for (int i = 0; i < 8; ++i) {
+			node[i]->bbox();
+			node[i]->sub();
+		}
 	}
 
 	float PolyOctree::Node::rayIntersectionT(Ray& ray) const {
-		float dtb = Renderer::rayBoxIntersectionTestF(ray, p, q);
+		const float dtb = Renderer::rayBoxIntersectionTestF(ray, pp, qq);
 		if (dtb < 0.0f || dtb>ray.d)
 			return -1.0f;
 		float d = -1.0f;
@@ -72,7 +99,7 @@ namespace core {
 				return dtb;
 			}
 			return -1.0f;*/
-
+			
 			d = std::min(ray.d, d);
 
 			for (int i = 0; i < points.size(); i += 3) {
@@ -116,6 +143,7 @@ namespace core {
 		}
 		root.depth = 0;
 		root.build(points);
+		root.bbox();
 		if (root.points.count() > Node::maxPolys * 3)
 			root.sub();
 	}

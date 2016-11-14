@@ -15,10 +15,11 @@ namespace core {
 	class PolyOctree {
 	private:
 		struct Node {
-			static const int maxPolys = 32;
+			static const int maxPolys = 16;
 			static const short maxDepth = 8;
 
 			vec4 p, q;
+			vec4 pp, qq;
 			Node* node[8];
 			short depth;
 			bool hasNodes;
@@ -32,6 +33,7 @@ namespace core {
 			void build(buffer<vec4>& buff);
 			void sub();
 			float rayIntersectionT(Ray& ray) const;
+			void bbox();
 		};
 
 	public:
