@@ -29,7 +29,7 @@ namespace core {
 
 			const float tmin = std::max(std::max(vmin.x, vmin.y), vmin.z);
 			const float tmax = std::min(std::min(vmax.x, vmax.y), vmax.z);
-			if (tmax<0 || tmin>tmax) return -1.0f;
+			if (tmin>tmax || tmax<0) return -1.0f;
 			return tmin;
 		}
 

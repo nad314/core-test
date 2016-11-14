@@ -34,26 +34,28 @@ namespace core {
 		node[0]->p = vec4(p.x, p.y, p.z, 1.0f);
 		node[0]->q = vec4(c.x, c.y, c.z, 1.0f);
 
-		node[4]->p = vec4(c.x, p.y, p.z, 1.0f);
-		node[4]->q = vec4(q.x, c.y, c.z, 1.0f);
+		node[1]->p = vec4(c.x, p.y, p.z, 1.0f);
+		node[1]->q = vec4(q.x, c.y, c.z, 1.0f);
 
-		node[1]->p = vec4(p.x, c.y, p.z, 1.0f);
-		node[1]->q = vec4(c.x, q.y, c.z, 1.0f);
+		node[2]->p = vec4(p.x, c.y, p.z, 1.0f);
+		node[2]->q = vec4(c.x, q.y, c.z, 1.0f);
 
-		node[5]->p = vec4(c.x, c.y, p.z, 1.0f);
-		node[5]->q = vec4(q.x, q.y, c.z, 1.0f);
+		node[3]->p = vec4(c.x, c.y, p.z, 1.0f);
+		node[3]->q = vec4(q.x, q.y, c.z, 1.0f);
 
-		node[3]->p = vec4(p.x, p.y, c.z, 1.0f);
-		node[3]->q = vec4(c.x, c.y, q.z, 1.0f);
+		node[4]->p = vec4(p.x, p.y, c.z, 1.0f);
+		node[4]->q = vec4(c.x, c.y, q.z, 1.0f);
 
-		node[7]->p = vec4(c.x, p.y, c.z, 1.0f);
-		node[7]->q = vec4(q.x, c.y, q.z, 1.0f);
+		node[5]->p = vec4(c.x, p.y, c.z, 1.0f);
+		node[5]->q = vec4(q.x, c.y, q.z, 1.0f);
 
-		node[2]->p = vec4(p.x, c.y, c.z, 1.0f);
-		node[2]->q = vec4(c.x, q.y, q.z, 1.0f);
+		node[6]->p = vec4(p.x, c.y, c.z, 1.0f);
+		node[6]->q = vec4(c.x, q.y, q.z, 1.0f);
 
-		node[6]->p = vec4(c.x, c.y, c.z, 1.0f);
-		node[6]->q = vec4(q.x, q.y, q.z, 1.0f);
+		node[7]->p = vec4(c.x, c.y, c.z, 1.0f);
+		node[7]->q = vec4(q.x, q.y, q.z, 1.0f);
+
+		memcpy(nodeBuff, node, sizeof(node));
 		
 		/*
 		for (int i = 0; i < 8; ++i)
@@ -79,27 +81,32 @@ namespace core {
 		}
 	}
 
-	float PolyOctree::Node::rayIntersectionT(Ray& ray) const {
+	float PolyOctree::Node::rayIntersectionT(Ray& ray) {
 		const float dtb = Renderer::rayBoxIntersectionTestF(ray, pp, qq);
 		if (dtb < 0.0f || dtb>ray.d)
 			return -1.0f;
 		float d = -1.0f;
 		if (hasNodes) {
+			//swapNodes(ray);
 			for (int i = 0; i < 8; ++i) {
-				float dist = node[i]->rayIntersectionT(ray);
-				if (dist > 0 && (dist < d || d < 0.0f))
-					d = dist;
+				const float dist = node[i]->rayIntersectionT(ray);
+				if (dist > 0 && (dist < d || d < 0.0f)) {
+					ray.d = d = dist;
+					std::swap(node[0], node[i]);
+				}
 			}
+			//memcpy(node, nodeBuff, sizeof(node));
 			return d;
 		}
 		else {
-			/*
+			
 			if (points.size() > 0) {
 				ray.d = dtb;
 				return dtb;
 			}
-			return -1.0f;*/
+			return -1.0f;
 			
+
 			d = std::min(ray.d, d);
 
 			for (int i = 0; i < points.size(); i += 3) {

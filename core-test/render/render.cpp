@@ -70,7 +70,7 @@ namespace core {
 		matrixf inv = view.mat;
 		inv.invert();
 
-		vec4 lightPos = view.mat*vec4(0.0f, 0.0f, -10.0f, 1.0f);
+		vec4 lightPos = view.mat*vec4(0.0f, 0.0f, -2.0f, 1.0f);
 		for (int i = 0; i < img.height; ++i) {
 			for (int j = 0; j < w; ++j) {
 				vec4 rr0 = inv*view.unproject(vec4((float)j, (float)img.height-i, 0.0f, 1.0f));
@@ -80,7 +80,7 @@ namespace core {
 				rr1 = (rr1 - rr0).normalize3d();
 				Ray ray(rr0, rr1);
 				if (octree.root.rayIntersectionT(ray) > 0.0f) {
-					byte b = (byte)(std::max(0.0f, Math::dot3(ray.plane, (lightPos - (rr0 + rr1*ray.d)).normalize()))*255.0f);
+					byte b = (byte)(std::max(0.0f, Math::dot3(ray.plane, (lightPos - (rr0 + rr1*ray.d)).normalize3d()))*255.0f);
 					color = vec4b(b, b, b, 255);
 					clr = *reinterpret_cast<const uint*>(&color);
 					memcpy(mp + j + i * w, &clr, 4);
