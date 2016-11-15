@@ -37,12 +37,14 @@ namespace core {
 				points.push_back(p);
 			}
 		}
+		mesh.~simdMesh();
 		root->depth = 0;
 		root->build(points);
 		root->bbox();
 		if (root->points.count() > Node::maxPolys * 3)
 			root->sub();
 		cacheSort();
+		root->multVecs();
 	}
 
 	void PolyOctree::cacheSort() {

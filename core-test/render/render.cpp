@@ -56,7 +56,9 @@ namespace core {
 		View &view = *pview;
 		Image &img = view.img;
 		uint* mp = reinterpret_cast<uint*>(img.data);
-		vec4 pp, qq;
+		vec4 pp, qq; //because SSE to non SSE conversion
+		vec4 bp, bq; // bounding box projected coordinates
+		projectedBox(octree, pview, bp, bq);
 		/*
 		p.store(pp);
 		q.store(qq);
@@ -70,11 +72,15 @@ namespace core {
 		matrixf inv = view.mat;
 		inv.invert();
 
-		const int square = 16;
+		const int square = 32;
 
 		vec4 lightPos = view.mat*vec4(0.0f, 0.0f, -2.0f, 1.0f);
-		for (int gy = 0; gy<img.height; gy+= square)
-			for(int gx = 0; gx<w; gx+= square) {
+		for (int gy = 0; gy<img.height; gy+= square) {
+			if (gy > bq.y || (gy + square) < bp.y)
+				continue;
+			for (int gx = 0; gx < w; gx += square) {
+				if (gx > bq.x || (gx + square) < bp.x)
+					continue;
 				const int mx = std::min(gx + square, w);
 				const int my = std::min(gy + square, (int)img.height);
 				for (int i = gy; i < my; ++i) {
@@ -93,6 +99,52 @@ namespace core {
 						}
 					}
 				}
+			}
 		}
+	}
+
+
+	void Renderer::projectedBox(const PolyOctree& octree, const View* pview, vec4& pOut, vec4& qOut) {
+		vec4s pO, qO;
+		vec4 p, q;
+		p = octree.root->pp;
+		q = octree.root->qq;
+		const View& view = *pview;
+
+		vec4s ps = view.project(vec4s(view.mat*p));
+		pO = qO = ps;
+
+		ps = view.project(vec4s(view.mat*vec4(q.x, q.y, p.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(p.x, q.y, p.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(q.x, p.y, p.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+
+
+		ps = view.project(vec4s(view.mat*vec4(p.x, p.y, q.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(q.x, q.y, q.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(p.x, q.y, q.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(q.x, p.y, q.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		pO.store(pOut);
+		qO.store(qOut);
 	}
 }

@@ -33,6 +33,8 @@ namespace core {
 			return tmin;
 		}
 
+		static void projectedBox(const PolyOctree& octree, const View* view, vec4& pOut, vec4& qOut);
+
 	};
 }
 

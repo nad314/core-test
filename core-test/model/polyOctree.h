@@ -24,8 +24,8 @@ namespace core {
 	public:
 		struct Node {
 			static const int maxPolys = 8;
-			static const short maxDepth = 12;
-			static const byte subtreeDepth = 4;
+			static const short maxDepth = 10;
+			static const byte subtreeDepth = 5;
 			static Node* lastNode;
 
 			vec4 p, q;

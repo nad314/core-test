@@ -95,8 +95,8 @@ namespace core {
 				const float dist = node[i]->rayIntersectionT(ray);
 				if (dist > 0 && (dist < d || d < 0.0f)) {
 					ray.d = d = dist;
-					std::swap(node[0], node[i]);
 				}
+				std::swap(node[0], node[i]);
 			}
 			return d;
 		}
@@ -110,12 +110,13 @@ namespace core {
 			*/
 			d = std::min(ray.d, d);
 
-			for (int i = 0; i < points.size(); i += 3) {
-				float dist = Math::rayPlaneT(ray.r0.xyz(), ray.r1.xyz(), planes[i / 3]);
+			const int ls = points.size();
+			for (int i = 0, j = 0; i < ls; i += 3, ++j) {
+				const float dist = Math::rayPlaneT(ray.r0, ray.r1, planes[j]);
 				if (dist > 0 && (dist < d || d < 0.0f))
-					if (Math::pointInTriangle((ray.r0 + ray.r1*dist) * 100, points[i] * 100, points[i + 1] * 100, points[i + 2] * 100)) {
+					if (Math::pointInTriangle((ray.r0 + ray.r1*dist) * 100.0f, points[i], points[i + 1], points[i + 2])) {
 						ray.d = d = dist;
-						ray.plane = planes[i / 3];
+						ray.plane = planes[j];
 						//lastNode = this;
 					}
 			}
@@ -130,7 +131,6 @@ namespace core {
 				node[i] = NULL;
 			}
 	}
-
 
 	void PolyOctree::Node::cacheSort(Node* mem, int& pos, int ddepth) {
 		std::queue<Node*> q;
@@ -156,6 +156,15 @@ namespace core {
 					mem[i].node[j] = &mem[tmp];
 				}
 			}
+		}
+	}
+
+	void PolyOctree::Node::multVecs() {
+		for (auto& i : points)
+			i *= 100.0f;
+		if (hasNodes) {
+			for (int i = 0; i < 8; ++i)
+				node[i]->multVecs();
 		}
 	}
 
