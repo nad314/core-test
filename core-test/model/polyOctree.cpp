@@ -13,6 +13,7 @@ namespace core {
 		vec4s pp, qq;
 		mesh.bbox(pp, qq);
 		root = new Node;
+		root->depth = 0;
 		pp.store(root->p);
 		qq.store(root->q);
 		buffer<vec4> points;
@@ -44,7 +45,6 @@ namespace core {
 		cacheSort();
 	}
 
-
 	void PolyOctree::cacheSort() {
 		if (!root)
 			return;
@@ -52,7 +52,7 @@ namespace core {
 		int nn = root->count();
 		mem = new Node[nn];
 		int pos = 0;
-		root->cacheSort(mem, pos, 3);
+		root->cacheSort(mem, pos, Node::subtreeDepth-1);
 		delete root;
 		root = &mem[0];
 	}

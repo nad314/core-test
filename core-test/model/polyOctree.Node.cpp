@@ -34,7 +34,7 @@ namespace core {
 	}
 
 	void PolyOctree::Node::sub() {
-		if (depth >= maxDepth || points.count()<maxPolys * 3)
+		if (depth >= maxDepth || points.count() < maxPolys * 3)
 			return;
 		hasNodes = 1;
 		for (int i = 0; i < 8; ++i) {
@@ -65,13 +65,6 @@ namespace core {
 
 		node[7]->p = vec4(c.x, c.y, c.z, 1.0f);
 		node[7]->q = vec4(q.x, q.y, q.z, 1.0f);
-
-		memcpy(nodeBuff, node, sizeof(node));
-
-		/*
-		for (int i = 0; i < 8; ++i)
-		node[i]->build(points);
-		*/
 
 		for (int i = 0; i < points.count(); i += 3) {
 			for (int j = 0; j < 8; ++j) {
@@ -108,13 +101,13 @@ namespace core {
 			return d;
 		}
 		else {
-
+			/*
 			if (points.size() > 0) {
 				ray.d = Renderer::rayBoxIntersectionTestF(ray, pp, qq);
 				return ray.d;
 			}
 			return -1.0f;
-
+			*/
 			d = std::min(ray.d, d);
 
 			for (int i = 0; i < points.size(); i += 3) {
@@ -130,26 +123,37 @@ namespace core {
 		}
 	}
 
-	void PolyOctree::Node::cacheSort(Node* mem, int& pos, int depth) const {
-		std::queue<Node const*> q;
+	void PolyOctree::Node::unlink() {
+		if (hasNodes)
+			for (int i = 0; i < 8; ++i) {
+				node[i]->unlink();
+				node[i] = NULL;
+			}
+	}
+
+
+	void PolyOctree::Node::cacheSort(Node* mem, int& pos, int ddepth) {
+		std::queue<Node*> q;
 		q.push(this);
+		int spos = pos;
 		while (!q.empty()) {
-			Node const* n = q.front();
+			Node* n = q.front();
 			q.pop();
+			const int cpos = pos;
 			mem[pos++] = *n;
-			if (n->hasNodes) {
-				if (this->depth < depth) {
-					for (int i = 0; i < 8; ++i) {
-						q.push(n->node[i]);
-						mem[pos - 1].node[i] = &mem[pos + q.size() - 1];
-					}
+			if (n->hasNodes && n->depth < ddepth)
+				for (int i = 0; i < 8; ++i) {
+					q.push(n->node[i]);
+					mem[cpos].node[i] = &mem[cpos + q.size()];
 				}
-				else {
-					for (int i = 0; i < 8; ++i) {
-						int cpos = pos - 1;
-						n->node[i]->cacheSort(mem, pos, depth + 4);
-						mem[cpos].node[i] = &mem[pos];
-					}
+		}
+		int cpos = pos;
+		for (int i = spos; i < cpos; ++i) {
+			if (mem[i].depth >= ddepth && mem[i].hasNodes) {
+				for (int j = 0; j < 8; ++j) {
+					const int tmp = pos;
+					mem[i].node[j]->cacheSort(mem, pos, ddepth + Node::subtreeDepth);
+					mem[i].node[j] = &mem[tmp];
 				}
 			}
 		}

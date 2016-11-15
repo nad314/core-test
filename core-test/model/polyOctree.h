@@ -10,6 +10,12 @@ namespace core {
 		vec4 plane;
 
 		Ray(vec4 v0, vec4 v1) : r0(v0), r1(v1) { 
+			vec4 rr1 = r1;
+			#define eps 1e-6
+			if (fabs(r1.x) < eps)r1.x = eps;
+			if (fabs(r1.y) < eps)r1.y = eps;
+			if (fabs(r1.z) < eps)r1.z = eps;
+			#undef eps
 			invr1 = vec4(1.0f) / r1; d = 100.0f; 
 		}
 	};
@@ -17,15 +23,15 @@ namespace core {
 	class PolyOctree {
 	public:
 		struct Node {
-			static const int maxPolys = 16;
-			static const short maxDepth = 8;
+			static const int maxPolys = 8;
+			static const short maxDepth = 12;
+			static const byte subtreeDepth = 4;
 			static Node* lastNode;
 
 			vec4 p, q;
 			vec4 pp, qq;
 			Node* node[8];
-			Node* nodeBuff[8];
-			short depth;
+			byte depth;
 			bool hasNodes;
 			buffer<vec4> points;
 			buffer<vec4> planes;
@@ -40,7 +46,6 @@ namespace core {
 				pp = n.pp;
 				qq = n.qq;
 				memcpy(node, n.node, sizeof(node));
-				memcpy(nodeBuff, n.nodeBuff, sizeof(node));
 				depth = n.depth;
 				hasNodes = n.hasNodes;
 				points = n.points;
@@ -52,39 +57,11 @@ namespace core {
 			void sub();
 			float rayIntersectionT(Ray& ray);
 			void bbox();
-
-			inline void swapNodes(const Ray& ray) {
-				if (ray.r0.x > q.x) { 
-					std::swap(node[0], node[1]); 
-					std::swap(node[2], node[3]); 
-					std::swap(node[4], node[5]);
-					std::swap(node[6], node[7]);
-				}
-				if (ray.r0.y > q.y) {
-					std::swap(node[0], node[2]);
-					std::swap(node[1], node[3]);
-					std::swap(node[4], node[6]);
-					std::swap(node[5], node[7]);
-				}
-				if (ray.r0.z > q.z) {
-					std::swap(node[0], node[4]);
-					std::swap(node[1], node[5]);
-					std::swap(node[2], node[6]);
-					std::swap(node[3], node[7]);
-				}
-			}
-
 			int count();
+			void unlink();
 
-			void unlink() {
-				if(hasNodes)
-					for (int i = 0; i < 8; ++i) {
-						node[i]->unlink();
-						node[i] = NULL;
-					}
-			}
-
-			void cacheSort(Node* mem, int& pos, int depth) const;
+			void cacheSort(Node* mem, int& pos, int depth);
+			void multVecs();
 
 		};
 
