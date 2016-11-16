@@ -33,38 +33,22 @@ namespace core {
 		struct Node : public SIMD {
 			static const int maxPolys = 8;
 			static const short maxDepth = 10;
-			static const byte subtreeDepth = 5;
+			static const byte subtreeDepth = 4;
 			static Node* lastNode;
 
 			vec4 p, q;
 			vec4 pp, qq;
 			vec4s spp, sqq;
 			Node* node[8];
-			byte depth;
-			bool hasNodes;
 			buffer<vec4> points;
 			buffer<vec4> planes;
+			byte depth;
 			byte nnodes;
+			bool hasNodes;
 
 			Node() { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0; }
 			Node(vec4 pp, vec4 qq) :p(pp), q(qq) { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0;}
-			~Node() { if(hasNodes)for (byte i = 0; i < 8; ++i) { delete node[i]; node[i] = NULL; } points.clear(); planes.clear(); }
-
-			Node& operator = (const Node& n) {
-				p = n.p;
-				q = n.q;
-				pp = n.pp;
-				qq = n.qq;
-				spp = n.spp;
-				sqq = n.sqq;
-				memcpy(node, n.node, sizeof(node));
-				depth = n.depth;
-				hasNodes = n.hasNodes;
-				points = n.points;
-				planes = n.planes;
-				nnodes = n.nnodes;
-				return *this;
-			}
+			~Node() { if(hasNodes)for (byte i = 0; i < 8; ++i) { delete node[i]; node[i] = NULL; } }
 
 			void build(buffer<vec4>& buff);
 			void sub();

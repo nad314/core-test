@@ -14,7 +14,6 @@ namespace core {
 		if (hasNodes) {
 			for (byte i = 0; i < nnodes; ++i) {
 				Renderer::rayBoxIntersectionTestSIMD(ray, node[i]->spp, node[i]->sqq);
-				//const float dtb = ray.vmin.x;
 				if (ray.vmin.x<0.0f || ray.vmin.x>ray.d)
 					continue;
 				const float dist = node[i]->rayIntersectionT(ray);
@@ -25,13 +24,13 @@ namespace core {
 			return d;
 		}
 		else {
-			
+			/*
 			if (points.size() > 0) {
 				Renderer::rayBoxIntersectionTestSIMD(ray, spp, sqq);
 				ray.d = ray.vmin.x;
 				return ray.d;
 			}
-			return -1.0f;
+			return -1.0f;*/
 			
 			d = std::min(ray.d, d);
 			
