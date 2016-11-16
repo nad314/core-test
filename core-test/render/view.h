@@ -31,11 +31,10 @@ struct View : public core::SIMD {
 	}
 	
 	//needs testing
-	/*
 	inline vec4s unproject(const vec4s &v) const {
-		vec4s t = (v / v09 - v07) / v08;
+		const vec4s t = (v / v09 - v07) / v08;
 		return (t-v10)/_mm_shuffle_ps(t, t, _MM_SHUFFLE(3, 3, 3, 3));
-	}*/
+	}
 
 	inline vec4s clamp (const vec4s &v) const {
 		return vec4s(_mm_min_ps(_mm_max_ps(v, _mm_setzero_ps()), vvs));

@@ -3,7 +3,7 @@
 namespace core {
 
 	float PolyOctree::rayIntersectionT(Ray& ray) const {
-		const float dtb = Renderer::rayBoxIntersectionTestF(ray, root->pp, root->qq);
+		const float dtb = Renderer::rayBoxIntersectionTestSIMD(ray, root->spp, root->sqq);
 		if (dtb < 0.0f || dtb>ray.d)
 			return -1.0f;
 		return root->rayIntersectionT(ray);
@@ -37,12 +37,13 @@ namespace core {
 				points.push_back(p);
 			}
 		}
-		mesh.~simdMesh();
+		//mesh.~simdMesh();
 		root->depth = 0;
 		root->build(points);
 		root->bbox();
 		if (root->points.count() > Node::maxPolys * 3)
 			root->sub();
+		root->countNodes();
 		cacheSort();
 		root->multVecs();
 	}

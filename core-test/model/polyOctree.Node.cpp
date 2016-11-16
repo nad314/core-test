@@ -24,6 +24,8 @@ namespace core {
 	}
 
 	void PolyOctree::Node::bbox() {
+		spp = p;
+		sqq = q;
 		if (points.count() < 1)
 			return;
 		pp = qq = points[0];
@@ -31,6 +33,8 @@ namespace core {
 			pp = pp.min(i);
 			qq = qq.max(i);
 		}
+		spp = pp;
+		sqq = qq;
 	}
 
 	void PolyOctree::Node::sub() {
@@ -88,14 +92,13 @@ namespace core {
 	float PolyOctree::Node::rayIntersectionT(Ray& ray) {
 		float d = -1.0f;
 		if (hasNodes) {
-			for (int i = 0; i < 8; ++i) {
-				const float dtb = Renderer::rayBoxIntersectionTestF(ray, node[i]->pp, node[i]->qq);
+			for (byte i = 0; i < nnodes; ++i) {
+				const float dtb = Renderer::rayBoxIntersectionTestSIMD(ray, node[i]->spp, node[i]->sqq);
 				if (dtb<0.0f || dtb>ray.d)
 					continue;
 				const float dist = node[i]->rayIntersectionT(ray);
-				if (dist > 0 && (dist < d || d < 0.0f)) {
+				if (dist > 0 && (dist < d || d < 0.0f))
 					ray.d = d = dist;
-				}
 				std::swap(node[0], node[i]);
 			}
 			return d;
@@ -103,13 +106,13 @@ namespace core {
 		else {
 			/*
 			if (points.size() > 0) {
-				ray.d = Renderer::rayBoxIntersectionTestF(ray, pp, qq);
+				ray.d = Renderer::rayBoxIntersectionTestSIMD(ray, spp, sqq);
 				return ray.d;
 			}
 			return -1.0f;
 			*/
 			d = std::min(ray.d, d);
-
+			
 			const int ls = points.size();
 			for (int i = 0, j = 0; i < ls; i += 3, ++j) {
 				const float dist = Math::rayPlaneT(ray.r0, ray.r1, planes[j]);

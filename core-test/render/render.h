@@ -29,8 +29,32 @@ namespace core {
 
 			const float tmin = std::max(std::max(vmin.x, vmin.y), vmin.z);
 			const float tmax = std::min(std::min(vmax.x, vmax.y), vmax.z);
-			if (tmin>tmax || tmax<0) return -1.0f;
+			if (tmin>tmax || tmax<0.0f) return -1.0f;
 			return tmin;
+		}
+
+		static inline float rayBoxIntersectionTestSIMD(Ray& ray, const vec4s& p, const vec4s& q) {
+			const vec4s vnull = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+			const vec4s v0 = (p - ray.sr0)*ray.sinvr1;
+			const vec4s v1 = (q - ray.sr0)*ray.sinvr1;
+			vec4s vmin = _mm_min_ps(v0, v1);
+			vec4s vmax = _mm_max_ps(v0, v1);
+			vmin = _mm_max_ps(vmin, _mm_shuffle_ps(vmin, vmin, _MM_SHUFFLE(1, 0, 3, 2)));
+			vmin = _mm_max_ps(vmin, _mm_shuffle_ps(vmin, vmin, _MM_SHUFFLE(1, 0, 2, 3)));
+
+			vmax = _mm_min_ps(vmax, _mm_shuffle_ps(vmax, vmax, _MM_SHUFFLE(1, 0, 3, 2)));
+			vmax = _mm_min_ps(vmax, _mm_shuffle_ps(vmax, vmax, _MM_SHUFFLE(1, 0, 2, 3)));
+
+			//vmax = _mm_cmpgt_ps(_mm_max_ps(_mm_max_ps(vmin, vnull), vnull), vmax);
+			//vmax = _mm_or_ps(_mm_cmpgt_ps(vmin, vmax), _mm_cmpgt_ps(vnull, vmax));
+
+			vmin.store(ray.vmin);
+			vmax.store(ray.vmax);
+			/*
+			const float tmin = std::max(std::max(ray.vmin.x, ray.vmin.y), ray.vmin.z);
+			const float tmax = std::min(std::min(ray.vmax.x, ray.vmax.y), ray.vmax.z);*/
+			if (ray.vmax.x<ray.vmin.x || ray.vmax.x<0.0f) return -1.0f;
+			return ray.vmin.x;
 		}
 
 		static void projectedBox(const PolyOctree& octree, const View* view, vec4& pOut, vec4& qOut);
