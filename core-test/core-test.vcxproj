@@ -122,6 +122,7 @@
   <ItemGroup>
     <ClCompile Include="model\polyOctree.cpp" />
     <ClCompile Include="model\polyOctree.Node.cpp" />
+    <ClCompile Include="model\polyOctree.Node.Raytracing.cpp" />
     <ClCompile Include="model\simdMesh.cpp" />
     <ClCompile Include="program\coreTest.cpp" />
     <ClCompile Include="program\main.cpp" />

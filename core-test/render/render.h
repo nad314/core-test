@@ -33,7 +33,7 @@ namespace core {
 			return tmin;
 		}
 
-		static inline float rayBoxIntersectionTestSIMD(Ray& ray, const vec4s& p, const vec4s& q) {
+		static inline void rayBoxIntersectionTestSIMD(Ray& ray, const vec4s& p, const vec4s& q) {
 			const vec4s vnull = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 			const vec4s v0 = (p - ray.sr0)*ray.sinvr1;
 			const vec4s v1 = (q - ray.sr0)*ray.sinvr1;
@@ -53,8 +53,8 @@ namespace core {
 			/*
 			const float tmin = std::max(std::max(ray.vmin.x, ray.vmin.y), ray.vmin.z);
 			const float tmax = std::min(std::min(ray.vmax.x, ray.vmax.y), ray.vmax.z);*/
-			if (ray.vmax.x<ray.vmin.x || ray.vmax.x<0.0f) return -1.0f;
-			return ray.vmin.x;
+			if (ray.vmax.x < ray.vmin.x || ray.vmax.x < 0.0f)
+				ray.vmin.x = -1.0f;
 		}
 
 		static void projectedBox(const PolyOctree& octree, const View* view, vec4& pOut, vec4& qOut);

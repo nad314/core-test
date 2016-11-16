@@ -7,7 +7,7 @@ namespace core {
 		if (!hasNodes)
 			return 1;
 		int ret = 1;
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < nnodes; ++i)
 			ret += node[i]->count();
 		return ret;
 	}
@@ -24,8 +24,10 @@ namespace core {
 	}
 
 	void PolyOctree::Node::bbox() {
-		spp = p;
-		sqq = q;
+		pp = q;
+		qq = p;
+		spp = pp;
+		sqq = qq;
 		if (points.count() < 1)
 			return;
 		pp = qq = points[0];
@@ -89,50 +91,13 @@ namespace core {
 		}
 	}
 
-	float PolyOctree::Node::rayIntersectionT(Ray& ray) {
-		float d = -1.0f;
-		if (hasNodes) {
-			for (byte i = 0; i < nnodes; ++i) {
-				const float dtb = Renderer::rayBoxIntersectionTestSIMD(ray, node[i]->spp, node[i]->sqq);
-				if (dtb<0.0f || dtb>ray.d)
-					continue;
-				const float dist = node[i]->rayIntersectionT(ray);
-				if (dist > 0 && (dist < d || d < 0.0f))
-					ray.d = d = dist;
-				std::swap(node[0], node[i]);
-			}
-			return d;
-		}
-		else {
-			/*
-			if (points.size() > 0) {
-				ray.d = Renderer::rayBoxIntersectionTestSIMD(ray, spp, sqq);
-				return ray.d;
-			}
-			return -1.0f;
-			*/
-			d = std::min(ray.d, d);
-			
-			const int ls = points.size();
-			for (int i = 0, j = 0; i < ls; i += 3, ++j) {
-				const float dist = Math::rayPlaneT(ray.r0, ray.r1, planes[j]);
-				if (dist > 0 && (dist < d || d < 0.0f))
-					if (Math::pointInTriangle((ray.r0 + ray.r1*dist) * 100.0f, points[i], points[i + 1], points[i + 2])) {
-						ray.d = d = dist;
-						ray.plane = planes[j];
-						//lastNode = this;
-					}
-			}
-			return d;
-		}
-	}
-
 	void PolyOctree::Node::unlink() {
 		if (hasNodes)
-			for (int i = 0; i < 8; ++i) {
+			for (int i = 0; i < nnodes; ++i) {
 				node[i]->unlink();
 				node[i] = NULL;
 			}
+		hasNodes = 0;
 	}
 
 	void PolyOctree::Node::cacheSort(Node* mem, int& pos, int ddepth) {
@@ -145,7 +110,7 @@ namespace core {
 			const int cpos = pos;
 			mem[pos++] = *n;
 			if (n->hasNodes && n->depth < ddepth)
-				for (int i = 0; i < 8; ++i) {
+				for (int i = 0; i < n->nnodes; ++i) {
 					q.push(n->node[i]);
 					mem[cpos].node[i] = &mem[cpos + q.size()];
 				}
@@ -153,7 +118,7 @@ namespace core {
 		int cpos = pos;
 		for (int i = spos; i < cpos; ++i) {
 			if (mem[i].depth >= ddepth && mem[i].hasNodes) {
-				for (int j = 0; j < 8; ++j) {
+				for (int j = 0; j < mem[i].nnodes; ++j) {
 					const int tmp = pos;
 					mem[i].node[j]->cacheSort(mem, pos, ddepth + Node::subtreeDepth);
 					mem[i].node[j] = &mem[tmp];
@@ -170,5 +135,47 @@ namespace core {
 				node[i]->multVecs();
 		}
 	}
+
+
+	int PolyOctree::Node::countNodes() {
+		nnodes = 0;
+		if (!hasNodes)
+			return nnodes = (points.size() > 0) ? 1 : 0;
+		int cp = 8;
+		for (byte i = 0; i < cp; ++i) {
+			if (node[i]->countNodes() > 0) {
+				++nnodes;
+			}
+			else {
+				std::swap(node[i], node[--cp]);
+				--i;
+			}
+		}
+		return (nnodes > 0) ? 1 : 0;
+	}
+
+	void PolyOctree::Node::shrinkNodes() {
+		if (!hasNodes) return;
+		for (byte i = 0; i < 8; ++i)
+			node[i]->shrinkNodes();
+
+		if (node[0]->isEmpty() && node[1]->isEmpty() && node[2]->isEmpty() && node[3]->isEmpty())
+			pp.z = std::min(std::min(node[4]->pp.z, node[5]->pp.z), std::min(node[6]->pp.z, node[7]->pp.z));
+		if (node[4]->isEmpty() && node[5]->isEmpty() && node[6]->isEmpty() && node[7]->isEmpty())
+			qq.z = std::max(std::max(node[0]->qq.z, node[1]->qq.z), std::max(node[2]->qq.z, node[3]->qq.z));
+		
+		if (node[0]->isEmpty() && node[1]->isEmpty() && node[4]->isEmpty() && node[5]->isEmpty())
+			pp.y = std::min(std::min(node[4]->pp.y, node[5]->pp.y), std::min(node[6]->pp.y, node[7]->pp.y));
+		if (node[2]->isEmpty() && node[3]->isEmpty() && node[6]->isEmpty() && node[7]->isEmpty())
+			qq.y = std::max(std::max(node[0]->qq.y, node[1]->qq.y), std::max(node[4]->qq.y, node[5]->qq.y));
+		
+		if (node[0]->isEmpty() && node[2]->isEmpty() && node[4]->isEmpty() && node[6]->isEmpty())
+			pp.x = std::min(std::min(node[1]->pp.x, node[3]->pp.x), std::min(node[5]->pp.x, node[7]->pp.x));
+		if (node[1]->isEmpty() && node[3]->isEmpty() && node[5]->isEmpty() && node[7]->isEmpty())
+			qq.x = std::max(std::max(node[0]->qq.x, node[2]->qq.x), std::max(node[4]->qq.x, node[6]->qq.x));
+		spp = pp;
+		sqq = qq;
+	}
+
 
 }

@@ -1,13 +1,10 @@
 #include <main>
 
 namespace core {
-
-	float PolyOctree::rayIntersectionT(Ray& ray) const {
-		const float dtb = Renderer::rayBoxIntersectionTestSIMD(ray, root->spp, root->sqq);
-		if (dtb < 0.0f || dtb>ray.d)
-			return -1.0f;
-		return root->rayIntersectionT(ray);
-	}
+	/*
+	inline float max3(float a, float b, float c) {
+		return std::max(a, std::max(b, c));
+	}*/
 
 	void PolyOctree::build(simdMesh& mesh) {
 		vec4s pp, qq;
@@ -16,6 +13,14 @@ namespace core {
 		root->depth = 0;
 		pp.store(root->p);
 		qq.store(root->q);
+		/*
+		vec4 q = root->q;
+		vec4 p = root->p;
+		float maxd = max3(q.x - p.x, q.y - p.y, q.z - p.z);
+		q = p + vec4(maxd, maxd, maxd, 1.0f);
+		root->q = q;
+		root->p = p;
+		*/
 		buffer<vec4> points;
 		points.reserve(mesh.vecs.count() * 3);
 		vec4 p;
@@ -44,8 +49,10 @@ namespace core {
 		if (root->points.count() > Node::maxPolys * 3)
 			root->sub();
 		root->countNodes();
-		cacheSort();
 		root->multVecs();
+		root->shrinkNodes();
+
+		cacheSort();
 	}
 
 	void PolyOctree::cacheSort() {

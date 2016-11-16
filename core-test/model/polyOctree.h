@@ -48,7 +48,7 @@ namespace core {
 
 			Node() { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0; }
 			Node(vec4 pp, vec4 qq) :p(pp), q(qq) { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0;}
-			~Node() { for (byte i = 0; i < 8; ++i) { delete node[i]; node[i] = NULL; } }
+			~Node() { if(hasNodes)for (byte i = 0; i < 8; ++i) { delete node[i]; node[i] = NULL; } points.clear(); planes.clear(); }
 
 			Node& operator = (const Node& n) {
 				p = n.p;
@@ -75,21 +75,10 @@ namespace core {
 
 			void cacheSort(Node* mem, int& pos, int depth);
 			void multVecs();
-			int countNodes() {
-				nnodes = 0;
-				if (!hasNodes)
-					return (points.size() > 0) ? 1 : 0;
-				int cp = 8;
-				for (byte i = 0; i < cp; ++i) {
-					if (node[i]->countNodes() > 0) {
-						++nnodes;
-					} else {
-						std::swap(node[i], node[--cp]);
-						--i;
-					}
-				}
-				return (nnodes > 0) ? 1 : 0;
-			}
+			int countNodes();
+			void shrinkNodes();
+
+			inline bool isEmpty() { return (hasNodes && nnodes == 0) || (!hasNodes && points.size()<1); }
 
 		};
 
@@ -100,6 +89,7 @@ namespace core {
 		float rayIntersectionT(Ray& ray) const;
 
 		PolyOctree() : root(NULL) {}
-		~PolyOctree() { root->unlink(); delete[] root; root = NULL; }
+		~PolyOctree() { dispose(); }
+		inline void dispose() { if(root)root->unlink(); delete root; root = NULL; }
 	};
 }

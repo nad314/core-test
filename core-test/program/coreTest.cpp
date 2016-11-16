@@ -12,6 +12,7 @@ int CoreTest::onLoad() {
 
 int CoreTest::onDispose() {
 	mesh.dispose();
+	octree.dispose();
 	return 0;
 }
 
@@ -78,6 +79,7 @@ int CoreTest::main() {
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);
 	}
+
 	/*
 	for (int i = 0; i < threads - 1; ++i)
 		thread[i].join();
