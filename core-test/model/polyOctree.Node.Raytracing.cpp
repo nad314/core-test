@@ -8,7 +8,6 @@ namespace core {
 		return root->rayIntersectionT(ray);
 	}
 
-
 	float PolyOctree::Node::rayIntersectionT(Ray& ray) {
 		float d = -1.0f;
 		if (hasNodes) {
@@ -24,14 +23,13 @@ namespace core {
 			return d;
 		}
 		else {
-			/*
 			if (points.size() > 0) {
 				Renderer::rayBoxIntersectionTestSIMD(ray, spp, sqq);
 				ray.d = ray.vmin.x;
 				return ray.d;
 			}
-			return -1.0f;*/
-			
+			return -1.0f;
+
 			d = std::min(ray.d, d);
 			
 			const int ls = points.size();
@@ -41,7 +39,6 @@ namespace core {
 					if (Math::pointInTriangle((ray.r0 + ray.r1*dist) * 100.0f, points[i], points[i + 1], points[i + 2])) {
 						ray.d = d = dist;
 						ray.plane = planes[j];
-						//lastNode = this;
 					}
 			}
 			return d;

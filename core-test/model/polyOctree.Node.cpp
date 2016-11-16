@@ -14,6 +14,9 @@ namespace core {
 
 	void PolyOctree::Node::build(buffer<vec4>& buff) {
 		if (buff.count() % 3 != 0 || buff.count() == 0)return;
+		vec4 p, q;
+		spp.store(p);
+		sqq.store(q);
 		for (int i = 0; i < buff.count(); i += 3)
 			if (Math::triangleAABBIntersection(buff[i], buff[i + 1], buff[i + 2], p, q)) {
 				points.push_back(buff[i]);
@@ -23,58 +26,50 @@ namespace core {
 			}
 	}
 
-	void PolyOctree::Node::bbox() {
-		pp = q;
-		qq = p;
-		spp = pp;
-		sqq = qq;
-		if (points.count() < 1)
-			return;
-		pp = qq = points[0];
-		for (auto& i : points) {
-			pp = pp.min(i);
-			qq = qq.max(i);
-		}
-		spp = pp;
-		sqq = qq;
-	}
-
 	void PolyOctree::Node::sub() {
-		if (depth >= maxDepth || points.count() < maxPolys * 3)
+		if (depth >= maxDepth || points.size() < maxPolys * 3)
 			return;
 		hasNodes = 1;
 		for (int i = 0; i < 8; ++i) {
 			node[i] = new Node();
 			node[i]->depth = depth + 1;
 		}
+
+		vec4 p, q;
+		spp.store(p);
+		sqq.store(q);
 		vec4 c = (p + q)*0.5f;
-		node[0]->p = vec4(p.x, p.y, p.z, 1.0f);
-		node[0]->q = vec4(c.x, c.y, c.z, 1.0f);
 
-		node[1]->p = vec4(c.x, p.y, p.z, 1.0f);
-		node[1]->q = vec4(q.x, c.y, c.z, 1.0f);
+		node[0]->spp = vec4(p.x, p.y, p.z, 1.0f);
+		node[0]->sqq = vec4(c.x, c.y, c.z, 1.0f);
 
-		node[2]->p = vec4(p.x, c.y, p.z, 1.0f);
-		node[2]->q = vec4(c.x, q.y, c.z, 1.0f);
+		node[1]->spp = vec4(c.x, p.y, p.z, 1.0f);
+		node[1]->sqq = vec4(q.x, c.y, c.z, 1.0f);
 
-		node[3]->p = vec4(c.x, c.y, p.z, 1.0f);
-		node[3]->q = vec4(q.x, q.y, c.z, 1.0f);
+		node[2]->spp = vec4(p.x, c.y, p.z, 1.0f);
+		node[2]->sqq = vec4(c.x, q.y, c.z, 1.0f);
 
-		node[4]->p = vec4(p.x, p.y, c.z, 1.0f);
-		node[4]->q = vec4(c.x, c.y, q.z, 1.0f);
+		node[3]->spp = vec4(c.x, c.y, p.z, 1.0f);
+		node[3]->sqq = vec4(q.x, q.y, c.z, 1.0f);
 
-		node[5]->p = vec4(c.x, p.y, c.z, 1.0f);
-		node[5]->q = vec4(q.x, c.y, q.z, 1.0f);
+		node[4]->spp = vec4(p.x, p.y, c.z, 1.0f);
+		node[4]->sqq = vec4(c.x, c.y, q.z, 1.0f);
 
-		node[6]->p = vec4(p.x, c.y, c.z, 1.0f);
-		node[6]->q = vec4(c.x, q.y, q.z, 1.0f);
+		node[5]->spp = vec4(c.x, p.y, c.z, 1.0f);
+		node[5]->sqq = vec4(q.x, c.y, q.z, 1.0f);
 
-		node[7]->p = vec4(c.x, c.y, c.z, 1.0f);
-		node[7]->q = vec4(q.x, q.y, q.z, 1.0f);
+		node[6]->spp = vec4(p.x, c.y, c.z, 1.0f);
+		node[6]->sqq = vec4(c.x, q.y, q.z, 1.0f);
 
+		node[7]->spp = vec4(c.x, c.y, c.z, 1.0f);
+		node[7]->sqq = vec4(q.x, q.y, q.z, 1.0f);
+
+		vec4 np, nq;
 		for (int i = 0; i < points.count(); i += 3) {
 			for (int j = 0; j < 8; ++j) {
-				if (Math::triangleAABBIntersection(points[i], points[i + 1], points[i + 2], node[j]->p, node[j]->q)) {
+				node[j]->spp.store(np);
+				node[j]->sqq.store(nq);
+				if (Math::triangleAABBIntersection(points[i], points[i + 1], points[i + 2], np, nq)) {
 					node[j]->points.push_back(points[i]);
 					node[j]->points.push_back(points[i + 1]);
 					node[j]->points.push_back(points[i + 2]);
@@ -86,7 +81,6 @@ namespace core {
 		points.clear();
 		planes.clear();
 		for (int i = 0; i < 8; ++i) {
-			node[i]->bbox();
 			node[i]->sub();
 		}
 	}
@@ -154,28 +148,64 @@ namespace core {
 		return (nnodes > 0) ? 1 : 0;
 	}
 
+	void PolyOctree::Node::expand() {
+		if (hasNodes) {
+			for (int i = 0; i < nnodes; ++i)
+				node[i]->expand();
+			spp = node[0]->spp;
+			sqq = node[0]->sqq;
+			for (int i = 0; i < nnodes; ++i) {
+				spp = _mm_min_ps(spp, node[i]->spp);
+				sqq = _mm_max_ps(sqq, node[i]->sqq);
+			}
+		}
+		else {
+			std::swap(spp, sqq);
+			if (points.size() < 1)
+				return;
+			spp = vec4s(points[0]);
+			sqq = vec4s(points[0]);
+			for (int i = 1; i < points.size(); ++i) {
+				const vec4s p = vec4s(points[i]);
+				spp = _mm_min_ps(spp, p);
+				sqq = _mm_max_ps(sqq, p);
+			}
+		}
+		
+	}
+
 	void PolyOctree::Node::shrinkNodes() {
 		if (!hasNodes) return;
-		for (byte i = 0; i < 8; ++i)
+		vec4 np[8];
+		vec4 nq[8];
+		vec4 pp, qq;
+		spp.store(pp);
+		sqq.store(qq);
+		for (byte i = 0; i < 8; ++i) {
 			node[i]->shrinkNodes();
-
+			node[i]->spp.store(np[i]);
+			node[i]->sqq.store(nq[i]);
+		}
+		
 		if (node[0]->isEmpty() && node[1]->isEmpty() && node[2]->isEmpty() && node[3]->isEmpty())
-			pp.z = std::min(std::min(node[4]->pp.z, node[5]->pp.z), std::min(node[6]->pp.z, node[7]->pp.z));
+			pp.z = std::min(std::min(np[4].z, np[5].z), std::min(np[6].z, np[7].z));
 		if (node[4]->isEmpty() && node[5]->isEmpty() && node[6]->isEmpty() && node[7]->isEmpty())
-			qq.z = std::max(std::max(node[0]->qq.z, node[1]->qq.z), std::max(node[2]->qq.z, node[3]->qq.z));
+			qq.z = std::max(std::max(nq[0].z, nq[1].z), std::max(nq[2].z, nq[3].z));
 		
 		if (node[0]->isEmpty() && node[1]->isEmpty() && node[4]->isEmpty() && node[5]->isEmpty())
-			pp.y = std::min(std::min(node[4]->pp.y, node[5]->pp.y), std::min(node[6]->pp.y, node[7]->pp.y));
+			pp.y = std::min(std::min(np[4].y, np[5].y), std::min(np[6].y, np[7].y));
 		if (node[2]->isEmpty() && node[3]->isEmpty() && node[6]->isEmpty() && node[7]->isEmpty())
-			qq.y = std::max(std::max(node[0]->qq.y, node[1]->qq.y), std::max(node[4]->qq.y, node[5]->qq.y));
+			qq.y = std::max(std::max(nq[0].y, nq[1].y), std::max(nq[4].y, nq[5].y));
 		
 		if (node[0]->isEmpty() && node[2]->isEmpty() && node[4]->isEmpty() && node[6]->isEmpty())
-			pp.x = std::min(std::min(node[1]->pp.x, node[3]->pp.x), std::min(node[5]->pp.x, node[7]->pp.x));
+			pp.x = std::min(std::min(np[1].x, np[3].x), std::min(np[5].x, np[7].x));
 		if (node[1]->isEmpty() && node[3]->isEmpty() && node[5]->isEmpty() && node[7]->isEmpty())
-			qq.x = std::max(std::max(node[0]->qq.x, node[2]->qq.x), std::max(node[4]->qq.x, node[6]->qq.x));
+			qq.x = std::max(std::max(nq[0].x, nq[2].x), std::max(nq[4].x, nq[6].x));
 		spp = pp;
 		sqq = qq;
+		
 	}
 
 
 }
+

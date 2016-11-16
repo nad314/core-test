@@ -56,15 +56,17 @@ namespace core {
 		View &view = *pview;
 		Image &img = view.img;
 		uint* mp = reinterpret_cast<uint*>(img.data);
-		vec4 pp, qq; //because SSE to non SSE conversion
+		//vec4 pp, qq; //because SSE to non SSE conversion
 		vec4 bp, bq; // bounding box projected coordinates
 		projectedBox(octree, pview, bp, bq);
 		/*
 		p.store(pp);
 		q.store(qq);
 		*/
+		/*
 		pp = octree.root->p;
 		qq = octree.root->q;
+		*/
 		vector4<byte> color(255, 255, 255, 255);
 		uint clr = *reinterpret_cast<const uint*>(&color);
 		const int w = img.width;
@@ -117,8 +119,8 @@ namespace core {
 	void Renderer::projectedBox(const PolyOctree& octree, const View* pview, vec4& pOut, vec4& qOut) {
 		vec4s pO, qO;
 		vec4 p, q;
-		p = octree.root->pp;
-		q = octree.root->qq;
+		octree.root->spp.store(p);
+		octree.root->sqq.store(q);
 		const View& view = *pview;
 
 		vec4s ps = view.project(vec4s(view.mat*p));

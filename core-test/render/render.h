@@ -34,7 +34,6 @@ namespace core {
 		}
 
 		static inline void rayBoxIntersectionTestSIMD(Ray& ray, const vec4s& p, const vec4s& q) {
-			const vec4s vnull = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 			const vec4s v0 = (p - ray.sr0)*ray.sinvr1;
 			const vec4s v1 = (q - ray.sr0)*ray.sinvr1;
 			vec4s vmin = _mm_min_ps(v0, v1);
@@ -48,13 +47,20 @@ namespace core {
 			//vmax = _mm_cmpgt_ps(_mm_max_ps(_mm_max_ps(vmin, vnull), vnull), vmax);
 			//vmax = _mm_or_ps(_mm_cmpgt_ps(vmin, vmax), _mm_cmpgt_ps(vnull, vmax));
 
+			//_mm_store_ss(ray.vmin, vmin);
 			vmin.store(ray.vmin);
-			vmax.store(ray.vmax);
+			//vmax.store(ray.vmax);
 			/*
 			const float tmin = std::max(std::max(ray.vmin.x, ray.vmin.y), ray.vmin.z);
 			const float tmax = std::min(std::min(ray.vmax.x, ray.vmax.y), ray.vmax.z);*/
+
+			if (_mm_comige_ss(vmin, vmax) || _mm_comige_ss(_mm_setzero_ps(), vmax))
+				ray.vmin.x = -1.0f;
+
+			/*
 			if (ray.vmax.x < ray.vmin.x || ray.vmax.x < 0.0f)
 				ray.vmin.x = -1.0f;
+				*/
 		}
 
 		static void projectedBox(const PolyOctree& octree, const View* view, vec4& pOut, vec4& qOut);

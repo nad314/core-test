@@ -28,16 +28,14 @@ namespace core {
 		}
 	};
 
-	class PolyOctree {
+	class PolyOctree : public SIMD {
 	public:
 		struct Node : public SIMD {
 			static const int maxPolys = 8;
 			static const short maxDepth = 10;
-			static const byte subtreeDepth = 4;
+			static const byte subtreeDepth = 5;
 			static Node* lastNode;
 
-			vec4 p, q;
-			vec4 pp, qq;
 			vec4s spp, sqq;
 			Node* node[8];
 			buffer<vec4> points;
@@ -47,19 +45,19 @@ namespace core {
 			bool hasNodes;
 
 			Node() { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0; }
-			Node(vec4 pp, vec4 qq) :p(pp), q(qq) { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0;}
+			Node(vec4 pp, vec4 qq) :spp(pp), sqq(qq) { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0;}
 			~Node() { if(hasNodes)for (byte i = 0; i < 8; ++i) { delete node[i]; node[i] = NULL; } }
 
 			void build(buffer<vec4>& buff);
 			void sub();
 			float rayIntersectionT(Ray& ray);
-			void bbox();
 			int count();
 			void unlink();
 
 			void cacheSort(Node* mem, int& pos, int depth);
 			void multVecs();
 			int countNodes();
+			void expand();
 			void shrinkNodes();
 
 			inline bool isEmpty() { return (hasNodes && nnodes == 0) || (!hasNodes && points.size()<1); }
