@@ -33,10 +33,10 @@ namespace core {
 		if (root->points.count() > Node::maxPolys * 3)
 			root->sub();
 		root->countNodes();
+		root->trunc();
 		root->expand();
 		root->multVecs();
 		root->shrinkNodes();
-
 		cacheSort();
 	}
 
@@ -47,7 +47,7 @@ namespace core {
 		int nn = root->count();
 		mem = new Node[nn];
 		int pos = 0;
-		root->cacheSort(mem, pos, Node::subtreeDepth-1);
+		root->cacheSort(mem, pos, Node::subtreeDepth);
 		delete root;
 		root = &mem[0];
 	}

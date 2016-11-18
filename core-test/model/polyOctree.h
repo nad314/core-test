@@ -10,8 +10,10 @@ namespace core {
 		vec4s sr1;
 		vec4s sinvr1;
 		float d;
+		vec4s sd;
 		vec4 plane;
 		vec4 vmin, vmax;
+		vec4s svmin, svmax;
 
 		Ray() {}
 		Ray(vec4 v0, vec4 v1) : r0(v0), r1(v1) { 
@@ -33,13 +35,15 @@ namespace core {
 		struct Node : public SIMD {
 			static const int maxPolys = 8;
 			static const short maxDepth = 10;
-			static const byte subtreeDepth = 5;
+			static const byte subtreeDepth = 4;
 			static Node* lastNode;
 
 			vec4s spp, sqq;
+			vec4s sc;
+			vec4s sr;
 			Node* node[8];
-			buffer<vec4> points;
-			buffer<vec4> planes;
+			buffer<vec4s> points;
+			buffer<vec4s> planes;
 			byte depth;
 			byte nnodes;
 			bool hasNodes;
@@ -50,7 +54,7 @@ namespace core {
 
 			void build(buffer<vec4>& buff);
 			void sub();
-			float rayIntersectionT(Ray& ray);
+			const float rayIntersectionT(Ray& ray);
 			int count();
 			void unlink();
 
@@ -59,8 +63,15 @@ namespace core {
 			int countNodes();
 			void expand();
 			void shrinkNodes();
+			void trunc();
 
 			inline bool isEmpty() { return (hasNodes && nnodes == 0) || (!hasNodes && points.size()<1); }
+			void reduceDepth() {
+				--depth;
+				if (hasNodes)
+					for (int i = 0; i < nnodes; ++i)
+						node[i]->reduceDepth();
+			}
 
 		};
 
@@ -68,7 +79,8 @@ namespace core {
 		Node* root;
 		void build(simdMesh& mesh);
 		void cacheSort();
-		float rayIntersectionT(Ray& ray) const;
+		vec4s rayIntersectionT(Ray& ray) const;
+		//float rayIntersectionIterative(Ray& ray) const;
 
 		PolyOctree() : root(NULL) {}
 		~PolyOctree() { dispose(); }

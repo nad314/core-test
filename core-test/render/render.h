@@ -63,6 +63,41 @@ namespace core {
 				*/
 		}
 
+
+		static inline void rayBoxIntersectionTestSIMD2(Ray& ray, const vec4s& p, const vec4s& q) {
+			const vec4s v0 = (p - ray.sr0)*ray.sinvr1;
+			const vec4s v1 = (q - ray.sr0)*ray.sinvr1;
+			ray.svmin = _mm_min_ps(v0, v1);
+			ray.svmax = _mm_max_ps(v0, v1);
+			ray.svmin = _mm_max_ps(ray.svmin, _mm_shuffle_ps(ray.svmin, ray.svmin, _MM_SHUFFLE(1, 0, 3, 2)));
+			ray.svmin = _mm_max_ps(ray.svmin, _mm_shuffle_ps(ray.svmin, ray.svmin, _MM_SHUFFLE(1, 0, 2, 3)));
+			ray.svmax = _mm_min_ps(ray.svmax, _mm_shuffle_ps(ray.svmax, ray.svmax, _MM_SHUFFLE(1, 0, 3, 2)));
+			ray.svmax = _mm_min_ps(ray.svmax, _mm_shuffle_ps(ray.svmax, ray.svmax, _MM_SHUFFLE(1, 0, 2, 3)));
+		}
+
+		static inline bool raySpehereIntersectionTestSIMD(const Ray& ray, const vec4s& c, const vec4s& r) {
+			const vec4s l = c - ray.sr0;
+			const vec4s t = l.dot3(ray.sr1);
+			if (_mm_comilt_ss(t, _mm_setzero_ps()))
+				return 0;
+			const vec4s d2 = l.dot3(l) - t*t;
+			if (_mm_comilt_ss(r, d2))
+				return 0;
+			return 1;
+		}
+
+		static inline void raySpehereIntersectionSIMD(Ray& ray, const vec4s& c, const vec4s& r) {
+			ray.svmin = _mm_set1_ps(-1.0f);
+			const vec4s l = c - ray.sr0;
+			const vec4s t = l.dot3(ray.sr1);
+			if (_mm_comilt_ss(t, _mm_setzero_ps()))
+				return;
+			const vec4s d2 = l.dot3(l) - t*t;
+			if (_mm_comilt_ss(r, d2))
+				return;
+			ray.svmin = t - _mm_sqrt_ps(r - d2);
+		}
+
 		static void projectedBox(const PolyOctree& octree, const View* view, vec4& pOut, vec4& qOut);
 
 	};

@@ -19,10 +19,10 @@ namespace core {
 		sqq.store(q);
 		for (int i = 0; i < buff.count(); i += 3)
 			if (Math::triangleAABBIntersection(buff[i], buff[i + 1], buff[i + 2], p, q)) {
-				points.push_back(buff[i]);
-				points.push_back(buff[i + 1]);
-				points.push_back(buff[i + 2]);
-				planes.push_back(Math::plane(buff[i].xyz(), buff[i + 1].xyz(), buff[i + 2].xyz()));
+				points.push_back(vec4s(buff[i]));
+				points.push_back(vec4s(buff[i + 1]));
+				points.push_back(vec4s(buff[i + 2]));
+				planes.push_back(vec4s(Math::plane(buff[i].xyz(), buff[i + 1].xyz(), buff[i + 2].xyz())));
 			}
 	}
 
@@ -65,15 +65,19 @@ namespace core {
 		node[7]->sqq = vec4(q.x, q.y, q.z, 1.0f);
 
 		vec4 np, nq;
+		vec4 a, b, d;
 		for (int i = 0; i < points.count(); i += 3) {
 			for (int j = 0; j < 8; ++j) {
 				node[j]->spp.store(np);
 				node[j]->sqq.store(nq);
-				if (Math::triangleAABBIntersection(points[i], points[i + 1], points[i + 2], np, nq)) {
+				points[i].store(a);
+				points[i + 1].store(b);
+				points[i + 2].store(d);
+				if (Math::triangleAABBIntersection(a, b, d, np, nq)) {
 					node[j]->points.push_back(points[i]);
 					node[j]->points.push_back(points[i + 1]);
 					node[j]->points.push_back(points[i + 2]);
-					node[j]->planes.push_back(Math::plane(points[i].xyz(), points[i + 1].xyz(), points[i + 2].xyz()));
+					node[j]->planes.push_back(vec4s(Math::plane(a.xyz(), b.xyz(), d.xyz())));
 					break;
 				}
 			}
@@ -123,13 +127,17 @@ namespace core {
 
 	void PolyOctree::Node::multVecs() {
 		for (auto& i : points)
-			i *= 100.0f;
+			i *= 1.0f;
+		/*
+		for (int i = 0; i < points.size(); i += 3) {
+			points[i + 1] -= points[i];
+			points[i + 2] -= points[i];
+		}*/
 		if (hasNodes) {
 			for (int i = 0; i < 8; ++i)
 				node[i]->multVecs();
 		}
 	}
-
 
 	int PolyOctree::Node::countNodes() {
 		nnodes = 0;
@@ -175,7 +183,12 @@ namespace core {
 	}
 
 	void PolyOctree::Node::shrinkNodes() {
-		if (!hasNodes) return;
+		if (!hasNodes) {
+			sc = (spp + sqq)*vec4s(0.5f);
+			sr = sqq - sc;
+			sr = sr.dot3(sr);
+			return;
+		}
 		vec4 np[8];
 		vec4 nq[8];
 		vec4 pp, qq;
@@ -203,7 +216,36 @@ namespace core {
 			qq.x = std::max(std::max(nq[0].x, nq[2].x), std::max(nq[4].x, nq[6].x));
 		spp = pp;
 		sqq = qq;
+
+		sc = (spp + sqq)*vec4s(0.5f);
+		sr = sqq - sc;
+		sr = sr.dot3(sr);
 		
+	}
+
+	void PolyOctree::Node::trunc() {
+		if (hasNodes) {
+			bool found;
+			while (1) {
+				found = 0;
+				for (int i = 0; i < nnodes; ++i) {
+					if (node[i]->hasNodes && node[i]->nnodes == 1) {
+						Node* tmp = node[i];
+						node[i] = tmp->node[0];
+
+						for (int j = 0; j < 8; ++j)
+							tmp->node[0] = new Node;
+						delete tmp;
+
+						node[i]->reduceDepth();
+						found = 1;
+					}
+				}
+				if (!found) break;
+			}
+			for (int i = 0; i < nnodes; ++i)
+				node[i]->trunc();
+		}
 	}
 
 

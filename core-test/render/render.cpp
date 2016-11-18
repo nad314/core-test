@@ -80,6 +80,9 @@ namespace core {
 		Ray ray;
 		matrixs sinv = inv;
 		const vec4s vone = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+		PolyOctree::Node& node = *octree.root;
+
 		for (int gy = 0; gy<img.height; gy+= square) {
 			if (gy > bq.y || (gy + square) < bp.y)
 				continue;
@@ -89,7 +92,7 @@ namespace core {
 				const int mx = std::min(gx + square, w);
 				const int my = std::min(gy + square, (int)img.height);
 				for (int i = gy; i < my; ++i) {
-					for (int j = gx; j < mx; ++j) {				
+					for (int j = gx; j < mx; ++j) {		
 						ray.sr0 = sinv*view.unproject(vec4s(vec4((float)j, (float)img.height - i, 0.0f, 1.0f)));
 						ray.sr0 /= _mm_shuffle_ps(ray.sr0, ray.sr0, _MM_SHUFFLE(3, 3, 3, 3));
 						ray.sr1 = sinv*view.unproject(vec4s(vec4((float)j, (float)img.height - i, 1.0f, 1.0f)));
@@ -102,8 +105,13 @@ namespace core {
 						ray.sr1.store(ray.r1);
 						ray.sinvr1.store(ray.invr1);
 						ray.d = 100.0f;
-
-						if (octree.rayIntersectionT(ray) > 0.0f) {
+						ray.sd = ray.d;
+						
+						Renderer::rayBoxIntersectionTestSIMD2(ray, node.spp, node.sqq);
+						if (_mm_comilt_ss(ray.svmin, _mm_setzero_ps()) || _mm_comilt_ss(_mm_set1_ps(ray.d), ray.svmin))
+							continue;
+						//if (_mm_comigt_ss(node.rayIntersectionT(ray), _mm_setzero_ps())) {
+						if (node.rayIntersectionT(ray) > 0.0f) {
 							byte b = (byte)(std::max(0.0f, Math::dot3(ray.plane, (lightPos - (ray.r0 + ray.r1*ray.d)).normalize3d()))*255.0f);
 							color = vec4b(b, b, b, 255);
 							clr = *reinterpret_cast<const uint*>(&color);
