@@ -103,7 +103,7 @@ namespace core {
 
 						ray.d = 100.0f;
 						
-						Renderer::rayBoxIntersectionTestSIMD2(ray, node.spp, node.sqq);
+						Renderer::rayBoxIntersectionTestSIMD(ray, node.spp, node.sqq);
 						if (_mm_comilt_ss(ray.svmin, _mm_setzero_ps()) || _mm_comilt_ss(_mm_set1_ps(ray.d), ray.svmin))
 							continue;
 						//if (_mm_comigt_ss(node.rayIntersectionT(ray), _mm_setzero_ps())) {

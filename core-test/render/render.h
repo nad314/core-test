@@ -34,15 +34,15 @@ namespace core {
 		}*/
 
 		//stores minimum distance into ray, returns maximum distance
-		static inline const vec4s rayBoxIntersectionTestSIMD2(Ray& ray, const vec4s& p, const vec4s& q) {
+		static inline const vec4s rayBoxIntersectionTestSIMD(Ray& ray, const vec4s& p, const vec4s& q) {
 			const vec4s v0 = (p - ray.sr0)*ray.sinvr1;
 			const vec4s v1 = (q - ray.sr0)*ray.sinvr1;
 			const vec4s min0 = _mm_min_ps(v0, v1);
 			const vec4s max0 = _mm_max_ps(v0, v1);
-			const vec4s min1 = _mm_max_ps(min0, _mm_shuffle_ps(min0, min0, _MM_SHUFFLE(1, 0, 3, 2)));
-			const vec4s max1 = _mm_min_ps(max0, _mm_shuffle_ps(max0, max0, _MM_SHUFFLE(1, 0, 3, 2)));
-			ray.svmin = _mm_max_ps(min1, _mm_shuffle_ps(min1, min1, _MM_SHUFFLE(1, 0, 2, 3)));
-			return _mm_min_ps(max1, _mm_shuffle_ps(max1, max1, _MM_SHUFFLE(1, 0, 2, 3)));
+			const vec4s min1 = _mm_max_ps(min0, _mm_permute_ps(min0, 0b10110001));
+			const vec4s max1 = _mm_min_ps(max0, _mm_permute_ps(max0, 0b10110001));
+			ray.svmin = _mm_max_ps(min1, _mm_permute_ps(min1, 0b01001011));
+			return _mm_min_ps(max1, _mm_permute_ps(max1, 0b01001011));
 		}
 
 		static inline bool raySpehereIntersectionTestSIMD(const Ray& ray, const vec4s& c, const vec4s& r) {
