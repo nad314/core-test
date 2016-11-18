@@ -84,13 +84,16 @@ namespace core {
 					continue;
 
 				const float dist = node[i]->rayIntersectionT(ray);
-				if (dist > 0 && (dist < d || d < 0.0f)) {
-					ray.d = d = dist;
-					if (i > 0) {
-						std::swap(node[1], node[i]);
-						std::swap(node[0], node[1]);
-					}
-				}
+
+				//teeny tiny cancer
+				if (dist < 0 || (dist > d && d > 0.0f))
+					continue;
+
+				ray.d = d = dist;
+				if (i == 0) continue;
+
+				std::swap(node[i], node[1]);
+				std::swap(node[1], node[0]);
 			}
 			return d;
 		}
@@ -103,13 +106,13 @@ namespace core {
 			vec4s d(-1.0f);
 			for (int i = 0, j = 0; i < points.size(); i += 3, ++j) {
 				const vec4s dist = SSE::rayPlaneT(ray.sr0, ray.sr1, planes[j]);
-				if ((_mm_comilt_ss(dist, d) || _mm_comilt_ss(d, _mm_setzero_ps())) &&
-					_mm_comige_ss(dist, _mm_setzero_ps()) &&
-					SSE::pointInTriangle(ray.sr0 + ray.sr1*dist, planes.at(j), points.at(i), points.at(i + 1), points.at(i + 2))) {
-					d = dist;
-					ray.d = _mm_cvtss_f32(d);
-					ray.plane = planes[j];
-				}
+				if ((_mm_comige_ss(dist, d) && _mm_comige_ss(d, _mm_setzero_ps())) ||
+					_mm_comilt_ss(dist, _mm_setzero_ps()) ||
+					SSE::pointInTriangle(ray.sr0 + ray.sr1*dist, planes.at(j), points.at(i), points.at(i + 1), points.at(i + 2)))
+					continue;
+				d = dist;
+				ray.d = _mm_cvtss_f32(d);
+				ray.plane = planes[j];
 			}
 			return _mm_cvtss_f32(d);
 			
