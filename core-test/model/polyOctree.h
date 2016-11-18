@@ -34,6 +34,8 @@ namespace core {
 			static const short maxDepth = 10;
 			static const byte subtreeDepth = 4;
 			static Node* lastNode;
+			static int hitsPerBox;
+			static int hitPerBoxCount;
 
 			vec4s spp, sqq;
 			Node* node[8];

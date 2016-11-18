@@ -39,10 +39,10 @@ namespace core {
 			const vec4s v1 = (q - ray.sr0)*ray.sinvr1;
 			const vec4s min0 = _mm_min_ps(v0, v1);
 			const vec4s max0 = _mm_max_ps(v0, v1);
-			const vec4s min1 = _mm_max_ps(min0, _mm_permute_ps(min0, 0b10110001));
-			const vec4s max1 = _mm_min_ps(max0, _mm_permute_ps(max0, 0b10110001));
-			ray.svmin = _mm_max_ps(min1, _mm_permute_ps(min1, 0b01001011));
-			return _mm_min_ps(max1, _mm_permute_ps(max1, 0b01001011));
+			const vec4s min1 = _mm_max_ps(min0, _mm_permute_ps(min0, 0b01001010));
+			const vec4s max1 = _mm_min_ps(max0, _mm_permute_ps(max0, 0b01001010));
+			ray.svmin = _mm_max_ss(min1, _mm_permute_ps(min1, 0b11100001));
+			return _mm_min_ss(max1, _mm_permute_ps(max1, 0b11100001));
 		}
 
 		static inline bool raySpehereIntersectionTestSIMD(const Ray& ray, const vec4s& c, const vec4s& r) {

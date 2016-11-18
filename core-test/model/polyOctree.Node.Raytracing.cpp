@@ -84,17 +84,21 @@ namespace core {
 					continue;
 
 				const float dist = node[i]->rayIntersectionT(ray);
-
-				//teeny tiny cancer
 				if (dist < 0 || (dist > d && d > 0.0f))
 					continue;
 
 				ray.d = d = dist;
 				if (i == 0) continue;
 
-				std::swap(node[i], node[1]);
-				std::swap(node[1], node[0]);
+				const Node const* tmp = node[0];
+				node[0] = node[i];
+				node[i] = node[1];
+				node[1] = const_cast<Node*>(tmp);
 			}
+			/*
+			Node::hitsPerBox += nnodes;
+			Node::hitPerBoxCount++;
+			*/
 			return d;
 		}
 		else {

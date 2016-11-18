@@ -2,6 +2,9 @@
 
 namespace core {
 	PolyOctree::Node* PolyOctree::Node::lastNode = NULL;
+	int PolyOctree::Node::hitsPerBox = 0;
+	int PolyOctree::Node::hitPerBoxCount = 0;
+
 
 	int PolyOctree::Node::count() {
 		if (!hasNodes)
