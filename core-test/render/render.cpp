@@ -75,7 +75,7 @@ namespace core {
 		inv.invert();
 
 		const int square = 32;
-		vec4 lightPos = view.mat*vec4(0.0f, 0.0f, -2.0f, 1.0f);
+		vec4s lightPos = view.mat*vec4(0.0f, 0.0f, -2.0f, 1.0f);
 
 		Ray ray;
 		matrixs sinv = inv;
@@ -92,7 +92,7 @@ namespace core {
 				const int mx = std::min(gx + square, w);
 				const int my = std::min(gy + square, (int)img.height);
 				for (int i = gy; i < my; ++i) {
-					for (int j = gx; j < mx; ++j) {		
+					for (int j = gx; j < mx; ++j) {
 						ray.sr0 = sinv*view.unproject(vec4s(vec4((float)j, (float)img.height - i, 0.0f, 1.0f)));
 						ray.sr0 /= _mm_shuffle_ps(ray.sr0, ray.sr0, _MM_SHUFFLE(3, 3, 3, 3));
 						ray.sr1 = sinv*view.unproject(vec4s(vec4((float)j, (float)img.height - i, 1.0f, 1.0f)));
@@ -101,18 +101,16 @@ namespace core {
 						ray.sr1 /= _mm_sqrt_ps(_mm_dp_ps(ray.sr1, ray.sr1, 0x7F));
 						ray.sinvr1 = vone / ray.sr1;
 
-						ray.sr0.store(ray.r0);
-						ray.sr1.store(ray.r1);
-						ray.sinvr1.store(ray.invr1);
 						ray.d = 100.0f;
-						ray.sd = ray.d;
 						
 						Renderer::rayBoxIntersectionTestSIMD2(ray, node.spp, node.sqq);
 						if (_mm_comilt_ss(ray.svmin, _mm_setzero_ps()) || _mm_comilt_ss(_mm_set1_ps(ray.d), ray.svmin))
 							continue;
 						//if (_mm_comigt_ss(node.rayIntersectionT(ray), _mm_setzero_ps())) {
 						if (node.rayIntersectionT(ray) > 0.0f) {
-							byte b = (byte)(std::max(0.0f, Math::dot3(ray.plane, (lightPos - (ray.r0 + ray.r1*ray.d)).normalize3d()))*255.0f);
+							const vec4s pminusl = (lightPos - (ray.sr0 + ray.sr1*vec4s(ray.d)));
+							const vec4s ndotl = ray.plane.dot3(pminusl/_mm_sqrt_ps(pminusl.dot3(pminusl)));
+							const byte b = (byte)_mm_cvtss_si32(_mm_mul_ps(_mm_max_ps(_mm_setzero_ps(), ndotl),_mm_set1_ps(255.0f)));
 							color = vec4b(b, b, b, 255);
 							clr = *reinterpret_cast<const uint*>(&color);
 							memcpy(mp + j + i * w, &clr, 4);

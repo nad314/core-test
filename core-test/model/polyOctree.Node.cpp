@@ -183,10 +183,10 @@ namespace core {
 	}
 
 	void PolyOctree::Node::shrinkNodes() {
-		if (!hasNodes) {
+		if (!hasNodes) {/*
 			sc = (spp + sqq)*vec4s(0.5f);
 			sr = sqq - sc;
-			sr = sr.dot3(sr);
+			sr = sr.dot3(sr);*/
 			return;
 		}
 		vec4 np[8];
@@ -216,10 +216,10 @@ namespace core {
 			qq.x = std::max(std::max(nq[0].x, nq[2].x), std::max(nq[4].x, nq[6].x));
 		spp = pp;
 		sqq = qq;
-
+		/*
 		sc = (spp + sqq)*vec4s(0.5f);
 		sr = sqq - sc;
-		sr = sr.dot3(sr);
+		sr = sr.dot3(sr);*/
 		
 	}
 

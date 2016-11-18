@@ -3,26 +3,23 @@
 namespace core {
 
 	struct Ray : public SIMD {
-		vec4 r0;
-		vec4 r1;
-		vec4 invr1;
 		vec4s sr0;
 		vec4s sr1;
 		vec4s sinvr1;
 		float d;
-		vec4s sd;
-		vec4 plane;
-		vec4 vmin, vmax;
-		vec4s svmin, svmax;
+		vec4s plane;
+		vec4s svmin;
 
 		Ray() {}
-		Ray(vec4 v0, vec4 v1) : r0(v0), r1(v1) { 
+		Ray(vec4 v0, vec4 v1) { 
+			const vec4 r0 = v0;
+			vec4 r1 = v1;
 			#define eps 1e-6
 			if (fabs(r1.x) < eps)r1.x = eps;
 			if (fabs(r1.y) < eps)r1.y = eps;
 			if (fabs(r1.z) < eps)r1.z = eps;
 			#undef eps
-			invr1 = vec4(1.0f) / r1; 
+			const vec4 invr1 = vec4(1.0f) / r1; 
 			d = 100.0f; 
 			sr0 = r0;
 			sr1 = r1;
@@ -39,8 +36,6 @@ namespace core {
 			static Node* lastNode;
 
 			vec4s spp, sqq;
-			vec4s sc;
-			vec4s sr;
 			Node* node[8];
 			buffer<vec4s> points;
 			buffer<vec4s> planes;

@@ -2,8 +2,8 @@
 namespace core {
 
 	vec4s PolyOctree::rayIntersectionT(Ray& ray) const {
-		Renderer::rayBoxIntersectionTestSIMD(ray, root->spp, root->sqq);
-		if (ray.vmin.x < 0.0f || ray.vmin.x>ray.d)
+		Renderer::rayBoxIntersectionTestSIMD2(ray, root->spp, root->sqq);
+		if (_mm_comilt_ss(ray.svmin, _mm_setzero_ps()) || _mm_comilt_ss(_mm_set1_ps(ray.d), ray.svmin))
 			return -1.0f;
 		return root->rayIntersectionT(ray);
 	}
@@ -76,23 +76,35 @@ namespace core {
 	const float PolyOctree::Node::rayIntersectionT(Ray& ray) {
 		float d = -1.0f;
 		if (hasNodes) {
-			int ind = 0;
-			for (byte i = 0; i < nnodes; ++i) {
+			/*
+			Renderer::rayBoxIntersectionTestSIMD2(ray, node[0]->spp, node[0]->sqq);
+			if (_mm_comilt_ss(ray.svmin, ray.svmax) &&
+				_mm_comilt_ss(_mm_setzero_ps(), ray.svmax) &&
+				_mm_comilt_ss(ray.svmin, _mm_set1_ps(ray.d))) {
+				const float dist = node[0]->rayIntersectionT(ray);
+				if (dist > 0 && (dist < d || d < 0.0f))
+					ray.d = d = dist;
+			}
+			*/
+			for (int i = 0; i < nnodes; ++i) {
 				/*
 				Renderer::raySpehereIntersectionSIMD(ray, node[i]->sc, node[i]->sr);
 				if (_mm_comige_ss(_mm_setzero_ps(), ray.svmin) ||
 					_mm_comige_ss(ray.svmin, _mm_set1_ps(ray.d)))
 					continue;*/
-				Renderer::rayBoxIntersectionTestSIMD2(ray, node[i]->spp, node[i]->sqq);
-				if (_mm_comige_ss(ray.svmin, ray.svmax) ||
-					_mm_comige_ss(_mm_setzero_ps(), ray.svmax) ||
+				const vec4s svmax = Renderer::rayBoxIntersectionTestSIMD2(ray, node[i]->spp, node[i]->sqq);
+				if (_mm_comige_ss(ray.svmin, svmax) ||
+					_mm_comige_ss(_mm_setzero_ps(), svmax) ||
 					_mm_comige_ss(ray.svmin, _mm_set1_ps(ray.d)))
 					continue;
 				const float dist = node[i]->rayIntersectionT(ray);
 				//if (_mm_comigt_ss(dist, _mm_setzero_ps()) && (_mm_comilt_ss(dist, d) || _mm_comilt_ss(d, _mm_setzero_ps()))) {
 				if (dist > 0 && (dist < d || d < 0.0f)) {
 					ray.d = d = dist;
-					if (i > 0) std::swap(node[i - 1], node[i]);
+					if (i > 0) {
+						std::swap(node[1], node[i]);
+						std::swap(node[0], node[1]);
+					}
 				}
 			}
 			return d;
@@ -100,10 +112,8 @@ namespace core {
 		else {
 			/*
 			if (points.size() > 0) {
-				//Renderer::raySpehereIntersectionSIMD(ray, sc, sr);
-				//Renderer::rayBoxIntersectionTestSIMD(ray, spp, sqq);
-				ray.svmin.store(ray.vmin);
-				return ray.d = ray.vmin.x;
+				_mm_store1_ps(&ray.d, ray.svmin);
+				return ray.d;
 			}
 			return -1.0f;
 			*/
@@ -111,12 +121,12 @@ namespace core {
 			const int ls = points.size();
 			for (int i = 0, j = 0; i < ls; i += 3, ++j) {
 				const vec4s dist = SSE::rayPlaneT(ray.sr0, ray.sr1, planes[j]);
-				if (_mm_comigt_ss(dist, _mm_setzero_ps()) && (_mm_comilt_ss(dist, _mm_set1_ps(d)) || _mm_comilt_ss(_mm_set1_ps(d), _mm_setzero_ps()))) {
-					if (SSE::pointInTriangle(planes[j], ray.sr0 + ray.sr1*dist, points[i], points[i + 1], points[i + 2])) {
-						_mm_store1_ps(&d, dist);
-						ray.d = d;
-						ray.plane = planes[j];
-					}
+				if ((_mm_comilt_ss(dist, _mm_set1_ps(d)) || _mm_comilt_ss(_mm_set1_ps(d), _mm_setzero_ps())) &&
+					_mm_comige_ss(dist, _mm_setzero_ps()) &&
+					SSE::pointInTriangle(ray.sr0 + ray.sr1*dist, planes[j], points[i], points[i + 1], points[i + 2])) {
+					_mm_store1_ps(&d, dist);
+					ray.d = d;
+					ray.plane = planes[j];
 				}
 			}
 			return d;
