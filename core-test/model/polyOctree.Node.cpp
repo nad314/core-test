@@ -131,8 +131,8 @@ namespace core {
 	void PolyOctree::Node::multVecs() {
 		for (auto& i : points)
 			i *= 1.0f;
-		/*
-		for (int i = 0; i < points.size(); i += 3) {
+		//for the old pointInTriangle method
+		/*for (int i = 0; i < points.size(); i += 3) {
 			points[i + 1] -= points[i];
 			points[i + 2] -= points[i];
 		}*/
@@ -186,12 +186,8 @@ namespace core {
 	}
 
 	void PolyOctree::Node::shrinkNodes() {
-		if (!hasNodes) {/*
-			sc = (spp + sqq)*vec4s(0.5f);
-			sr = sqq - sc;
-			sr = sr.dot3(sr);*/
+		if (!hasNodes)
 			return;
-		}
 		vec4 np[8];
 		vec4 nq[8];
 		vec4 pp, qq;
@@ -218,12 +214,7 @@ namespace core {
 		if (node[1]->isEmpty() && node[3]->isEmpty() && node[5]->isEmpty() && node[7]->isEmpty())
 			qq.x = std::max(std::max(nq[0].x, nq[2].x), std::max(nq[4].x, nq[6].x));
 		spp = pp;
-		sqq = qq;
-		/*
-		sc = (spp + sqq)*vec4s(0.5f);
-		sr = sqq - sc;
-		sr = sr.dot3(sr);*/
-		
+		sqq = qq;		
 	}
 
 	void PolyOctree::Node::trunc() {
@@ -234,10 +225,10 @@ namespace core {
 				for (int i = 0; i < nnodes; ++i) {
 					if (node[i]->hasNodes && node[i]->nnodes == 1) {
 						Node* tmp = node[i];
-						node[i] = tmp->node[0];
+						node[i] = new Node;
+						*node[i] = *tmp->node[0];
 
-						for (int j = 0; j < 8; ++j)
-							tmp->node[0] = new Node;
+						tmp->node[0] = new Node;
 						delete tmp;
 
 						node[i]->reduceDepth();

@@ -45,6 +45,7 @@ namespace core {
 			return;
 		Node* mem;
 		int nn = root->count();
+		size = nn;
 		printf("Mem size: %d bytes\n", nn * sizeof(Node));
 		mem = new Node[nn];
 		int pos = 0;

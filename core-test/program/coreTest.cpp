@@ -1,9 +1,5 @@
 #include <main>
 
-inline void printvec(const vec4s& v) {
-	printf("%.2f %.2f %.2f %.2f\n", v.m.m128_f32[0], v.m.m128_f32[1], v.m.m128_f32[2], v.m.m128_f32[3]);
-}
-
 int CoreTest::onLoad() {
 	if (!wnd.goToHomeDirectory())
 		return 1;
@@ -12,14 +8,7 @@ int CoreTest::onLoad() {
 	mesh.normalize();
 	mesh.bbox(p, q);
 	octree.build(mesh);
-
-	/*
-	const vec4s v0 = vec4(1.0f, 2.0f, 3.0f, 4.0f); printf("vec0 "); printvec(v0);
-	const vec4s v1 = _mm_permute_ps(v0, 0b00110110); printf("vec1 "); printvec(v1); //3 2 4 1
-	system("pause");
-	return 1;
-	*/
-	
+	bvh.build(octree);
 	return 0;
 }
 
@@ -80,13 +69,13 @@ int CoreTest::main() {
 
 		timer.start();
 		core::Renderer::invalidate();
-		core::Renderer::raytrace(octree, &rw.view);
+		core::Renderer::raytrace(octree, bvh, &rw.view);
 		//core::Renderer::drawPointRange(mesh, &rw.view, (threads - 1)*step, mesh.vecs.count());
 		timer.stop();
 
 		renderTime += timer;
 		++nframes;
-		sprintf(text, "%d Points: %.3fms avg, %.3fms cur (%.2f hitsPerBox avg)", mesh.vecs.count(), renderTime / nframes, timer.ms());
+		sprintf(text, "%d Points: %.3fms avg, %.3fms cur", mesh.vecs.count(), renderTime / nframes, timer.ms());
 		core::Renderer::print(text, rw, 10, rw.height - 10 - core::Font::get().height());
 		
 		GL::drawImageInverted(rw);

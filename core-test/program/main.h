@@ -19,6 +19,7 @@ typedef core::Rect Rect;
 //core components
 #include <model/simdMesh.h>
 #include <model/polyOctree.h>
+#include <OBVH/OBVH.h>
 #include <render/view.h>
 #include <render/render.h>
 

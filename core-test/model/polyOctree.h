@@ -1,6 +1,52 @@
 #pragma once
 #include <queue>
 namespace core {
+	
+	struct vec3avx : public SIMD {
+		__m256 x;
+		__m256 y;
+		__m256 z;
+
+		vec3avx() {}
+		vec3avx(const float* xx, const float* yy, const float* zz) {
+			x = _mm256_loadu_ps(xx);
+			y = _mm256_loadu_ps(yy);
+			z = _mm256_loadu_ps(zz);
+		}
+		vec3avx(const __m256& xx, const __m256& yy, const __m256& zz) :x(xx), y(yy), z(zz) {}
+	};
+
+	struct vec4avx : public SIMD {
+		__m256 x;
+		__m256 y;
+		__m256 z;
+		__m256 w;
+
+		vec4avx() {}
+		vec4avx(const float* xx, const float* yy, const float* zz, const float* ww) {
+			x = _mm256_loadu_ps(xx);
+			y = _mm256_loadu_ps(yy);
+			z = _mm256_loadu_ps(zz);
+			w = _mm256_loadu_ps(ww);
+		}
+		vec4avx(const __m256& xx, const __m256& yy, const __m256& zz, const __m256& ww) :x(xx), y(yy), z(zz), w(ww) {}
+	};
+
+
+	struct vec3sse : public SIMD {
+		__m128 x;
+		__m128 y;
+		__m128 z;
+
+		vec3sse() {}
+		vec3sse(const float* xx, const float* yy, const float* zz) {
+			x = _mm_load_ps(xx);
+			y = _mm_load_ps(yy);
+			z = _mm_load_ps(zz);
+		}
+		vec3sse(const __m128 xx, const __m128 yy, const __m128 zz) :x(xx), y(yy), z(zz) {}
+	};
+	
 
 	struct Ray : public SIMD {
 		vec4s sr0;
@@ -8,7 +54,7 @@ namespace core {
 		vec4s sinvr1;
 		float d;
 		vec4s plane;
-		vec4s svmin;
+		__m256 ar0, ainvr1;
 
 		Ray() {}
 		Ray(vec4 v0, vec4 v1) { 
@@ -31,8 +77,8 @@ namespace core {
 	public:
 		struct Node : public SIMD {
 			static const int maxPolys = 8;
-			static const short maxDepth = 10;
-			static const byte subtreeDepth = 4;
+			static const short maxDepth = 24;
+			static const byte subtreeDepth = 6;
 			static Node* lastNode;
 			static int hitsPerBox;
 			static int hitPerBoxCount;
@@ -70,9 +116,16 @@ namespace core {
 						node[i]->reduceDepth();
 			}
 
+			inline const float px() const { return spp.m.m128_f32[0]; }
+			inline const float py() const { return spp.m.m128_f32[1]; }
+			inline const float pz() const { return spp.m.m128_f32[2]; }
+			inline const float qx() const { return sqq.m.m128_f32[0]; }
+			inline const float qy() const { return sqq.m.m128_f32[1]; }
+			inline const float qz() const { return sqq.m.m128_f32[2]; }
 		};
 
 	public:
+		int size;
 		Node* root;
 		void build(simdMesh& mesh);
 		void cacheSort();

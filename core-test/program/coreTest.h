@@ -5,6 +5,7 @@ private:
 	MainWindow wnd;
 	core::simdMesh mesh;
 	core::PolyOctree octree;
+	core::OBVH bvh;
 	core::Timer<float> timer;
 	core::Timer<float> globalTimer;
 

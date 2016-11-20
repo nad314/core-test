@@ -11,6 +11,7 @@ namespace core {
 		static void drawPointThread(simdMesh &mesh, View* view, const int& start, const int& stop, bool* done);
 
 		static void raytrace(PolyOctree& octree, View* view);
+		static void raytrace(PolyOctree& octree, OBVH& bvh, View* view);
 		/*
 		static inline bool rayBoxIntersectionTest(const Ray& ray, const vec4& p, const vec4& q) {
 			vec4 v0 = (p - ray.r0)*ray.invr1;
@@ -33,7 +34,9 @@ namespace core {
 			return tmin;
 		}*/
 
+		//commented because removing unnecessary varibales from Ray class due to cache problems
 		//stores minimum distance into ray, returns maximum distance
+		/*
 		static inline const vec4s rayBoxIntersectionTestSIMD(Ray& ray, const vec4s& p, const vec4s& q) {
 			const vec4s v0 = (p - ray.sr0)*ray.sinvr1;
 			const vec4s v1 = (q - ray.sr0)*ray.sinvr1;
@@ -44,6 +47,65 @@ namespace core {
 			ray.svmin = _mm_max_ss(min1, _mm_permute_ps(min1, 0b11100001));
 			return _mm_min_ss(max1, _mm_permute_ps(max1, 0b11100001));
 		}
+		*/
+
+		//commented because removing unnecessary varibales from Ray class due to cache problems
+		/*
+		static inline const __m256 rayBoxIntersectionTestSIMD(Ray& ray, const vec4s& p0, const vec4s& q0, const vec4s& p1, const vec4s& q1) {
+			const __m256 p = _mm256_insertf128_ps(_mm256_castps128_ps256(p0), p1, 1);
+			const __m256 q = _mm256_insertf128_ps(_mm256_castps128_ps256(q0), q1, 1);
+			const __m256 v0 = _mm256_mul_ps(_mm256_sub_ps(p, ray.ar0), ray.ainvr1);
+			const __m256 v1 = _mm256_mul_ps(_mm256_sub_ps(q, ray.ar0), ray.ainvr1);
+			const __m256 min0 = _mm256_min_ps(v0, v1);
+			const __m256 max0 = _mm256_max_ps(v0, v1);
+			const __m256 min1 = _mm256_max_ps(min0, _mm256_permute_ps(min0, 0b01001010));
+			const __m256 max1 = _mm256_min_ps(max0, _mm256_permute_ps(max0, 0b01001010));
+			ray.avmin = _mm256_max_ps(min1, _mm256_permute_ps(min1, 0b11100001));
+			return _mm256_min_ps(max1, _mm256_permute_ps(max1, 0b11100001));
+		}*/
+
+
+		
+		//up to 22 instructions form 14, but doing 8 at a time
+		static inline const __m256 rayBoxIntersectionTestAVX(OBVH::Ray& ray, const vec3avx& p, const vec3avx& q, __m256&  min) {
+			const __m256 v0x = _mm256_mul_ps(_mm256_sub_ps(p.x, ray.r0.x), ray.inv.x);
+			const __m256 v0y = _mm256_mul_ps(_mm256_sub_ps(p.y, ray.r0.y), ray.inv.y);
+			const __m256 v0z = _mm256_mul_ps(_mm256_sub_ps(p.z, ray.r0.z), ray.inv.z);
+			const __m256 v1x = _mm256_mul_ps(_mm256_sub_ps(q.x, ray.r0.x), ray.inv.x);
+			const __m256 v1y = _mm256_mul_ps(_mm256_sub_ps(q.y, ray.r0.y), ray.inv.y);
+			const __m256 v1z = _mm256_mul_ps(_mm256_sub_ps(q.z, ray.r0.z), ray.inv.z);
+
+			const __m256 min0x = _mm256_min_ps(v0x, v1x);
+			const __m256 min0y = _mm256_min_ps(v0y, v1y);
+			const __m256 min0z = _mm256_min_ps(v0z, v1z);
+			const __m256 max0x = _mm256_max_ps(v0x, v1x);
+			const __m256 max0y = _mm256_max_ps(v0y, v1y);
+			const __m256 max0z = _mm256_max_ps(v0z, v1z);
+
+			min = _mm256_max_ps(min0x, _mm256_max_ps(min0y, min0z));
+			return _mm256_min_ps(max0x, _mm256_min_ps(max0y, max0z));
+		}
+		/*
+		//up to 22 instructions form 14, but doing 4 at a time
+		static inline const __m128 rayBoxIntersectionTestSSE(Ray& ray, const vec3sse& p, const vec3sse& q) {
+			const __m128 v0x = _mm_mul_ps(_mm_sub_ps(p.x, ray.r0s.x), ray.rinvs.x);
+			const __m128 v0y = _mm_mul_ps(_mm_sub_ps(p.y, ray.r0s.y), ray.rinvs.y);
+			const __m128 v0z = _mm_mul_ps(_mm_sub_ps(p.z, ray.r0s.z), ray.rinvs.z);
+			const __m128 v1x = _mm_mul_ps(_mm_sub_ps(q.x, ray.r0s.x), ray.rinvs.x);
+			const __m128 v1y = _mm_mul_ps(_mm_sub_ps(q.y, ray.r0s.y), ray.rinvs.y);
+			const __m128 v1z = _mm_mul_ps(_mm_sub_ps(q.z, ray.r0s.z), ray.rinvs.z);
+
+			const __m128 min0x = _mm_min_ps(v0x, v1x);
+			const __m128 min0y = _mm_min_ps(v0y, v1y);
+			const __m128 min0z = _mm_min_ps(v0z, v1z);
+			const __m128 max0x = _mm_max_ps(v0x, v1x);
+			const __m128 max0y = _mm_max_ps(v0y, v1y);
+			const __m128 max0z = _mm_max_ps(v0z, v1z);
+
+			ray.vmins = _mm_max_ps(min0x, _mm_max_ps(min0y, min0z));
+			return _mm_min_ps(max0x, _mm_min_ps(max0y, max0z));
+		}
+		*/
 
 		static inline bool raySpehereIntersectionTestSIMD(const Ray& ray, const vec4s& c, const vec4s& r) {
 			const vec4s l = c - ray.sr0;
@@ -55,7 +117,7 @@ namespace core {
 				return 0;
 			return 1;
 		}
-
+		/*
 		static inline void raySpehereIntersectionSIMD(Ray& ray, const vec4s& c, const vec4s& r) {
 			ray.svmin = _mm_set1_ps(-1.0f);
 			const vec4s l = c - ray.sr0;
@@ -66,7 +128,7 @@ namespace core {
 			if (_mm_comilt_ss(r, d2))
 				return;
 			ray.svmin = t - _mm_sqrt_ps(r - d2);
-		}
+		}*/
 
 		static void projectedBox(const PolyOctree& octree, const View* view, vec4& pOut, vec4& qOut);
 

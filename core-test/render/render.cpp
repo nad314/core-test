@@ -82,6 +82,7 @@ namespace core {
 		const vec4s vone = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 		PolyOctree::Node& node = *octree.root;
+		vec4 r0, r1, rinv;
 
 		for (int gy = 0; gy<img.height; gy+= square) {
 			if (gy > bq.y || (gy + square) < bp.y)
@@ -100,12 +101,44 @@ namespace core {
 						ray.sr1 = (ray.sr1 - ray.sr0);
 						ray.sr1 /= _mm_sqrt_ps(_mm_dp_ps(ray.sr1, ray.sr1, 0x7F));
 						ray.sinvr1 = vone / ray.sr1;
-
 						ray.d = 100.0f;
-						
+
+						ray.sr0.store(r0);
+						ray.sr1.store(r1);
+						ray.sinvr1.store(rinv);
+
+						ray.ar0 = _mm256_insertf128_ps(_mm256_castps128_ps256(ray.sr0), ray.sr0, 1);
+						ray.ainvr1 = _mm256_insertf128_ps(_mm256_castps128_ps256(ray.sinvr1), ray.sinvr1, 1);
+
+						/*
+						ray.r0a.x = _mm256_broadcast_ss(&r0.x);
+						ray.r0a.y = _mm256_broadcast_ss(&r0.y);
+						ray.r0a.z = _mm256_broadcast_ss(&r0.z);
+
+						ray.r1a.x = _mm256_broadcast_ss(&r1.x);
+						ray.r1a.y = _mm256_broadcast_ss(&r1.y);
+						ray.r1a.z = _mm256_broadcast_ss(&r1.z);
+
+						ray.rinva.x = _mm256_broadcast_ss(&rinv.x);
+						ray.rinva.y = _mm256_broadcast_ss(&rinv.y);
+						ray.rinva.z = _mm256_broadcast_ss(&rinv.z);
+
+						ray.r0s.x = _mm_broadcast_ss(&r0.x);
+						ray.r0s.y = _mm_broadcast_ss(&r0.y);
+						ray.r0s.z = _mm_broadcast_ss(&r0.z);
+
+						ray.r1s.x = _mm_broadcast_ss(&r1.x);
+						ray.r1s.y = _mm_broadcast_ss(&r1.y);
+						ray.r1s.z = _mm_broadcast_ss(&r1.z);
+
+						ray.rinvs.x = _mm_broadcast_ss(&rinv.x);
+						ray.rinvs.y = _mm_broadcast_ss(&rinv.y);
+						ray.rinvs.z = _mm_broadcast_ss(&rinv.z);*/
+
+						/*
 						Renderer::rayBoxIntersectionTestSIMD(ray, node.spp, node.sqq);
 						if (_mm_comilt_ss(ray.svmin, _mm_setzero_ps()) || _mm_comilt_ss(_mm_set1_ps(ray.d), ray.svmin))
-							continue;
+							continue;*/
 						//if (_mm_comigt_ss(node.rayIntersectionT(ray), _mm_setzero_ps())) {
 						if (node.rayIntersectionT(ray) > 0.0f) {
 							const vec4s pminusl = (lightPos - (ray.sr0 + ray.sr1*vec4s(ray.d)));
