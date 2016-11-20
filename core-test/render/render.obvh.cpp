@@ -34,6 +34,7 @@ namespace core {
 
 		OBVH::Ray oray;
 
+		__m128 svmin;
 		for (int gy = 0; gy < img.height; gy += square) {
 			if (gy > bq.y || (gy + square) < bp.y)
 				continue;
@@ -57,13 +58,6 @@ namespace core {
 						ray.sr1.store(r1);
 						ray.sinvr1.store(rinv);
 
-						ray.ar0 = _mm256_insertf128_ps(_mm256_castps128_ps256(ray.sr0), ray.sr0, 1);
-						ray.ainvr1 = _mm256_insertf128_ps(_mm256_castps128_ps256(ray.sinvr1), ray.sinvr1, 1);
-
-						
-						oray.sr0 = ray.sr0;
-						oray.sr1 = ray.sr1;
-
 						oray.r0.x = _mm256_broadcast_ss(&r0.x);
 						oray.r0.y = _mm256_broadcast_ss(&r0.y);
 						oray.r0.z = _mm256_broadcast_ss(&r0.z);
@@ -77,11 +71,6 @@ namespace core {
 						oray.inv.z = _mm256_broadcast_ss(&rinv.z);
 						oray.d = 100.0f;
 
-						/*
-						Renderer::rayBoxIntersectionTestSIMD(ray, node.spp, node.sqq);
-						if (_mm_comilt_ss(ray.svmin, _mm_setzero_ps()) || _mm_comilt_ss(_mm_set1_ps(ray.d), ray.svmin))
-						continue;*/
-						//if (_mm_comigt_ss(node.rayIntersectionT(ray), _mm_setzero_ps())) {
 						if (bvh.inner[0].rayIntersectionT(oray, bvh) > 0.0f) {
 							const vec4s pminusl = (lightPos - (ray.sr0 + ray.sr1*vec4s(oray.d)));
 							const vec4s ndotl = oray.plane.dot3(pminusl / _mm_sqrt_ps(pminusl.dot3(pminusl)));

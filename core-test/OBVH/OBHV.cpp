@@ -70,6 +70,12 @@ namespace core {
 				
 				int& c = leaf.count();
 
+				leaf[c].p0 = vec3avx(pp[0], pp[1], pp[2]);
+				leaf[c].p1 = vec3avx(pp[3], pp[4], pp[5]);
+				leaf[c].p2 = vec3avx(pp[6], pp[7], pp[8]);
+				leaf[c].plane = vec4avx(pp[9], pp[10], pp[11], pp[12]);
+				leaf[c].np = tree.root[i].planes.count();
+
 				/*
 				memset(px, 0, sizeof(px));
 				memset(py, 0, sizeof(py));
@@ -88,15 +94,7 @@ namespace core {
 				qz[0] = tree.root[i].qz();
 				leaf[c].p0 = vec3avx(px, py, pz);
 				leaf[c].p1 = vec3avx(qx, qy, qz);*/
-				
-				leaf[c].p0 = vec3avx(pp[0], pp[1], pp[2]);
-				leaf[c].p1 = vec3avx(pp[3], pp[4], pp[5]);
-				leaf[c].p2 = vec3avx(pp[6], pp[7], pp[8]);
-				leaf[c].plane = vec4avx(pp[9], pp[10], pp[11], pp[12]);
-				leaf[c].np = tree.root[i].planes.count();
-				/*
-				leaf[c].points = tree.root[i].points;
-				leaf[c].planes = tree.root[i].planes;*/
+
 				++c;
 			}
 	}

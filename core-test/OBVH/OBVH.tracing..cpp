@@ -98,8 +98,14 @@ namespace core {
 		const __m256 y = _mm256_sub_ps(_mm256_mul_ps(e, a), _mm256_mul_ps(D, b));
 		const __m256 z = _mm256_sub_ps(_mm256_add_ps(x, y), ac_bb);
 
+		const __m256 mm_min = _mm256_min_ps(dist, _mm256_min_ps(x, y));
+		const __m256 mm_min2 = _mm256_min_ps(mm_min, _mm256_sub_ps(_mm256_setzero_ps(), z));
+
 		for (int i = 0; i < np; ++i) {
-			if ((dist.m256_f32[i] >= d && d >= 0.0f) || dist.m256_f32[i] < 0.0f || 0>=((sgn(z.m256_f32[i]) & ~(sgn(x.m256_f32[i]) | sgn(y.m256_f32[i]))) & 0x80000000))
+			//if ((dist.m256_f32[i] >= d && d >= 0.0f) || mm_min.m256_f32[i]<0 || z.m256_f32[i] >= 0)
+			//above is the correct way
+			//below doesn't discard z==0
+			if ((dist.m256_f32[i] >= d && d >= 0.0f) || mm_min2.m256_f32[i]<0)
 				continue;
 			d = dist.m256_f32[i];
 			ray.plane = vec4(plane.x.m256_f32[i], plane.y.m256_f32[i], plane.z.m256_f32[i], plane.w.m256_f32[i]);
