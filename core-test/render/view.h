@@ -33,7 +33,7 @@ struct View : public core::SIMD {
 	//needs testing
 	inline vec4s unproject(const vec4s &v) const {
 		const vec4s t = (v / v09 - v07) / v08;
-		return (t-v10)/_mm_shuffle_ps(t, t, _MM_SHUFFLE(3, 3, 3, 3));
+		return (t-v10)/_mm_permute_ps(t, 0xff);
 	}
 
 	inline vec4s clamp (const vec4s &v) const {

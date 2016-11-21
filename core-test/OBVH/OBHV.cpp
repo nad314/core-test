@@ -73,6 +73,20 @@ namespace core {
 				leaf[c].p0 = vec3avx(pp[0], pp[1], pp[2]);
 				leaf[c].p1 = vec3avx(pp[3], pp[4], pp[5]);
 				leaf[c].p2 = vec3avx(pp[6], pp[7], pp[8]);
+				leaf[c].p1.x = _mm256_sub_ps(leaf[c].p1.x, leaf[c].p0.x);
+				leaf[c].p1.y = _mm256_sub_ps(leaf[c].p1.y, leaf[c].p0.y);
+				leaf[c].p1.z = _mm256_sub_ps(leaf[c].p1.z, leaf[c].p0.z);
+				leaf[c].p2.x = _mm256_sub_ps(leaf[c].p2.x, leaf[c].p0.x);
+				leaf[c].p2.y = _mm256_sub_ps(leaf[c].p2.y, leaf[c].p0.y);
+				leaf[c].p2.z = _mm256_sub_ps(leaf[c].p2.z, leaf[c].p0.z);
+#define p1 leaf[c].p1
+#define p2 leaf[c].p2
+				leaf[c].a = _mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(p1.x, p1.x), _mm256_mul_ps(p1.y, p1.y)), _mm256_mul_ps(p1.z, p1.z));
+				leaf[c].b = _mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(p1.x, p2.x), _mm256_mul_ps(p1.y, p2.y)), _mm256_mul_ps(p1.z, p2.z));
+				leaf[c].c = _mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(p2.x, p2.x), _mm256_mul_ps(p2.y, p2.y)), _mm256_mul_ps(p2.z, p2.z));
+#undef p1
+#undef p2
+
 				leaf[c].plane = vec4avx(pp[9], pp[10], pp[11], pp[12]);
 				leaf[c].np = tree.root[i].planes.count();
 
