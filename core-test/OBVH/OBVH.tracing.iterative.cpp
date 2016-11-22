@@ -46,7 +46,7 @@ namespace core {
 		std::pair<int, float>* st = stack;
 		*st++ = std::pair<int, float>(0, -1.0f);
 		std::pair<int, float>* current = stack;
-		int indMin;
+		int indMin = 0;
 		ray.d = 100.0f;
 
 		while (st != stack) {
@@ -56,7 +56,6 @@ namespace core {
 				current = st - 1;
 				continue;
 			}
-
 			innerNode& n = inner[current->first];
 			//ray box intersection test
 			const __m256 v0x = _mm256_mul_ps(_mm256_sub_ps(n.p.x, ray.r0.x), ray.inv.x);

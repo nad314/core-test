@@ -33,6 +33,8 @@ namespace core {
 
 		buffer<innerNode> inner;
 		buffer<leafNode> leaf;
+		int nodesPerNode;
+		int nodesTested;
 
 		void build(const PolyOctree& tree);
 		const float rayIntersectionTIt(OBVH::Ray& ray);

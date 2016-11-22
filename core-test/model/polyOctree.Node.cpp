@@ -222,6 +222,7 @@ namespace core {
 			bool found;
 			while (1) {
 				found = 0;
+				//trunc childs with only 1 child
 				for (int i = 0; i < nnodes; ++i) {
 					if (node[i]->hasNodes && node[i]->nnodes == 1) {
 						Node* tmp = node[i];
@@ -233,6 +234,24 @@ namespace core {
 
 						node[i]->reduceDepth();
 						found = 1;
+					}
+				}
+				//fill up to 8 slots
+				if (nnodes < 8) {
+					int c = -1;
+					for (int i = 0; i < nnodes; ++i)
+						if (node[i]->hasNodes && node[i]->nnodes > 1)
+							c = i;
+					if (c >= 0) {
+						for (int i = 0; i < nnodes; ++i)
+							if (node[i]->hasNodes && node[i]->nnodes < node[c]->nnodes && node[i]->nnodes > 1)
+								c = i;
+						delete node[nnodes++];
+						node[nnodes-1] = node[c]->node[--node[c]->nnodes];
+						node[c]->node[node[c]->nnodes] = new Node;
+						node[c]->node[node[c]->nnodes]->depth = node[c]->depth + 1;
+						node[nnodes - 1]->reduceDepth();
+						continue;
 					}
 				}
 				if (!found) break;

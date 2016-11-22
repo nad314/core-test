@@ -76,9 +76,9 @@ int CoreTest::main() {
 
 		renderTime += timer;
 		++nframes;
-		sprintf(text, "%d Points: %.3fms avg, %.3fms cur", mesh.vecs.count(), renderTime / nframes, timer.ms());
+		sprintf(text, "[Points: %d] [Avg: %.2fms (%.2f FPS)] [Cur: %.2fms (%.2f FPS)]", mesh.vecs.count(), renderTime / nframes, (1000.0f*nframes)/renderTime, timer.ms(), 1000.0f/timer.ms());
 		core::Renderer::print(text, rw, 10, rw.height - 10 - core::Font::get().height());
-		
+
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);
 	}
