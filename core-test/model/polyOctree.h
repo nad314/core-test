@@ -78,7 +78,7 @@ namespace core {
 		struct Node : public SIMD {
 			static const int maxPolys = 8;
 			static const short maxDepth = 24;
-			static const byte subtreeDepth = 6;
+			static const byte subtreeDepth = 4;
 			static Node* lastNode;
 			static int hitsPerBox;
 			static int hitPerBoxCount;

@@ -129,6 +129,7 @@
     <ClCompile Include="model\simdMesh.cpp" />
     <ClCompile Include="OBVH\OBHV.cpp" />
     <ClCompile Include="OBVH\OBVH.tracing..cpp" />
+    <ClCompile Include="OBVH\OBVH.tracing.iterative.cpp" />
     <ClCompile Include="program\coreTest.cpp" />
     <ClCompile Include="program\main.cpp" />
     <ClCompile Include="render\render.cpp" />

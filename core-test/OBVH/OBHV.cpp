@@ -26,11 +26,14 @@ namespace core {
 				memset(qx, 0, sizeof(qx));
 				memset(qy, 0, sizeof(qy));
 				memset(qz, 0, sizeof(qz));
+				inner[c].reserved[1] = 1;
 				for (int j = 0; j < tree.root[i].nnodes; ++j) {
 					if (tree.root[i].node[j]->hasNodes)
 						inner[c].node[j] = c + (int)(tree.root[i].node[j] - &tree.root[i]) - (leafCount[(int)(tree.root[i].node[j] - tree.root)] - llc);
-					else
+					else {
 						inner[c].node[j] = -(leafCount[(int)(tree.root[i].node[j] - tree.root)] - 1);
+						inner[c].reserved[1] = 0;
+					}
 					px[j] = tree.root[i].node[j]->px();
 					py[j] = tree.root[i].node[j]->py();
 					pz[j] = tree.root[i].node[j]->pz();
