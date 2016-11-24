@@ -15,7 +15,7 @@ namespace core {
 
 		float px[8], py[8], pz[8], qx[8], qy[8], qz[8];
 		float pp[13][8];
-
+		inner[0].parent = 0;
 		for (int i = 0; i < tree.size; ++i)
 			if (tree.root[i].hasNodes) {
 				int& c = inner.count();
@@ -26,13 +26,16 @@ namespace core {
 				memset(qx, 0, sizeof(qx));
 				memset(qy, 0, sizeof(qy));
 				memset(qz, 0, sizeof(qz));
-				inner[c].reserved[1] = 1;
 				for (int j = 0; j < tree.root[i].nnodes; ++j) {
-					if (tree.root[i].node[j]->hasNodes)
+					if (tree.root[i].node[j]->hasNodes) {
 						inner[c].node[j] = c + (int)(tree.root[i].node[j] - &tree.root[i]) - (leafCount[(int)(tree.root[i].node[j] - tree.root)] - llc);
+						inner[inner[c].node[j]].parent = c;
+						inner[inner[c].node[j]].pos = j;
+					}
 					else {
 						inner[c].node[j] = -(leafCount[(int)(tree.root[i].node[j] - tree.root)] - 1);
-						inner[c].reserved[1] = 0;
+						leaf[-inner[c].node[j]].parent = c;
+						leaf[-inner[c].node[j]].pos = j;
 					}
 					px[j] = tree.root[i].node[j]->px();
 					py[j] = tree.root[i].node[j]->py();
@@ -82,6 +85,7 @@ namespace core {
 				leaf[c].p2.x = _mm256_sub_ps(leaf[c].p2.x, leaf[c].p0.x);
 				leaf[c].p2.y = _mm256_sub_ps(leaf[c].p2.y, leaf[c].p0.y);
 				leaf[c].p2.z = _mm256_sub_ps(leaf[c].p2.z, leaf[c].p0.z);
+
 #define p1 leaf[c].p1
 #define p2 leaf[c].p2
 				leaf[c].a = _mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(p1.x, p1.x), _mm256_mul_ps(p1.y, p1.y)), _mm256_mul_ps(p1.z, p1.z));

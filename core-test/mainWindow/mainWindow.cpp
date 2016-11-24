@@ -3,7 +3,6 @@
 void MainWindow::onOpening() {
 	WindowForm::onOpening();
 	setTitle("Core Renderer");
-	setClass("CoreRenderer");
 	setSize(640, 480);
 }
 
@@ -14,7 +13,6 @@ void MainWindow::onOpened() {
 	rwnd.open();
 	core::vec4i r = getClientRect();
 	rwnd.move(r.z - r.x, r.w - r.y);
-	//Reshape();
 }
 
 void MainWindow::onClosing() {

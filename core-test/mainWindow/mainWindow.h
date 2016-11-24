@@ -4,7 +4,6 @@ class MainWindow final : public core::WindowForm {
 private:
 	RenderWindow rwnd;
 public:
-	MainWindow() {}
 	inline core::Window& getRenderWindow() { return rwnd; }
 	void onOpening() override;
 	void onOpened() override;

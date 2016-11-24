@@ -8,6 +8,7 @@ namespace core {
 			vec3avx inv;
 			vec4s plane;
 			float d;
+			int node;
 		};
 
 		struct innerNode: public SIMD {
@@ -15,9 +16,11 @@ namespace core {
 			int node[8];
 			int nn;
 			int threadPriority; //indices as result of priority changes
-			int reserved[2];
+			int priority;
+			int parent;
+			int pos;
 
-			innerNode() { memset(node, 0, sizeof(node)); nn = 0; memset(reserved, 0, sizeof(reserved)); }
+			innerNode() { memset(node, 0, sizeof(node)); nn = 0; priority = 0; parent = 0; pos = 0; }
 			const float rayIntersectionT(OBVH::Ray& ray, OBVH& bvh);
 		};
 
@@ -26,9 +29,11 @@ namespace core {
 			vec4avx plane;
 			__m256 a, b, c;
 			int np;
+			int parent;
+			int pos;
 
 			const float rayIntersectionT(OBVH::Ray& ray, const OBVH& bvh) const;
-			void rayIntersection(OBVH::Ray& ray) const;
+			void rayIntersection(OBVH::Ray& ray, const int& node) const;
 		};
 
 		buffer<innerNode> inner;

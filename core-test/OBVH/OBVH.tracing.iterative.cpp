@@ -1,7 +1,7 @@
 #include <main>
 
 namespace core {
-	void OBVH::leafNode::rayIntersection(OBVH::Ray& ray) const {
+	void OBVH::leafNode::rayIntersection(OBVH::Ray& ray, const int& node) const {
 		//ray plane intersection distance
 		const __m256 dx = _mm256_mul_ps(ray.r1.x, plane.x);
 		const __m256 dy = _mm256_mul_ps(ray.r1.y, plane.y);
@@ -19,6 +19,7 @@ namespace core {
 		const __m256 pointx = _mm256_add_ps(ray.r0.x, _mm256_mul_ps(ray.r1.x, dist));
 		const __m256 pointy = _mm256_add_ps(ray.r0.y, _mm256_mul_ps(ray.r1.y, dist));
 		const __m256 pointz = _mm256_add_ps(ray.r0.z, _mm256_mul_ps(ray.r1.z, dist));
+
 		const __m256 vpx = _mm256_sub_ps(pointx, p0.x);
 		const __m256 vpy = _mm256_sub_ps(pointy, p0.y);
 		const __m256 vpz = _mm256_sub_ps(pointz, p0.z);
@@ -37,17 +38,19 @@ namespace core {
 			if (mm_min2.m256_f32[i]<0 || ray.d <= dist.m256_f32[i])
 				continue;
 			ray.d = dist.m256_f32[i];
+			ray.node = node;
 			ray.plane = vec4(plane.x.m256_f32[i], plane.y.m256_f32[i], plane.z.m256_f32[i], plane.w.m256_f32[i]);
 		}
 	}
 
 	const float OBVH::rayIntersectionTIt(OBVH::Ray& ray) {
-		static std::pair<int, float> stack[256];
-		std::pair<int, float>* st = stack;
-		*st++ = std::pair<int, float>(0, -1.0f);
-		std::pair<int, float>* current = stack;
-		int indMin = 0;
+		typedef std::pair<int, float> SE;
+		static SE stack[256];
+		SE* st = stack;
+		*st++ = SE(0, -1.0f);
+		SE* current = stack;
 		ray.d = 100.0f;
+		ray.node = 0;
 
 		while (st != stack) {
 			//test if distance to box is greater than previously found distance
@@ -60,16 +63,15 @@ namespace core {
 			//ray box intersection test
 			const __m256 v0x = _mm256_mul_ps(_mm256_sub_ps(n.p.x, ray.r0.x), ray.inv.x);
 			const __m256 v1x = _mm256_mul_ps(_mm256_sub_ps(n.q.x, ray.r0.x), ray.inv.x);
-			const __m256 min0x = _mm256_min_ps(v0x, v1x);
-			const __m256 max0x = _mm256_max_ps(v0x, v1x);
-
 			const __m256 v0y = _mm256_mul_ps(_mm256_sub_ps(n.p.y, ray.r0.y), ray.inv.y);
 			const __m256 v1y = _mm256_mul_ps(_mm256_sub_ps(n.q.y, ray.r0.y), ray.inv.y);
-			const __m256 min0y = _mm256_min_ps(v0y, v1y);
-			const __m256 max0y = _mm256_max_ps(v0y, v1y);
-
 			const __m256 v0z = _mm256_mul_ps(_mm256_sub_ps(n.p.z, ray.r0.z), ray.inv.z);
 			const __m256 v1z = _mm256_mul_ps(_mm256_sub_ps(n.q.z, ray.r0.z), ray.inv.z);
+
+			const __m256 min0x = _mm256_min_ps(v0x, v1x);
+			const __m256 max0x = _mm256_max_ps(v0x, v1x);
+			const __m256 min0y = _mm256_min_ps(v0y, v1y);
+			const __m256 max0y = _mm256_max_ps(v0y, v1y);
 			const __m256 min0z = _mm256_min_ps(v0z, v1z);
 			const __m256 max0z = _mm256_max_ps(v0z, v1z);
 
@@ -77,39 +79,44 @@ namespace core {
 			const __m256 max = _mm256_min_ps(max0x, _mm256_min_ps(max0y, max0z));
 
 			--st; //pop
-			indMin = n.reserved[0];
 			//do until 0th element so that there's less branching
-			for (int m = n.nn - 1; m > 0; --m) {
-				const int i = (m == n.reserved[0]) ? 0 : m;
-				if (max.m256_f32[i] < min.m256_f32[i] || max.m256_f32[i] < 0.0f)
+			for (int m = 7; m > 0; --m) {
+				const int i = (m == n.priority) ? 0 : m;
+				if (max.m256_f32[i] <= min.m256_f32[i] || max.m256_f32[i] < 0.0f)
 					continue;
-
-				if (min.m256_f32[i] < min.m256_f32[indMin])
-					indMin = i;
 
 				if (n.node[i] > 0)
 					//inner
-					*st++ = std::pair<int, float>(n.node[i], min.m256_f32[i]);
+					*st++ = SE(n.node[i], min.m256_f32[i]);
 				else
 					//leaf
-					leaf[-n.node[i]].rayIntersection(ray);
+					leaf[-n.node[i]].rayIntersection(ray, n.node[i]);
+					//if (ray.d > min.m256_f32[i]) { ray.d = min.m256_f32[i]; ray.node = n.node[i]; }
 			}
 			//do the 0th element
-			const int i = n.reserved[0];
+			const int i = n.priority;
 			if (max.m256_f32[i] >= min.m256_f32[i] && max.m256_f32[i] >= 0.0f) {
 				if (n.node[i] > 0)
-					*st++ = std::pair<int, float>(n.node[i], min.m256_f32[i]);
+					*st++ = SE(n.node[i], min.m256_f32[i]);
 				else
-					leaf[-n.node[i]].rayIntersection(ray);
+					leaf[-n.node[i]].rayIntersection(ray, n.node[i]);
+					//if (ray.d > min.m256_f32[i]) { ray.d = min.m256_f32[i]; ray.node = n.node[i]; }
 			}
-
-			n.reserved[0] = indMin;
 			current = st - 1;
 		}
 
-		if (ray.d >= 100.0f)
-			return -1.0f;
-		else
+		if (ray.node < 0) {
+			int node = leaf[-ray.node].parent;
+			int pos = leaf[-ray.node].pos;
+			do {
+				innerNode& n = inner[node];
+				n.priority = pos;
+				node = n.parent;
+				pos = n.pos;
+			} while (node > 0);
+			inner[0].priority = pos;
 			return ray.d;
+		}
+		return -1.0f;
 	}
 }
