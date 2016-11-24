@@ -1,7 +1,6 @@
 #pragma once
 namespace core {
 	struct OBVH: public SIMD {
-
 		struct Ray {
 			vec3avx r0;
 			vec3avx r1;
@@ -38,10 +37,11 @@ namespace core {
 
 		buffer<innerNode> inner;
 		buffer<leafNode> leaf;
+		vec4s p, q;
 		int nodesPerNode;
 		int nodesTested;
 
 		void build(const PolyOctree& tree);
-		const float rayIntersectionTIt(OBVH::Ray& ray);
+		const float rayIntersectionTIt(OBVH::Ray& ray, std::pair<int, float>* stack, int* priority);
 	};
 }

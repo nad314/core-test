@@ -198,4 +198,50 @@ namespace core {
 		pO.store(pOut);
 		qO.store(qOut);
 	}
+
+	void Renderer::projectedBox(const OBVH& bvh, const View* pview, vec4& pOut, vec4& qOut) {
+		vec4s pO, qO;
+		vec4 p, q;
+		bvh.p.store(p);
+		bvh.q.store(q);
+		const View& view = *pview;
+
+		vec4s ps = view.project(vec4s(view.mat*p));
+		pO = qO = ps;
+
+		ps = view.project(vec4s(view.mat*vec4(q.x, q.y, p.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(p.x, q.y, p.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(q.x, p.y, p.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+
+
+		ps = view.project(vec4s(view.mat*vec4(p.x, p.y, q.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(q.x, q.y, q.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(p.x, q.y, q.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		ps = view.project(vec4s(view.mat*vec4(q.x, p.y, q.z, 1.0f)));
+		pO = _mm_min_ps(pO, ps);
+		qO = _mm_max_ps(qO, ps);
+
+		pO.store(pOut);
+		qO.store(qOut);
+	}
+
+
 }

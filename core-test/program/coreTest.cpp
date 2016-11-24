@@ -69,7 +69,7 @@ int CoreTest::main() {
 
 		timer.start();
 		core::Renderer::invalidate();
-		core::Renderer::raytrace(octree, bvh, &rw.view);
+		core::Renderer::raytrace(bvh, &rw.view);
 		//core::Renderer::raytrace(octree, &rw.view);
 		//core::Renderer::drawPointRange(mesh, &rw.view, (threads - 1)*step, mesh.vecs.count());
 		timer.stop();

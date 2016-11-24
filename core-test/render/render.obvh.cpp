@@ -1,11 +1,11 @@
 #include <main>
 namespace core {
-	void Renderer::raytrace(PolyOctree& octree, OBVH& bvh, View* pview) {
+	void Renderer::raytrace(OBVH& bvh, View* pview) {
 		View &view = *pview;
 		Image &img = view.img;
 		int* mp = reinterpret_cast<int*>(img.data);
 		vec4 bp, bq; // bounding box projected coordinates
-		projectedBox(octree, pview, bp, bq);
+		projectedBox(bvh, pview, bp, bq);
 
 		const int w = img.width;
 		const int h = img.height;
@@ -19,6 +19,9 @@ namespace core {
 
 		Ray ray;
 		OBVH::Ray oray;
+		static std::pair<int, float> stack[256];
+		int* priority = new int[bvh.inner.size()];
+		memset(priority, 0, bvh.inner.size() * sizeof(int));
 
 		__m128 svmin;
 		for (int gy = 0; gy < img.height; gy += square) {
@@ -53,7 +56,7 @@ namespace core {
 						oray.d = 100.0f;
 
 						//if (bvh.inner[0].rayIntersectionT(oray, bvh) > 0.0f) {
-						if (bvh.rayIntersectionTIt(oray) > 0.0f) {
+						if (bvh.rayIntersectionTIt(oray, stack, priority) > 0.0f) {
 							const vec4s pminusl = (lightPos - (ray.sr0 + ray.sr1*vec4s(oray.d)));
 							const vec4s ndotl = oray.plane.dot3(pminusl / _mm_sqrt_ps(pminusl.dot3(pminusl)));
 							const byte b = (byte)_mm_cvtss_si32(_mm_mul_ps(_mm_max_ps(_mm_setzero_ps(), ndotl), _mm_set1_ps(255.0f)));

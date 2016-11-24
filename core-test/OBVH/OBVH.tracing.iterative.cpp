@@ -43,9 +43,8 @@ namespace core {
 		}
 	}
 
-	const float OBVH::rayIntersectionTIt(OBVH::Ray& ray) {
+	const float OBVH::rayIntersectionTIt(OBVH::Ray& ray, std::pair<int, float>* stack, int* priority) {
 		typedef std::pair<int, float> SE;
-		static SE stack[256];
 		SE* st = stack;
 		*st++ = SE(0, -1.0f);
 		SE* current = stack;
@@ -54,12 +53,14 @@ namespace core {
 
 		while (st != stack) {
 			//test if distance to box is greater than previously found distance
-			if (ray.d < current->second) {
+			if (ray.d <= current->second) {
 				--st;
 				current = st - 1;
 				continue;
 			}
+
 			innerNode& n = inner[current->first];
+			const int pri = priority[current->first];
 			//ray box intersection test
 			const __m256 v0x = _mm256_mul_ps(_mm256_sub_ps(n.p.x, ray.r0.x), ray.inv.x);
 			const __m256 v1x = _mm256_mul_ps(_mm256_sub_ps(n.q.x, ray.r0.x), ray.inv.x);
@@ -81,21 +82,19 @@ namespace core {
 			--st; //pop
 			//do until 0th element so that there's less branching
 			for (int m = 7; m > 0; --m) {
-				const int i = (m == n.priority) ? 0 : m;
+				const int i = (m == pri) ? 0 : m;
 				if (max.m256_f32[i] <= min.m256_f32[i] || max.m256_f32[i] < 0.0f)
 					continue;
 
 				if (n.node[i] > 0)
-					//inner
 					*st++ = SE(n.node[i], min.m256_f32[i]);
 				else
-					//leaf
 					leaf[-n.node[i]].rayIntersection(ray, n.node[i]);
 					//if (ray.d > min.m256_f32[i]) { ray.d = min.m256_f32[i]; ray.node = n.node[i]; }
 			}
 			//do the 0th element
-			const int i = n.priority;
-			if (max.m256_f32[i] >= min.m256_f32[i] && max.m256_f32[i] >= 0.0f) {
+			const int i = pri;
+			if (max.m256_f32[i] > min.m256_f32[i] && max.m256_f32[i] >= 0.0f) {
 				if (n.node[i] > 0)
 					*st++ = SE(n.node[i], min.m256_f32[i]);
 				else
@@ -104,17 +103,17 @@ namespace core {
 			}
 			current = st - 1;
 		}
-
+		
 		if (ray.node < 0) {
 			int node = leaf[-ray.node].parent;
 			int pos = leaf[-ray.node].pos;
 			do {
+				priority[node] = pos;
 				innerNode& n = inner[node];
-				n.priority = pos;
 				node = n.parent;
 				pos = n.pos;
 			} while (node > 0);
-			inner[0].priority = pos;
+			priority[0] = pos;
 			return ray.d;
 		}
 		return -1.0f;

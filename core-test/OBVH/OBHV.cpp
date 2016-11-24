@@ -1,6 +1,10 @@
 #include <main>
 namespace core {
 	void OBVH::build(const PolyOctree& tree) {
+		if (!tree.root)
+			return;
+		p = tree.root[0].spp;
+		q = tree.root[0].sqq;
 		int n = 0;
 		buffer<int> leafCount;
 		int lc = 0;
