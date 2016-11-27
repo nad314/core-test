@@ -41,27 +41,28 @@ int CoreTest::main() {
 	RenderWindow& rw = static_cast<RenderWindow&>(wnd.getRenderWindow());
 	if (!rw)done = 1;
 
-	/*
 	int threads = std::thread::hardware_concurrency();
-	std::thread *thread = new std::thread[threads];
-	int step = mesh.vecs.count() / threads;
-	
-	for (int i = 0; i < threads - 1; ++i) {
-		thread[i] = std::thread(core::Renderer::drawPointThread, mesh, &rw.view, i*step, (i + 1)*step, &done);
-	}*/
+	//const int threads = 2;
+	core::Renderer::Worker::go = threads;
+	core::Renderer::Worker *thread = new core::Renderer::Worker[threads];
+	for (int i = 0; i < threads-1; ++i)
+		thread[i].create(bvh, &rw.view, i, threads);
+	thread[threads - 1].threadNumber = threads-1;
+	thread[threads - 1].threadCount = threads;
 
-	int threads = 1;
 	int step = 0;
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	GL::swapBuffers(rw);
 
+	
+
 	while (!done) {
 		if (wnd.peekMessageAsync(done))
 			continue;
-
+		/*
 		if (GetAsyncKeyState(VK_ESCAPE))
-			done = true;
+			done = true;*/
 		
 		rw.view.rotation.init().rotate(globalTimer.update()*0.05f, 0.0f, 1.0f, 0.0f);
 		rw.view.updateMatrix();
@@ -69,7 +70,24 @@ int CoreTest::main() {
 
 		timer.start();
 		core::Renderer::invalidate();
-		core::Renderer::raytrace(bvh, &rw.view);
+		{
+			std::lock_guard<std::mutex> lg(thread[0].mutex);
+			core::Renderer::Worker::go = 0;
+			core::Renderer::Worker::stop = 0;
+		}
+		core::Renderer::Worker::cv.notify_all();
+		thread[threads - 1].render(bvh, &rw.view);
+		if (core::Renderer::Worker::stop < threads-1) {
+			//MessageBox(NULL, "", "", MB_OK);
+			std::unique_lock<std::mutex> lk(thread[0].mutex);
+			while (core::Renderer::Worker::stop < threads - 1)
+				core::Renderer::Worker::cv.wait(lk);
+			/*
+			core::Renderer::Worker::cv.wait(lk, 
+				[&] { return core::Renderer::Worker::go>=threads-1; });
+				*/
+		}
+		//core::Renderer::raytrace(bvh, &rw.view);
 		//core::Renderer::raytrace(octree, &rw.view);
 		//core::Renderer::drawPointRange(mesh, &rw.view, (threads - 1)*step, mesh.vecs.count());
 		timer.stop();
@@ -82,13 +100,9 @@ int CoreTest::main() {
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);
 	}
-
-	/*
 	for (int i = 0; i < threads - 1; ++i)
 		thread[i].join();
-
 	delete[] thread;
-	*/
 
 	return 0;
 }

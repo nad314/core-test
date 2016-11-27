@@ -1,17 +1,35 @@
 #pragma once
 namespace core {
-	class Renderer : public Core2D {
+	class Renderer: public SIMD, public Core2D {
 	private:
 		static bool valid;
 	public:
 
-		struct Worker {
+		struct Worker: public SIMD {
 			std::pair<int, float> stack[256];
 			int* priority;
-			std::mutex mutex;
+			std::thread thread;
+			int threadNumber;
+			int threadCount;
+			bool done;
+			bool pass;
+			static int go;
+			static int stop;
+			static std::condition_variable cv;
+			static std::mutex mutex;
 
 			Worker() { priority = NULL; };
-			~Worker() { delete priority; priority = NULL; }
+			~Worker() { if (priority)delete[] priority; priority = NULL; }
+
+			void create(OBVH& bvh, View* view, const int& tn, const int& tc);
+			void render(OBVH& bvh, View* view);
+			void join();
+
+			void start();
+			void wait();
+
+			void threadFunc(OBVH& bvh, View* view);
+
 		};
 
 		inline static void invalidate() { valid = 0; }

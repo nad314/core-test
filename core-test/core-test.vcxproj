@@ -134,6 +134,7 @@
     <ClCompile Include="program\main.cpp" />
     <ClCompile Include="render\render.cpp" />
     <ClCompile Include="render\render.obvh.cpp" />
+    <ClCompile Include="render\render.worker.cpp" />
     <ClCompile Include="render\view.cpp" />
     <ClCompile Include="mainWindow\mainWindow.cpp" />
     <ClCompile Include="renderWindow\renderWindow.cpp" />

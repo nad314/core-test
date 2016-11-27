@@ -3,7 +3,7 @@
 void MainWindow::onOpening() {
 	WindowForm::onOpening();
 	setTitle("Core Renderer");
-	setSize(640, 480);
+	setSize(1280, 720);
 }
 
 void MainWindow::onOpened() {

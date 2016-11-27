@@ -57,6 +57,9 @@
     <ClCompile Include="OBVH\OBVH.tracing.iterative.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="render\render.worker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\render.h">
