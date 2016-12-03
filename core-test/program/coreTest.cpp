@@ -3,16 +3,32 @@
 int CoreTest::onLoad() {
 	if (!wnd.goToHomeDirectory())
 		return 1;
-
+	core::Debug::enable();
+	/*
 	mesh.importgdev("data/panther.gdev");
 	mesh.normalize();
 	mesh.bbox(p, q);
 	octree.build(mesh);
-	bvh.build(octree);
+	bvh.build(octree);*/
+	
+	/*
+	cloud.loadObj("data/subsampledDense2.obj");
+	cloud.normalize();
+	cloud.saveRaw("data/subsampledDense2.glc"); //GeoLogCloud...because I can 8D
+	*/
+	if (!cloud.loadRaw("data/subsampledDense2.glc")) {
+		MessageBox(NULL, "Couldn't Load File", "Error", MB_OK);
+		return 1;
+	}
+	cloud.bbox(p, q);
+	cloudTree.build(cloud);
+	pbvh.build(cloudTree);
+	pbvh.setRadius(pbvh.estimateRadius());
 	return 0;
 }
 
 int CoreTest::onDispose() {
+	cloudTree.dispose();
 	mesh.dispose();
 	octree.dispose();
 	return 0;
@@ -41,8 +57,8 @@ int CoreTest::main() {
 	RenderWindow& rw = static_cast<RenderWindow&>(wnd.getRenderWindow());
 	if (!rw)done = 1;
 
-	int threads = std::thread::hardware_concurrency();
-	//const int threads = 2;
+	//const int threads = std::thread::hardware_concurrency();
+	const int threads = 1;
 	core::Renderer::Worker::go = threads;
 	core::Renderer::Worker *thread = new core::Renderer::Worker[threads];
 	for (int i = 0; i < threads-1; ++i)
@@ -64,11 +80,13 @@ int CoreTest::main() {
 		if (GetAsyncKeyState(VK_ESCAPE))
 			done = true;*/
 		
-		rw.view.rotation.init().rotate(globalTimer.update()*0.05f, 0.0f, 1.0f, 0.0f);
+		rw.view.rotation.init().rotate(globalTimer.update()*0.0125f, 0.0f, 1.0f, 0.0f);
 		rw.view.updateMatrix();
 		rw.view.clear();
 
 		timer.start();
+		//Render Multithreaded
+		/*
 		core::Renderer::invalidate();
 		{
 			std::lock_guard<std::mutex> lg(thread[0].mutex);
@@ -78,18 +96,15 @@ int CoreTest::main() {
 		core::Renderer::Worker::cv.notify_all();
 		thread[threads - 1].render(bvh, &rw.view);
 		if (core::Renderer::Worker::stop < threads-1) {
-			//MessageBox(NULL, "", "", MB_OK);
 			std::unique_lock<std::mutex> lk(thread[0].mutex);
 			while (core::Renderer::Worker::stop < threads - 1)
 				core::Renderer::Worker::cv.wait(lk);
-			/*
-			core::Renderer::Worker::cv.wait(lk, 
-				[&] { return core::Renderer::Worker::go>=threads-1; });
-				*/
 		}
+		*/
 		//core::Renderer::raytrace(bvh, &rw.view);
 		//core::Renderer::raytrace(octree, &rw.view);
-		//core::Renderer::drawPointRange(mesh, &rw.view, (threads - 1)*step, mesh.vecs.count());
+		//core::Renderer::drawPointRange(cloud, &rw.view, 0, cloud.points.count());
+		core::Renderer::raytrace(pbvh, &rw.view);
 		timer.stop();
 
 		renderTime += timer;

@@ -6,6 +6,10 @@ private:
 	core::simdMesh mesh;
 	core::PolyOctree octree;
 	core::OBVH bvh;
+
+	core::PointCloud cloud;
+	core::PointOctree cloudTree;
+	core::PBVH pbvh;
 	core::Timer<float> timer;
 	core::Timer<float> globalTimer;
 

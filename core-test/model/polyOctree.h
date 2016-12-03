@@ -73,9 +73,9 @@ namespace core {
 		}
 	};
 
-	class PolyOctree : public SIMD {
+	class PolyOctree: public SIMD {
 	public:
-		struct Node : public SIMD {
+		struct Node: public SIMD {
 			static const int maxPolys = 8;
 			static const short maxDepth = 24;
 			static const byte subtreeDepth = 4;

@@ -20,6 +20,9 @@ typedef core::Rect Rect;
 #include <model/simdMesh.h>
 #include <model/polyOctree.h>
 #include <OBVH/OBVH.h>
+#include <pointCloud/pointCloud.h>
+#include <pointCloud/pointOctree.h>
+#include <PBVH/PBVH.h>
 #include <render/view.h>
 #include <render/render.h>
 

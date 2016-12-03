@@ -35,10 +35,12 @@ namespace core {
 		inline static void invalidate() { valid = 0; }
 		static void drawPoints(simdMesh &mesh, View* view);
 		static void drawPointRange(simdMesh &mesh, View* view, const int& start, const int& stop);
+		static void drawPointRange(PointCloud &mesh, View* view, const int& start, const int& stop);
 		static void drawPointThread(simdMesh &mesh, View* view, const int& start, const int& stop, bool* done);
 
 		static void raytrace(PolyOctree& octree, View* view);
 		static void raytrace(OBVH& bvh, View* view);
+		static void raytrace(PBVH& bvh, View* view);
 		/*
 		static inline bool rayBoxIntersectionTest(const Ray& ray, const vec4& p, const vec4& q) {
 			vec4 v0 = (p - ray.r0)*ray.invr1;
@@ -159,6 +161,7 @@ namespace core {
 
 		static void projectedBox(const PolyOctree& octree, const View* view, vec4& pOut, vec4& qOut);
 		static void projectedBox(const OBVH& bvh, const View* view, vec4& pOut, vec4& qOut);
+		static void projectedBox(const PBVH& bvh, const View* view, vec4& pOut, vec4& qOut);
 
 	};
 }
