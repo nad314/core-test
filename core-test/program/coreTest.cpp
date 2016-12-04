@@ -16,10 +16,8 @@ int CoreTest::onLoad() {
 	cloud.normalize();
 	cloud.saveRaw("data/subsampledDense2.glc"); //GeoLogCloud...because I can 8D
 	*/
-	if (!cloud.loadRaw("data/subsampledDense2.glc")) {
-		MessageBox(NULL, "Couldn't Load File", "Error", MB_OK);
+	if (!cloud.loadRaw("data/subsampledDense2.glc"))
 		return 1;
-	}
 	cloud.bbox(p, q);
 	cloudTree.build(cloud);
 	pbvh.build(cloudTree);

@@ -57,7 +57,7 @@ namespace core {
 					*/
 				ray.d = dist.m256_f32[i];
 				ray.node = node;
-				ray.plane = vec4(n[j].x.m256_f32[i], n[j].y.m256_f32[i], n[j].z.m256_f32[i], 1.0f);
+				ray.plane = vec4(n[j].x.m256_f32[i], n[j].y.m256_f32[i], n[j].z.m256_f32[i], n[j].w.m256_f32[i]);
 			}
 		}
 	}
