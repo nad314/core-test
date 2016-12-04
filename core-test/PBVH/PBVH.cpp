@@ -61,7 +61,7 @@ namespace core {
 				for (int j = 0; j < 8; ++j)
 					for (int k = 0; k < 32; ++k)
 						pp[j][k] = 1.0f;
-				for (int j = 0; j < std::min(32, tree.root[i].points.count()); j++) {
+				for (int j = 0; j < std::min(PointOctree::Node::maxPoints, tree.root[i].points.count()); j++) {
 					pp[0][j] = tree.root[i].points[j].m.m128_f32[0];
 					pp[1][j] = tree.root[i].points[j].m.m128_f32[1];
 					pp[2][j] = tree.root[i].points[j].m.m128_f32[2];
@@ -74,8 +74,8 @@ namespace core {
 
 
 				int& c = leaf.count();
-				leaf[c].np = tree.root[i].points.count();
-				for (int j = 0; j < 4; ++j) {
+				leaf[c].np = std::min(PointOctree::Node::maxPoints, tree.root[i].points.count());
+				for (int j = 0; j < PointOctree::Node::maxPoints/8; ++j) {
 					leaf[c].p[j] = vec3avx(pp[0] + j * 8, pp[1] + j * 8, pp[2] + j * 8);
 					leaf[c].n[j] = vec4avx(pp[3] + j * 8, pp[4] + j * 8, pp[5] + j * 8, pp[6] + j * 8);
 				}

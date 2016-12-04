@@ -12,9 +12,9 @@ int CoreTest::onLoad() {
 	bvh.build(octree);*/
 	
 	/*
-	cloud.loadObj("data/subsampledDense2.obj");
+	cloud.loadObj("data/panther-mid.obj");
 	cloud.normalize();
-	cloud.saveRaw("data/subsampledDense2.glc"); //GeoLogCloud...because I can 8D
+	cloud.saveRaw("data/panther-mid.glc"); //GeoLogCloud...because I can 8D
 	*/
 	if (!cloud.loadRaw("data/subsampledDense2.glc"))
 		return 1;
@@ -58,13 +58,14 @@ int CoreTest::main() {
 
 	//const int threads = std::thread::hardware_concurrency();
 	const int threads = 1;
+	/*
 	core::Renderer::Worker::go = threads;
 	core::Renderer::Worker *thread = new core::Renderer::Worker[threads];
 	for (int i = 0; i < threads-1; ++i)
 		thread[i].create(bvh, &rw.view, i, threads);
 	thread[threads - 1].threadNumber = threads-1;
 	thread[threads - 1].threadCount = threads;
-
+	*/
 	int step = 0;
 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -113,10 +114,10 @@ int CoreTest::main() {
 
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);
-	}
+	}/*
 	for (int i = 0; i < threads - 1; ++i)
 		thread[i].join();
-	delete[] thread;
+	delete[] thread;*/
 
 	return 0;
 }

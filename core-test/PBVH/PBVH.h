@@ -24,13 +24,13 @@ namespace core {
 		};
 
 		struct leafNode : public SIMD {
-			vec3avx p[4];
-			vec4avx n[4];
+			vec3avx p[1];
+			vec4avx n[1];
 			int np;
 			int parent;
 			int pos;
 
-			void rayIntersection(OBVH::Ray& ray, const int& node, const float& radiusSquared) const;
+			void rayIntersection(OBVH::Ray& ray, const int& node, const float& radiusSquared, const float& dist) const;
 		};
 
 		buffer<innerNode> inner;

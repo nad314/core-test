@@ -3,7 +3,7 @@
 namespace core {
 	struct PointOctree {
 		struct Node : public SIMD {
-			static const int maxPoints = 32;
+			static const int maxPoints = 8;
 			static const short maxDepth = 32;
 			static const byte subtreeDepth = 4;
 

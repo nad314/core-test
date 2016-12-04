@@ -1,10 +1,11 @@
 #include <main>
 
 namespace core {
-	void PBVH::leafNode::rayIntersection(OBVH::Ray& ray, const int& node, const float& radiusSquared) const {
-		for (int j = 0; j < 4; ++j) {
+	void PBVH::leafNode::rayIntersection(OBVH::Ray& ray, const int& node, const float& radiusSquared, const float& dd) const {
+		/*for (int j = 0; j < 4; ++j) {
 			if (j * 8 > np)
-				return;
+				return;*/
+#define j 0
 			//ray sphere intersection
 			
 			const __m256 lx = _mm256_sub_ps(p[j].x, ray.r0.x);
@@ -52,14 +53,15 @@ namespace core {
 					continue;
 				
 				/*
-				if (dist.m256_f32[i] < 0 || ray.d <= dist.m256_f32[i] || pddot.m256_f32[i]>radiusSquared)
+				if (pddot.m256_f32[i] > radiusSquared || dist.m256_f32[i] < 0  || ray.d <= dist.m256_f32[i])
 					continue;
 					*/
 				ray.d = dist.m256_f32[i];
 				ray.node = node;
-				ray.plane = vec4(n[j].x.m256_f32[i], n[j].y.m256_f32[i], n[j].z.m256_f32[i], n[j].w.m256_f32[i]);
+				ray.plane = vec4s(vec4(n[j].x.m256_f32[i], n[j].y.m256_f32[i], n[j].z.m256_f32[i], n[j].w.m256_f32[i]));
 			}
-		}
+		//}
+#undef j
 	}
 
 	const float PBVH::rayIntersectionTIt(OBVH::Ray& ray, std::pair<int, float>* stack, int* priority) {
@@ -108,7 +110,7 @@ namespace core {
 				if (n.node[i] > 0)
 					*st++ = SE(n.node[i], min.m256_f32[i]);
 				else
-					leaf[-n.node[i]].rayIntersection(ray, n.node[i], radiusSquared);
+					leaf[-n.node[i]].rayIntersection(ray, n.node[i], radiusSquared, min.m256_f32[i]);
 				//if (ray.d > min.m256_f32[i]) { ray.d = min.m256_f32[i]; ray.node = n.node[i]; }
 			}
 			//do the 0th element
@@ -117,7 +119,7 @@ namespace core {
 				if (n.node[i] > 0)
 					*st++ = SE(n.node[i], min.m256_f32[i]);
 				else
-					leaf[-n.node[i]].rayIntersection(ray, n.node[i], radiusSquared);
+					leaf[-n.node[i]].rayIntersection(ray, n.node[i], radiusSquared, min.m256_f32[i]);
 				//if (ray.d > min.m256_f32[i]) { ray.d = min.m256_f32[i]; ray.node = n.node[i]; }
 			}
 			current = st - 1;

@@ -23,7 +23,7 @@ namespace core {
 	}
 
 	void PointOctree::Node::sub() {
-		if (depth >= maxDepth || points.size() < maxPoints)
+		if (depth >= maxDepth || points.size() <= maxPoints)
 			return;
 		hasNodes = 1;
 		for (int i = 0; i < 8; ++i) {
@@ -229,7 +229,7 @@ namespace core {
 				for (int i = 0; i < nnodes; ++i) {
 					for (int j = 0; j < nnodes; ++j) {
 						if (i == j) continue;
-						if ((node[i]->points.count() > 1) && (node[j]->points.count() > 1) && (node[i]->points.count() + node[j]->points.count()) < 32) {
+						if ((node[i]->points.count() > 1) && (node[j]->points.count() > 1) && (node[i]->points.count() + node[j]->points.count()) <= Node::maxPoints) {
 							for (int k = 0; k < node[j]->points.count(); ++k) {
 								node[i]->points.push_back(node[j]->points[k]);
 								node[i]->planes.push_back(node[j]->planes[k]);

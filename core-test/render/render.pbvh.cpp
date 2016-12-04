@@ -67,5 +67,6 @@ namespace core {
 				}
 			}
 		}
+		delete[] priority;
 	}
 }
