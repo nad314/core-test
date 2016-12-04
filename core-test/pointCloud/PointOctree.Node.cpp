@@ -225,6 +225,24 @@ namespace core {
 						found = 1;
 					}
 				}
+				//merge nodes with few points
+				for (int i = 0; i < nnodes; ++i) {
+					for (int j = 0; j < nnodes; ++j) {
+						if (i == j) continue;
+						if ((node[i]->points.count() > 1) && (node[j]->points.count() > 1) && (node[i]->points.count() + node[j]->points.count()) < 32) {
+							for (int k = 0; k < node[j]->points.count(); ++k) {
+								node[i]->points.push_back(node[j]->points[k]);
+								node[i]->planes.push_back(node[j]->planes[k]);
+							}
+							node[i]->spp = _mm_min_ps(node[i]->spp, node[j]->spp);
+							node[i]->sqq = _mm_max_ps(node[i]->sqq, node[j]->sqq);
+							std::swap(node[j], node[--nnodes]);
+							delete node[nnodes];
+							node[nnodes] = new Node;
+							found = 1;
+						}
+					}
+				}
 				//fill up to 8 slots
 				if (nnodes < 8) {
 					int c = -1;

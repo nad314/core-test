@@ -6,7 +6,7 @@ namespace core {
 			if (j * 8 > np)
 				return;
 			//ray sphere intersection
-			/*
+			
 			const __m256 lx = _mm256_sub_ps(p[j].x, ray.r0.x);
 			const __m256 ly = _mm256_sub_ps(p[j].y, ray.r0.y);
 			const __m256 lz = _mm256_sub_ps(p[j].z, ray.r0.z);
@@ -21,8 +21,8 @@ namespace core {
 			const __m256 d2 = _mm256_sub_ps(ldotl, _mm256_mul_ps(tca, tca));
 			const __m256 thc = _mm256_sqrt_ps(_mm256_sub_ps(_mm256_set1_ps(radiusSquared), d2));
 			const __m256 dist = _mm256_sub_ps(tca, thc);
-			*/
 			
+			/*
 			//ray plane distance
 			const __m256 dx = _mm256_mul_ps(ray.r1.x, n[j].x);
 			const __m256 dy = _mm256_mul_ps(ray.r1.y, n[j].y);
@@ -44,16 +44,17 @@ namespace core {
 			const __m256 pdy = _mm256_sub_ps(p[j].y, py);
 			const __m256 pdz = _mm256_sub_ps(p[j].z, pz);
 			const __m256 pddot = _mm256_add_ps(_mm256_mul_ps(pdx, pdx), _mm256_add_ps(_mm256_mul_ps(pdy, pdy), _mm256_mul_ps(pdz, pdz)));
-			
+			*/
 			const int to = std::min(np - j * 8, 8);
 			for (int i = 0; i < to; ++i) {
-				/*
-				if (tca.m256_f32[i] < 0 || d2.m256_f32[i] > radius2 || ray.d <= dist.m256_f32[i])
-					continue;
-				*/
 				
+				if (tca.m256_f32[i] < 0 || d2.m256_f32[i] > radiusSquared || ray.d <= dist.m256_f32[i])
+					continue;
+				
+				/*
 				if (dist.m256_f32[i] < 0 || ray.d <= dist.m256_f32[i] || pddot.m256_f32[i]>radiusSquared)
 					continue;
+					*/
 				ray.d = dist.m256_f32[i];
 				ray.node = node;
 				ray.plane = vec4(n[j].x.m256_f32[i], n[j].y.m256_f32[i], n[j].z.m256_f32[i], 1.0f);

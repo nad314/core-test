@@ -24,6 +24,7 @@ int CoreTest::onLoad() {
 	cloudTree.build(cloud);
 	pbvh.build(cloudTree);
 	pbvh.setRadius(pbvh.estimateRadius());
+	pbvh.pointsPerBox();
 	return 0;
 }
 

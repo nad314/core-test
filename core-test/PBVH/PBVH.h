@@ -42,5 +42,6 @@ namespace core {
 		const float rayIntersectionTIt(OBVH::Ray& ray, std::pair<int, float>* stack, int* priority);
 		const float estimateRadius();
 		void setRadius(const float& rad);
+		void pointsPerBox();
 	};
 }

@@ -136,4 +136,14 @@ namespace core {
 			i.q.z = _mm256_add_ps(i.q.z, mr);
 		}
 	}
+
+	void PBVH::pointsPerBox() {
+		float points = 0.0f;
+		float count = 0.0f;
+		for (auto& i : leaf) {
+			points += i.np;
+			++count;
+		}
+		core::Debug::print("Average Points Per Box: %.2f\n", points / count);
+	}
 }
