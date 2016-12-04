@@ -5,7 +5,7 @@ namespace core {
 	std::condition_variable Renderer::Worker::cv;
 	std::mutex Renderer::Worker::mutex;
 
-	void Renderer::Worker::create(OBVH& bvh, View* view, const int& tn, const int& tc) {
+	void Renderer::Worker::create(PBVH& bvh, View* view, const int& tn, const int& tc) {
 		threadNumber = tn;
 		threadCount = tc;
 		done = 0;
@@ -27,7 +27,7 @@ namespace core {
 		//std::unique_lock<std::mutex> lk(mmutex);
 	}
 
-	void Renderer::Worker::threadFunc(OBVH& bvh, View* view) {
+	void Renderer::Worker::threadFunc(PBVH& bvh, View* view) {
 		while (!done) {
 			{
 				std::unique_lock<std::mutex> lk(mutex);
@@ -60,7 +60,7 @@ namespace core {
 
 
 
-	void Renderer::Worker::render(OBVH& bvh, View* pview) {
+	void Renderer::Worker::render(PBVH& bvh, View* pview) {
 		View &view = *pview;
 		Image &img = view.img;
 		int* mp = reinterpret_cast<int*>(img.data);

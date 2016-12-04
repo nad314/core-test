@@ -3,7 +3,7 @@
 namespace core {
 	struct PointOctree {
 		struct Node : public SIMD {
-			static const int maxPoints = 8;
+			static const int maxPoints = 32;
 			static const short maxDepth = 32;
 			static const byte subtreeDepth = 4;
 
@@ -55,6 +55,6 @@ namespace core {
 
 		PointOctree() : root(NULL) {}
 		~PointOctree() { dispose(); }
-		inline void dispose() { if (root)root->unlink(); delete root; root = NULL; }
+		inline void dispose() { if (root)root->unlink(); delete[] root; root = NULL; }
 	};
 }

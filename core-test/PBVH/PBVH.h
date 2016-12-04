@@ -24,8 +24,8 @@ namespace core {
 		};
 
 		struct leafNode : public SIMD {
-			vec3avx p[1];
-			vec4avx n[1];
+			vec3avx p[4];
+			vec4avx n[4];
 			int np;
 			int parent;
 			int pos;

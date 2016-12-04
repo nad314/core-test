@@ -21,14 +21,14 @@ namespace core {
 			Worker() { priority = NULL; };
 			~Worker() { if (priority)delete[] priority; priority = NULL; }
 
-			void create(OBVH& bvh, View* view, const int& tn, const int& tc);
-			void render(OBVH& bvh, View* view);
+			void create(PBVH& bvh, View* view, const int& tn, const int& tc);
+			void render(PBVH& bvh, View* view);
 			void join();
 
 			void start();
 			void wait();
 
-			void threadFunc(OBVH& bvh, View* view);
+			void threadFunc(PBVH& bvh, View* view);
 
 		};
 

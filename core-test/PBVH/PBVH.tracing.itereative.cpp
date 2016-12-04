@@ -2,10 +2,9 @@
 
 namespace core {
 	void PBVH::leafNode::rayIntersection(OBVH::Ray& ray, const int& node, const float& radiusSquared, const float& dd) const {
-		/*for (int j = 0; j < 4; ++j) {
+		for (int j = 0; j < PointOctree::Node::maxPoints/8; ++j) {
 			if (j * 8 > np)
-				return;*/
-#define j 0
+				return;
 			//ray sphere intersection
 			
 			const __m256 lx = _mm256_sub_ps(p[j].x, ray.r0.x);
@@ -60,8 +59,7 @@ namespace core {
 				ray.node = node;
 				ray.plane = vec4s(vec4(n[j].x.m256_f32[i], n[j].y.m256_f32[i], n[j].z.m256_f32[i], n[j].w.m256_f32[i]));
 			}
-		//}
-#undef j
+		}
 	}
 
 	const float PBVH::rayIntersectionTIt(OBVH::Ray& ray, std::pair<int, float>* stack, int* priority) {

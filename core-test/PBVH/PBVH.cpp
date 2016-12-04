@@ -19,7 +19,7 @@ namespace core {
 		leaf.reserve(tree.size - n);
 
 		float px[8], py[8], pz[8], qx[8], qy[8], qz[8];
-		float pp[8][32];
+		float pp[8][64];
 		inner[0].parent = 0;
 		for (int i = 0; i < tree.size; ++i)
 			if (tree.root[i].hasNodes) {
@@ -59,7 +59,7 @@ namespace core {
 			else {
 
 				for (int j = 0; j < 8; ++j)
-					for (int k = 0; k < 32; ++k)
+					for (int k = 0; k < 64; ++k)
 						pp[j][k] = 1.0f;
 				for (int j = 0; j < std::min(PointOctree::Node::maxPoints, tree.root[i].points.count()); j++) {
 					pp[0][j] = tree.root[i].points[j].m.m128_f32[0];

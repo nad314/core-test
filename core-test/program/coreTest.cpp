@@ -23,6 +23,8 @@ int CoreTest::onLoad() {
 	pbvh.build(cloudTree);
 	pbvh.setRadius(pbvh.estimateRadius());
 	pbvh.pointsPerBox();
+	cloudTree.dispose();
+	cloud.dispose();
 	return 0;
 }
 
@@ -57,15 +59,13 @@ int CoreTest::main() {
 	if (!rw)done = 1;
 
 	//const int threads = std::thread::hardware_concurrency();
-	const int threads = 1;
-	/*
+	const int threads = 4;
 	core::Renderer::Worker::go = threads;
 	core::Renderer::Worker *thread = new core::Renderer::Worker[threads];
 	for (int i = 0; i < threads-1; ++i)
-		thread[i].create(bvh, &rw.view, i, threads);
+		thread[i].create(pbvh, &rw.view, i, threads);
 	thread[threads - 1].threadNumber = threads-1;
 	thread[threads - 1].threadCount = threads;
-	*/
 	int step = 0;
 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -86,7 +86,6 @@ int CoreTest::main() {
 
 		timer.start();
 		//Render Multithreaded
-		/*
 		core::Renderer::invalidate();
 		{
 			std::lock_guard<std::mutex> lg(thread[0].mutex);
@@ -94,17 +93,16 @@ int CoreTest::main() {
 			core::Renderer::Worker::stop = 0;
 		}
 		core::Renderer::Worker::cv.notify_all();
-		thread[threads - 1].render(bvh, &rw.view);
+		thread[threads - 1].render(pbvh, &rw.view);
 		if (core::Renderer::Worker::stop < threads-1) {
 			std::unique_lock<std::mutex> lk(thread[0].mutex);
 			while (core::Renderer::Worker::stop < threads - 1)
 				core::Renderer::Worker::cv.wait(lk);
 		}
-		*/
 		//core::Renderer::raytrace(bvh, &rw.view);
 		//core::Renderer::raytrace(octree, &rw.view);
 		//core::Renderer::drawPointRange(cloud, &rw.view, 0, cloud.points.count());
-		core::Renderer::raytrace(pbvh, &rw.view);
+		//core::Renderer::raytrace(pbvh, &rw.view);
 		timer.stop();
 
 		renderTime += timer;
@@ -114,10 +112,10 @@ int CoreTest::main() {
 
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);
-	}/*
+	}
 	for (int i = 0; i < threads - 1; ++i)
 		thread[i].join();
-	delete[] thread;*/
+	delete[] thread;
 
 	return 0;
 }
