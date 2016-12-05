@@ -93,6 +93,9 @@
     <ClCompile Include="render\subRenderTask.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="storage\storage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\render.h">
@@ -141,6 +144,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="render\subRenderTask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="storage\storage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

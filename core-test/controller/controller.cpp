@@ -2,21 +2,21 @@
 
 Controller* core::Getter<Controller>::getter = NULL;
 
-Controller::Controller(core::Window* p, core::PBVH* lpbvh) {
+Controller::Controller(core::Window* p, Storage* st) {
 	set(*this);
+	storage = st;
 	parent = p;
-	pbvh = lpbvh;
 	view = &(static_cast<RenderWindow*>(parent))->view;
 	samples = 2;
 	threads = std::thread::hardware_concurrency();
 	//threads = 4;
 	thread = new core::Renderer::Worker[threads];
 	for (int i = 0; i < threads - 1; ++i)
-		thread[i].create(*pbvh, view, i, threads);
+		thread[i].create(storage->pbvh, view, i, threads);
 	thread[threads - 1].threadNumber = threads - 1;
 	thread[threads - 1].threadCount = threads;
 	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::msRenderTask(pbvh, view, samples));
+		thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
 	invalidate();
 }
 
@@ -30,7 +30,7 @@ int Controller::onLButtonDown(const core::eventInfo& e) {
 	dragging = 1;
 	getPoint(e.x(), e.y());
 	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::subRenderTask(pbvh, view));
+		thread[i].push(new core::subRenderTask(&storage->pbvh, view));
 	invalidate();
 	SetCapture(*parent);
 	return e;
@@ -39,7 +39,7 @@ int Controller::onLButtonDown(const core::eventInfo& e) {
 int Controller::onLButtonUp(const core::eventInfo& e) {
 	dragging = 0;
 	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::msRenderTask(pbvh, view, samples));
+		thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
 	invalidate();
 	ReleaseCapture();
 	return e;
@@ -58,7 +58,7 @@ int Controller::onMouseMove(const core::eventInfo& e) {
 		view->updateMatrix();
 		invalidate();
 		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::subRenderTask(pbvh, view));
+			thread[i].push(new core::subRenderTask(&storage->pbvh, view));
 	}
 	mouse = core::vec2i(e.x(), e.y());
 	return e;
@@ -67,14 +67,14 @@ int Controller::onMouseMove(const core::eventInfo& e) {
 int Controller::onKeyDown(const core::eventInfo& e) {
 	if (e.wP == VK_F12) {
 		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::msRenderTask(pbvh, view, 4));
+			thread[i].push(new core::msRenderTask(&storage->pbvh, view, 4));
 		invalidate();
 	}
 	else if (e.wP == VK_F11) {
 		view->home();
 		view->updateMatrix();
 		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::msRenderTask(pbvh, view, samples));
+			thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
 		invalidate();
 	}
 	return e;

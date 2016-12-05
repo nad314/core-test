@@ -15,6 +15,7 @@ public:
 		SetFocus(rwnd);
 		return 0;
 	}
+	int onDropFiles(const core::eventInfo& e) override;
 	void onEndPaint(const core::eventInfo& e) override;
 };
 

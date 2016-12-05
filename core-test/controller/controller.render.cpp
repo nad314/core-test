@@ -17,7 +17,7 @@ void Controller::render() {
 
 void Controller::getPoint(const float x, const float y) {
 	View& view = (static_cast<RenderWindow*>(parent))->view;
-	core::PBVH& bvh = *pbvh;
+	core::PBVH& bvh = storage->pbvh;
 	matrixf inv = view.mat;
 	inv.invert();
 	matrixs sinv = inv;

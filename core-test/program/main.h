@@ -30,6 +30,7 @@ typedef core::Rect Rect;
 #include <render/subRenderTask.h>
 
 //CoreTest components
+#include <storage/storage.h>
 #include <controller/controller.h>
 #include <renderWindow/renderWindow.h>
 #include <mainWindow/mainWindow.h>

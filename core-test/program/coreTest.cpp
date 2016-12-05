@@ -2,20 +2,22 @@
 
 int CoreTest::loadData() {
 	/*
-	cloud.loadObj("data/subsampledLow2.obj");
+	cloud.loadObj("data/pantherUniformHigh.obj");
 	cloud.normalize();
-	cloud.saveRaw("data/subsampledLow2.glc"); //GeoLogCloud...because I can 8D
-	*/
+	cloud.saveRaw("data/pantherUniformHigh.cloud");
+	*//*
 	if (!cloud.loadRaw("data/testSample.cloud"))
 		return 1;
 	cloud.bbox(p, q);
 	cloudTree.build(cloud);
 	pbvh.build(cloudTree);
-	pbvh.setRadius(pbvh.estimateRadius()*1.1f);
+	pbvh.setRadius(pbvh.estimateRadius()*0.9f);
 	pbvh.pointsPerBox();
 	//cleanup
 	cloudTree.dispose();
-	cloud.dispose();
+	//cloud.dispose();*/
+
+	return storage->load("data/testSample.cloud");
 	return 0;
 }
 
@@ -23,21 +25,10 @@ int CoreTest::onLoad() {
 	if (!wnd.goToHomeDirectory())
 		return 1;
 	//core::Debug::enable();
-	/*
-	mesh.importgdev("data/panther.gdev");
-	mesh.normalize();
-	mesh.bbox(p, q);
-	octree.build(mesh);
-	bvh.build(octree);*/
 	return 0;
 }
 
 int CoreTest::onDispose() {
-	//in case I decide to comment the dispose in onLoad()
-	cloudTree.dispose();
-	cloud.dispose();
-	mesh.dispose();
-	octree.dispose();
 	return 0;
 }
 
@@ -48,8 +39,6 @@ int CoreTest::onStart() {
 	wnd.onPaint(e);
 	glClear(GL_COLOR_BUFFER_BIT);
 	GL::swapBuffers(wnd.getRenderWindow());
-	if (loadData())
-		return 1;
 	return 0;
 }
 
@@ -70,7 +59,10 @@ int CoreTest::main() {
 	RenderWindow& rw = static_cast<RenderWindow&>(wnd.getRenderWindow());
 	if (!rw)done = 1;
 
-	controller = new Controller(&rw, &pbvh);
+	storage = new Storage;
+	if (storage->load("data/testSample.cloud"))
+		done = 1;
+	controller = new Controller(&rw, storage);
 	rw.attach(controller);
 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -110,7 +102,7 @@ int CoreTest::main() {
 
 		renderTime += timer;
 		++nframes;
-		sprintf(text, "[Points: %d] [Avg: %.2fms (%.2f FPS)] [Cur: %.2fms (%.2f FPS)]", mesh.vecs.count(), renderTime / nframes, (1000.0f*nframes)/renderTime, timer.ms(), 1000.0f/timer.ms());
+		sprintf(text, "[Points: %d] [Avg: %.2fms (%.2f FPS)] [Cur: %.2fms (%.2f FPS)]", storage->cloud.points.count(), renderTime / nframes, (1000.0f*nframes)/renderTime, timer.ms(), 1000.0f/timer.ms());
 		core::Renderer::print(text, rw, 10, rw.height - 10 - core::Font::get().height());
 		core::Renderer::print("Left Click to Rotate", rw, 10, rw.height - 42 - 3 * core::Font::get().height());
 		core::Renderer::print("F11 to reset camera", rw, 10, rw.height - 38 - 2 * core::Font::get().height());
@@ -122,6 +114,7 @@ int CoreTest::main() {
 	}
 	rw.detach();
 	delete controller;
+	delete storage;
 
 	return 0;
 }

@@ -4,6 +4,7 @@ void MainWindow::onOpening() {
 	WindowForm::onOpening();
 	setTitle("Core Renderer");
 	setSize(1280, 720);
+	addExStyle(WS_EX_ACCEPTFILES);
 }
 
 void MainWindow::onOpened() {
@@ -32,4 +33,13 @@ int MainWindow::onResize(const core::eventInfo &e) {
 void MainWindow::onEndPaint(const core::eventInfo& e) {
 	WindowForm::onEndPaint(e);
 	core::Renderer::drawRect(rwnd.getChildRect().expand(1), core::Color(31, 31, 31, 255), *this);
+}
+
+int MainWindow::onDropFiles(const core::eventInfo& e) {
+	char path[256];
+	if (DragQueryFileA((HDROP)e.wP, 0, path, 256)) {
+		DragFinish((HDROP)e.wP);
+		Storage::get().load(path);
+	}
+	return e;
 }

@@ -18,7 +18,6 @@ namespace core {
 			n.w = -Math::dot3(n, p);
 			planes.push_back(n);
 		}
-		//mesh.~simdMesh();
 		root->depth = 0;
 		root->build(points, planes);
 		if (root->points.count() > Node::maxPoints)

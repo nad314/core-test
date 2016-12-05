@@ -1,8 +1,8 @@
 #pragma once
-class Controller: public core::EventListener, public::core::Getter<Controller> {
+class Controller: public core::SIMD, public core::EventListener, public::core::Getter<Controller> {
 public:
+	Storage* storage;
 	core::Window* parent;
-	core::PBVH* pbvh;
 	View* view;
 	bool valid = 0;
 	core::vec2i mouse;
@@ -12,7 +12,7 @@ public:
 	int samples = 2;
 	vec4 clickPoint;
 	
-	Controller(core::Window* p, core::PBVH* lpbvh);
+	Controller(core::Window* p, Storage* st);
 	~Controller();
 
 	inline void invalidate() { valid = 0; }

@@ -218,7 +218,8 @@ namespace core {
 						node[i] = new Node;
 						*node[i] = *tmp->node[0];
 
-						tmp->node[0] = new Node;
+						for (int j=0;j<8;++j)
+							tmp->node[0]->node[j] = NULL;
 						delete tmp;
 
 						node[i]->reduceDepth();

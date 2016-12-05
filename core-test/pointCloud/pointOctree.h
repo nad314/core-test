@@ -17,7 +17,7 @@ namespace core {
 
 			Node() { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0; }
 			Node(vec4 pp, vec4 qq) :spp(pp), sqq(qq) { for (byte i = 0; i < 8; ++i)node[i] = NULL; hasNodes = 0; }
-			~Node() { if (hasNodes)for (byte i = 0; i < 8; ++i) { delete node[i]; node[i] = NULL; } }
+			~Node() { if (hasNodes)for (byte i = 0; i < 8; ++i) { delete node[i]; node[i] = NULL; } points.clear(); planes.clear(); }
 
 			void build(buffer<vec4>& buff, buffer<vec4>& nbuff);
 			void sub();
@@ -55,6 +55,6 @@ namespace core {
 
 		PointOctree() : root(NULL) {}
 		~PointOctree() { dispose(); }
-		inline void dispose() { if (root)root->unlink(); delete[] root; root = NULL; }
+		inline void dispose() { if (root)root->unlink(); delete[] root; root = NULL; size = 0; }
 	};
 }

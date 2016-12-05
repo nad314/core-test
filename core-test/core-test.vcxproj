@@ -149,6 +149,7 @@
     <ClCompile Include="render\view.cpp" />
     <ClCompile Include="mainWindow\mainWindow.cpp" />
     <ClCompile Include="renderWindow\renderWindow.cpp" />
+    <ClCompile Include="storage\storage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="controller\controller.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="render\subRenderTask.h" />
     <ClInclude Include="render\view.h" />
     <ClInclude Include="renderWindow\renderWindow.h" />
+    <ClInclude Include="storage\storage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />
