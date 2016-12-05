@@ -21,7 +21,8 @@ int RenderWindow::onResize(const core::eventInfo& e) {
 	if (width == 0 || height == 0)
 		return e;
 	view.make(width, height);
-	view.home();
+	//view.home();
+	view.updateMatrix();
 	Controller::get().invalidate();
 	GL::ortho(*this);
 }

@@ -20,7 +20,8 @@ namespace core {
 		matrixs sinv = inv;
 
 		const int square = 8;
-		vec4s lightPos = inv*vec4(0.0f, 0.0f, -2.0f, 1.0f);
+		vec4s lightPos = inv*vec4(0.0f, 0.0f, -5.0f, 1.0f);
+		const float step = 1.0f / (float)samples;
 
 		Ray ray;
 		OBVH::Ray oray;
@@ -41,11 +42,11 @@ namespace core {
 					for (int j = gx; j < mx; ++j) {
 						int b = 0;
 						int c = 0;
-						for( int k = 0; k < 2;++k)
-							for (int l = 0; l < 2; ++l) {
-								ray.sr0 = sinv*view.unproject(vec4s(vec4((float)j + 0.5f*k, (float)h - i + 0.5f*l, 0.0f, 1.0f)));
+						for( int k = 0; k < samples; ++k)
+							for (int l = 0; l < samples; ++l) {
+								ray.sr0 = sinv*view.unproject(vec4s(vec4((float)j + step*k, (float)h - i + step*l, 0.0f, 1.0f)));
 								ray.sr0 /= _mm_permute_ps(ray.sr0, 0b11111111);
-								ray.sr1 = sinv*view.unproject(vec4s(vec4((float)j + 0.5f*k, (float)h - i + 0.5f*l, 1.0f, 1.0f)));
+								ray.sr1 = sinv*view.unproject(vec4s(vec4((float)j + step*k, (float)h - i + step*l, 1.0f, 1.0f)));
 								ray.sr1 /= _mm_permute_ps(ray.sr1, 0b11111111);
 								ray.sr1 = (ray.sr1 - ray.sr0);
 								ray.sr1 /= _mm_sqrt_ps(_mm_dp_ps(ray.sr1, ray.sr1, 0x7F));
@@ -72,7 +73,7 @@ namespace core {
 									++c;
 								}
 							}
-						b /= 4;
+						b /= (samples*samples);
 						if (c) {
 							int fragOut = 0xff000000 | (b << 16) | (b << 8) | b;
 							_mm_stream_si32(mp + j + i*w, fragOut);

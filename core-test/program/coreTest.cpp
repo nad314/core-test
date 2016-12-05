@@ -15,7 +15,7 @@ int CoreTest::onLoad() {
 	cloud.normalize();
 	cloud.saveRaw("data/cleaned.glc"); //GeoLogCloud...because I can 8D
 	*/
-	if (!cloud.loadRaw("data/cleaned.glc"))
+	if (!cloud.loadRaw("data/subsampledLow.glc"))
 		return 1;
 	cloud.bbox(p, q);
 	cloudTree.build(cloud);
@@ -63,16 +63,6 @@ int CoreTest::main() {
 	controller = new Controller(&rw, &pbvh);
 	rw.attach(controller);
 
-	//const int threads = std::thread::hardware_concurrency();
-	const int threads = 4;
-	core::Renderer::Worker::go = threads;
-	core::Renderer::Worker *thread = new core::Renderer::Worker[threads];
-	for (int i = 0; i < threads-1; ++i)
-		thread[i].create(pbvh, &rw.view, i, threads);
-	thread[threads - 1].threadNumber = threads-1;
-	thread[threads - 1].threadCount = threads;
-	int step = 0;
-
 	glClear(GL_COLOR_BUFFER_BIT);
 	GL::swapBuffers(rw);
 
@@ -112,6 +102,9 @@ int CoreTest::main() {
 		++nframes;
 		sprintf(text, "[Points: %d] [Avg: %.2fms (%.2f FPS)] [Cur: %.2fms (%.2f FPS)]", mesh.vecs.count(), renderTime / nframes, (1000.0f*nframes)/renderTime, timer.ms(), 1000.0f/timer.ms());
 		core::Renderer::print(text, rw, 10, rw.height - 10 - core::Font::get().height());
+		core::Renderer::print("Left Click to Rotate", rw, 10, rw.height - 42 - 3 * core::Font::get().height());
+		core::Renderer::print("F11 to reset camera", rw, 10, rw.height - 38 - 2 * core::Font::get().height());
+		core::Renderer::print("F12 to render x16 MSAA", rw, 10, rw.height - 34 - core::Font::get().height());
 
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);
@@ -119,9 +112,6 @@ int CoreTest::main() {
 	}
 	rw.detach();
 	delete controller;
-	for (int i = 0; i < threads - 1; ++i)
-		thread[i].join();
-	delete[] thread;
 
 	return 0;
 }

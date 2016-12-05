@@ -9,6 +9,8 @@ public:
 	bool dragging = 0;
 	int threads;
 	core::Renderer::Worker* thread;
+	int samples = 2;
+	vec4 clickPoint;
 	
 	Controller(core::Window* p, core::PBVH* lpbvh);
 	~Controller();
@@ -18,5 +20,7 @@ public:
 	int onLButtonDown(const core::eventInfo& e) override;
 	int onLButtonUp(const core::eventInfo& e) override;
 	int onMouseMove(const core::eventInfo& e) override;
+	int onKeyDown(const core::eventInfo& e) override;
 	void render();
+	void getPoint(const float x, const float y);
 };
