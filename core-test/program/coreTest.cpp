@@ -60,6 +60,9 @@ int CoreTest::main() {
 	RenderWindow& rw = static_cast<RenderWindow&>(wnd.getRenderWindow());
 	if (!rw)done = 1;
 
+	controller = new Controller(&rw, &pbvh);
+	rw.attach(controller);
+
 	//const int threads = std::thread::hardware_concurrency();
 	const int threads = 4;
 	core::Renderer::Worker::go = threads;
@@ -73,19 +76,22 @@ int CoreTest::main() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	GL::swapBuffers(rw);
 
-	
+	rw.view.rotation.init();
+	rw.view.updateMatrix();
 
 	while (!done) {
 		if (wnd.peekMessageAsync(done))
 			continue;
 
-		rw.view.rotation.init().rotate(globalTimer.update()*0.0125f, 0.0f, 1.0f, 0.0f);
-		rw.view.updateMatrix();
+		if (controller->valid)
+			continue;
+
 		rw.view.clear();
 
 		timer.start();
 		//Render Multithreaded
 		core::Renderer::invalidate();
+		/*
 		{
 			std::lock_guard<std::mutex> lg(thread[0].mutex);
 			core::Renderer::Worker::go = 0;
@@ -98,6 +104,8 @@ int CoreTest::main() {
 			while (core::Renderer::Worker::stop < threads - 1)
 				core::Renderer::Worker::cv.wait(lk);
 		}
+		*/
+		controller->render();
 		timer.stop();
 
 		renderTime += timer;
@@ -107,7 +115,10 @@ int CoreTest::main() {
 
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);
+		controller->validate();
 	}
+	rw.detach();
+	delete controller;
 	for (int i = 0; i < threads - 1; ++i)
 		thread[i].join();
 	delete[] thread;

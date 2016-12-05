@@ -13,6 +13,8 @@ private:
 	core::Timer<float> timer;
 	core::Timer<float> globalTimer;
 
+	Controller* controller;
+
 	vec4s p, q;
 
 public:

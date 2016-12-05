@@ -123,6 +123,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="controller\controller.cpp" />
+    <ClCompile Include="controller\controller.render.cpp" />
     <ClCompile Include="model\polyOctree.cpp" />
     <ClCompile Include="model\polyOctree.Node.cpp" />
     <ClCompile Include="model\polyOctree.Node.Raytracing.cpp" />
@@ -137,15 +139,18 @@
     <ClCompile Include="pointCloud\PointOctree.Node.cpp" />
     <ClCompile Include="program\coreTest.cpp" />
     <ClCompile Include="program\main.cpp" />
+    <ClCompile Include="render\msRenderTask.cpp" />
     <ClCompile Include="render\render.cpp" />
     <ClCompile Include="render\render.obvh.cpp" />
     <ClCompile Include="render\render.pbvh.cpp" />
     <ClCompile Include="render\render.worker.cpp" />
+    <ClCompile Include="render\renderTask.cpp" />
     <ClCompile Include="render\view.cpp" />
     <ClCompile Include="mainWindow\mainWindow.cpp" />
     <ClCompile Include="renderWindow\renderWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="controller\controller.h" />
     <ClInclude Include="model\polyOctree.h" />
     <ClInclude Include="model\simdMesh.h" />
     <ClInclude Include="OBVH\OBVH.h" />
@@ -155,6 +160,7 @@
     <ClInclude Include="program\coreTest.h" />
     <ClInclude Include="mainWindow\mainWindow.h" />
     <ClInclude Include="program\main.h" />
+    <ClInclude Include="render\msRenderTask.h" />
     <ClInclude Include="render\render.h" />
     <ClInclude Include="render\renderTask.h" />
     <ClInclude Include="render\view.h" />
@@ -163,7 +169,6 @@
   <ItemGroup>
     <None Include="main" />
     <None Include="packages.config" />
-    <None Include="render\renderTask.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

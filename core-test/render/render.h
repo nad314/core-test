@@ -7,7 +7,7 @@ namespace core {
 
 		struct Worker: public SIMD {
 			struct Task {
-				virtual ~Task() = 0;
+				virtual ~Task() {}
 				virtual void execute(Worker* pWorker) = 0;
 			};
 
@@ -39,16 +39,16 @@ namespace core {
 			inline void execute() {
 				std::unique_lock<std::mutex> lk(taskMutex);
 				Task* t = task.front();
-				task.pop();
 				t->execute(this);
 				delete t;
+				task.pop();
 			}
 
 			inline void skip() {
 				std::unique_lock<std::mutex> lk(taskMutex);
 				Task* t = task.front();
-				task.pop();
 				delete t;
+				task.pop();
 			}
 
 			inline void push(Task* t) {

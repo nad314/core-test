@@ -78,6 +78,18 @@
     <ClCompile Include="PBVH\PBVH.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="render\renderTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render\msRenderTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="controller\controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="controller\controller.render.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\render.h">
@@ -119,10 +131,15 @@
     <ClInclude Include="render\renderTask.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="render\msRenderTask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="controller\controller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />
     <None Include="packages.config" />
-    <None Include="render\renderTask.cpp" />
   </ItemGroup>
 </Project>

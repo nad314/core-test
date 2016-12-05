@@ -22,6 +22,7 @@ int RenderWindow::onResize(const core::eventInfo& e) {
 		return e;
 	view.make(width, height);
 	view.home();
+	Controller::get().invalidate();
 	GL::ortho(*this);
 }
 
@@ -34,4 +35,5 @@ void RenderWindow::move(int xw, int yw) {
 	width = xw; 
 	height = yw;
 }
+
 

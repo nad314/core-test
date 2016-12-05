@@ -23,11 +23,17 @@ namespace core {
 	}
 
 	void Renderer::Worker::wait() {
+		if (!task.empty()) {
+			std::unique_lock<std::mutex> lk(taskMutex);
+			while (!task.empty())
+				cv.wait(lk);
+		}
 		//std::unique_lock<std::mutex> lk(mmutex);
 	}
 
 	void Renderer::Worker::threadFunc(PBVH& bvh, View* view) {
 		while (!done) {
+			/*
 			{
 				std::unique_lock<std::mutex> lk(mutex);
 				while (go >= threadCount - 1)
@@ -39,10 +45,6 @@ namespace core {
 				std::lock_guard<std::mutex> lg(mutex);
 				++go;
 			}
-			/*
-			if (threadNumber == 0)
-				Sleep(100);
-				*/
 			cv.notify_all();
 			if (go < threadCount - 1) {
 				std::unique_lock<std::mutex> lk(mutex);
@@ -53,6 +55,14 @@ namespace core {
 				std::lock_guard<std::mutex> lg(mutex);
 				++stop;
 			}
+			cv.notify_all();
+			*/
+			{
+				std::unique_lock<std::mutex> lk(taskMutex);
+				while (task.empty())
+					cv.wait(lk);
+			}
+			execute();
 			cv.notify_all();
 		}
 	}

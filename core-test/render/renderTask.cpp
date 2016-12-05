@@ -1,4 +1,5 @@
 #include <main> 
+
 namespace core {
 	void RenderTask::execute(Renderer::Worker* pWorker) {
 		if (pWorker == NULL)
@@ -19,7 +20,7 @@ namespace core {
 		matrixs sinv = inv;
 
 		const int square = 8;
-		vec4s lightPos = view.mat*vec4(0.0f, 0.0f, -2.0f, 1.0f);
+		vec4s lightPos = inv*vec4(0.0f, 0.0f, -5.0f, 1.0f);
 
 		Ray ray;
 		OBVH::Ray oray;
