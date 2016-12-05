@@ -1,12 +1,18 @@
 #include <main>
 
 void Controller::render() {
-	if (thread[threads - 1].task.empty())
-		return;
+	{
+		std::unique_lock<std::mutex> lk(core::Renderer::Worker::mutex);
+		core::Renderer::Worker::go = 1;
+	}
 	core::Renderer::Worker::cv.notify_all();
 	thread[threads - 1].execute();
 	for (int i = 0; i < threads - 1; ++i)
 		thread[i].wait();
+	{
+		std::unique_lock<std::mutex> lk(core::Renderer::Worker::mutex);
+		core::Renderer::Worker::go = 0;
+	}
 }
 
 void Controller::getPoint(const float x, const float y) {

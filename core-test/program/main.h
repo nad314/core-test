@@ -27,6 +27,7 @@ typedef core::Rect Rect;
 #include <render/render.h>
 #include <render/renderTask.h>
 #include <render/msRenderTask.h>
+#include <render/subRenderTask.h>
 
 //CoreTest components
 #include <controller/controller.h>

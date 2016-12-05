@@ -10,6 +10,11 @@ public:
 	void onClosing() override;
 	
 	int onResize(const core::eventInfo& e) override;
+	int onActivate(const core::eventInfo& e) override {
+		WindowForm::onActivate(e);
+		SetFocus(rwnd);
+		return 0;
+	}
 	void onEndPaint(const core::eventInfo& e) override;
 };
 

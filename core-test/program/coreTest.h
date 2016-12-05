@@ -20,6 +20,7 @@ private:
 public:
 	int onLoad() override;
 	int onDispose() override;
+	int loadData();
 
 	int onStart() override;
 	int onStop() override;

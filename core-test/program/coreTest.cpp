@@ -1,30 +1,34 @@
 #include <main>
 
+int CoreTest::loadData() {
+	/*
+	cloud.loadObj("data/subsampledLow2.obj");
+	cloud.normalize();
+	cloud.saveRaw("data/subsampledLow2.glc"); //GeoLogCloud...because I can 8D
+	*/
+	if (!cloud.loadRaw("data/testSample.cloud"))
+		return 1;
+	cloud.bbox(p, q);
+	cloudTree.build(cloud);
+	pbvh.build(cloudTree);
+	pbvh.setRadius(pbvh.estimateRadius()*1.1f);
+	pbvh.pointsPerBox();
+	//cleanup
+	cloudTree.dispose();
+	cloud.dispose();
+	return 0;
+}
+
 int CoreTest::onLoad() {
 	if (!wnd.goToHomeDirectory())
 		return 1;
-	core::Debug::enable();
+	//core::Debug::enable();
 	/*
 	mesh.importgdev("data/panther.gdev");
 	mesh.normalize();
 	mesh.bbox(p, q);
 	octree.build(mesh);
 	bvh.build(octree);*/
-	/*
-	cloud.loadObj("data/cleaned.obj");
-	cloud.normalize();
-	cloud.saveRaw("data/cleaned.glc"); //GeoLogCloud...because I can 8D
-	*/
-	if (!cloud.loadRaw("data/subsampledLow.glc"))
-		return 1;
-	cloud.bbox(p, q);
-	cloudTree.build(cloud);
-	pbvh.build(cloudTree);
-	pbvh.setRadius(pbvh.estimateRadius()*1.2f);
-	pbvh.pointsPerBox();
-	//cleanup
-	cloudTree.dispose();
-	cloud.dispose();
 	return 0;
 }
 
@@ -40,6 +44,12 @@ int CoreTest::onDispose() {
 int CoreTest::onStart() {
 	wnd.open();
 	GL::setVsync(0);
+	core::eventInfo e(wnd, WM_PAINT, wnd.width, wnd.height);
+	wnd.onPaint(e);
+	glClear(GL_COLOR_BUFFER_BIT);
+	GL::swapBuffers(wnd.getRenderWindow());
+	if (loadData())
+		return 1;
 	return 0;
 }
 

@@ -36,8 +36,17 @@ namespace core {
 
 			void threadFunc(PBVH& bvh, View* view);
 
+			inline void empty() {
+				while (!task.empty()) {
+					delete task.front();
+					task.pop();
+				}
+			}
+
 			inline void execute() {
 				std::unique_lock<std::mutex> lk(taskMutex);
+				if (task.empty())
+					return;
 				Task* t = task.front();
 				t->execute(this);
 				delete t;
@@ -52,7 +61,8 @@ namespace core {
 			}
 
 			inline void push(Task* t) {
-				std::unique_lock<std::mutex> lk(taskMutex);
+				empty();
+				std::lock_guard<std::mutex> lk(taskMutex);
 				task.push(t);
 			}
 

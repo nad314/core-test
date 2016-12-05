@@ -90,6 +90,9 @@
     <ClCompile Include="controller\controller.render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="render\subRenderTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\render.h">
@@ -135,6 +138,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="controller\controller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render\subRenderTask.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

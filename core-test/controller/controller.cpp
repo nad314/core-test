@@ -8,8 +8,8 @@ Controller::Controller(core::Window* p, core::PBVH* lpbvh) {
 	pbvh = lpbvh;
 	view = &(static_cast<RenderWindow*>(parent))->view;
 	samples = 2;
-	//threads = std::thread::hardware_concurrency();
-	threads = 4;
+	threads = std::thread::hardware_concurrency();
+	//threads = 4;
 	thread = new core::Renderer::Worker[threads];
 	for (int i = 0; i < threads - 1; ++i)
 		thread[i].create(*pbvh, view, i, threads);
@@ -17,6 +17,7 @@ Controller::Controller(core::Window* p, core::PBVH* lpbvh) {
 	thread[threads - 1].threadCount = threads;
 	for (int i = 0; i < threads; ++i)
 		thread[i].push(new core::msRenderTask(pbvh, view, samples));
+	invalidate();
 }
 
 Controller::~Controller() {
@@ -29,7 +30,7 @@ int Controller::onLButtonDown(const core::eventInfo& e) {
 	dragging = 1;
 	getPoint(e.x(), e.y());
 	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::RenderTask(pbvh, view));
+		thread[i].push(new core::subRenderTask(pbvh, view));
 	invalidate();
 	SetCapture(*parent);
 	return e;
@@ -57,7 +58,7 @@ int Controller::onMouseMove(const core::eventInfo& e) {
 		view->updateMatrix();
 		invalidate();
 		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::RenderTask(pbvh, view));
+			thread[i].push(new core::subRenderTask(pbvh, view));
 	}
 	mouse = core::vec2i(e.x(), e.y());
 	return e;

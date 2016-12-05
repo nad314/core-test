@@ -1,77 +1,16 @@
-#include <main>
+#include <main> 
+
 namespace core {
-	int Renderer::Worker::go = 0;
-	int Renderer::Worker::stop = 0;
-	std::condition_variable Renderer::Worker::cv;
-	std::mutex Renderer::Worker::mutex;
-
-	void Renderer::Worker::create(PBVH& bvh, View* view, const int& tn, const int& tc) {
-		threadNumber = tn;
-		threadCount = tc;
-		done = 0;
-		thread = std::thread(&Renderer::Worker::threadFunc, this, std::ref(bvh), view);
-		thread.detach();
-	}
-
-	void Renderer::Worker::join() {
-		done = 1;
-		if (thread.joinable())
-			thread.join();
-	}
-
-	void Renderer::Worker::start() {
-	}
-
-	void Renderer::Worker::wait() {
-		std::unique_lock<std::mutex> lk(taskMutex);
-		while (!task.empty())
-			cv.wait(lk);
-	}
-
-	void Renderer::Worker::threadFunc(PBVH& bvh, View* view) {
-		while (!done) {
-			/*
-			{
-				std::unique_lock<std::mutex> lk(mutex);
-				while (go >= threadCount - 1)
-					cv.wait(lk);
-				//cv.wait(lk, [this] { return go < threadCount - 1; });
-			}
-			if (!done) render(bvh, view);
-			{
-				std::lock_guard<std::mutex> lg(mutex);
-				++go;
-			}
-			cv.notify_all();
-			if (go < threadCount - 1) {
-				std::unique_lock<std::mutex> lk(mutex);
-				while (go < threadCount - 1)
-					cv.wait(lk);
-			}
-			{
-				std::lock_guard<std::mutex> lg(mutex);
-				++stop;
-			}
-			cv.notify_all();
-			*/
-			{
-				std::unique_lock<std::mutex> lk(taskMutex);
-				while (task.empty() || go==0)
-					cv.wait(lk);
-			}
-			if (!done) execute();
-			cv.notify_all();
-		}
-	}
-
-
-
-	void Renderer::Worker::render(PBVH& bvh, View* pview) {
+	void subRenderTask::execute(Renderer::Worker* pWorker) {
+		if (pWorker == NULL)
+			return;
+		Renderer::Worker& worker = *pWorker;
+		PBVH& bvh = *pbvh;
 		View &view = *pview;
 		Image &img = view.img;
 		int* mp = reinterpret_cast<int*>(img.data);
 		vec4 bp, bq; // bounding box projected coordinates
-		projectedBox(bvh, pview, bp, bq);
+		Renderer::projectedBox(bvh, pview, bp, bq);
 
 		const int w = img.width;
 		const int h = img.height;
@@ -81,7 +20,7 @@ namespace core {
 		matrixs sinv = inv;
 
 		const int square = 8;
-		vec4s lightPos = view.mat*vec4(0.0f, 0.0f, -2.0f, 1.0f);
+		vec4s lightPos = inv*vec4(0.0f, 0.0f, -5.0f, 1.0f);
 
 		Ray ray;
 		OBVH::Ray oray;
@@ -93,13 +32,13 @@ namespace core {
 		for (int gy = 0; gy < img.height; gy += square) {
 			if (gy > bq.y || (gy + square) < bp.y)
 				continue;
-			for (int gx = square*threadNumber; gx < w; gx += square*threadCount) {
+			for (int gx = square*worker.threadNumber; gx < w; gx += square*worker.threadCount) {
 				if (gx > bq.x || (gx + square) < bp.x)
 					continue;
 				const int mx = std::min(gx + square, w);
 				const int my = std::min(gy + square, h);
-				for (int i = gy; i < my; ++i) {
-					for (int j = gx; j < mx; ++j) {
+				for (int i = gy; i < my-my%2; i+=2) {
+					for (int j = gx; j < mx-mx%2; j+=2) {
 						ray.sr0 = sinv*view.unproject(vec4s(vec4((float)j, (float)h - i, 0.0f, 1.0f)));
 						ray.sr0 /= _mm_permute_ps(ray.sr0, 0b11111111);
 						ray.sr1 = sinv*view.unproject(vec4s(vec4((float)j, (float)h - i, 1.0f, 1.0f)));
@@ -128,12 +67,32 @@ namespace core {
 							const byte b = (byte)_mm_cvtss_si32(_mm_mul_ps(_mm_max_ps(_mm_sub_ps(_mm_setzero_ps(), ndotl), ndotl), _mm_set1_ps(255.0f)));
 							int fragOut = 0xff000000 | (b << 16) | (b << 8) | b;
 							_mm_stream_si32(mp + j + i*w, fragOut);
+							_mm_stream_si32(mp + j + 1 + i*w, fragOut);
+							_mm_stream_si32(mp + j + 1 + (i + 1)*w, fragOut);
+							_mm_stream_si32(mp + j + (i + 1)*w, fragOut);
 						}
 					}
 				}
+				
+				/*
+				for (int i = gy; i < my - 1; i++)
+					for (int j = gx; j < mx - 1; j++) {
+						const int frag00 = *(mp + j + i*w);
+						const int frag01 = *(mp + j + 1 + i*w);
+						const int frag11 = *(mp + j + 1 + (i + 1)*w);
+						const int frag10 = *(mp + j + (i + 1)*w);
+						vec4i c00 = vec4i(frag00 & 0xff, (frag00 >> 8) & 0xff, (frag00 >> 16) & 0xff, (frag00 >> 24) & 0xff);
+						vec4i c01 = vec4i(frag01 & 0xff, (frag01 >> 8) & 0xff, (frag01 >> 16) & 0xff, (frag01 >> 24) & 0xff);
+						vec4i c11 = vec4i(frag11 & 0xff, (frag11 >> 8) & 0xff, (frag11 >> 16) & 0xff, (frag11 >> 24) & 0xff);
+						vec4i c10 = vec4i(frag10 & 0xff, (frag10 >> 8) & 0xff, (frag10 >> 16) & 0xff, (frag10 >> 24) & 0xff);
+						c00 += c01 + c10 + c11;
+						c00 /= 4;
+						int fragOut = 0xff000000 | (c00.z << 16) | (c00.y << 8) | c00.z;
+						_mm_stream_si32(mp + j + i*w, fragOut);
+					}*/
 			}
 		}
 		delete[] priority;
-	}
 
+	}
 }
