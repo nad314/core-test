@@ -25,6 +25,7 @@ typedef core::Rect Rect;
 #include <PBVH/PBVH.h>
 #include <render/view.h>
 #include <render/render.h>
+#include <render/renderTask.h>
 
 //CoreTest components
 #include <renderWindow/renderWindow.h>

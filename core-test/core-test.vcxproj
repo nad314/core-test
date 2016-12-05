@@ -156,12 +156,14 @@
     <ClInclude Include="mainWindow\mainWindow.h" />
     <ClInclude Include="program\main.h" />
     <ClInclude Include="render\render.h" />
+    <ClInclude Include="render\renderTask.h" />
     <ClInclude Include="render\view.h" />
     <ClInclude Include="renderWindow\renderWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />
     <None Include="packages.config" />
+    <None Include="render\renderTask.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

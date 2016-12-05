@@ -116,9 +116,13 @@
     <ClInclude Include="PBVH\PBVH.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="render\renderTask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main" />
     <None Include="packages.config" />
+    <None Include="render\renderTask.cpp" />
   </ItemGroup>
 </Project>

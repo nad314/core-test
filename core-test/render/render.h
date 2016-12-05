@@ -6,20 +6,26 @@ namespace core {
 	public:
 
 		struct Worker: public SIMD {
+			struct Task {
+				virtual ~Task() = 0;
+				virtual void execute(Worker* pWorker) = 0;
+			};
+
+			std::queue<Task*> task;
 			std::pair<int, float> stack[256];
 			int* priority;
 			std::thread thread;
 			int threadNumber;
 			int threadCount;
 			bool done;
-			bool pass;
 			static int go;
 			static int stop;
 			static std::condition_variable cv;
 			static std::mutex mutex;
+			std::mutex taskMutex;
 
 			Worker() { priority = NULL; };
-			~Worker() { if (priority)delete[] priority; priority = NULL; }
+			~Worker() { if (priority)delete[] priority; priority = NULL; while (!task.empty()) { Task* t = task.front(); task.pop(); delete t; } }
 
 			void create(PBVH& bvh, View* view, const int& tn, const int& tc);
 			void render(PBVH& bvh, View* view);
@@ -29,6 +35,26 @@ namespace core {
 			void wait();
 
 			void threadFunc(PBVH& bvh, View* view);
+
+			inline void execute() {
+				std::unique_lock<std::mutex> lk(taskMutex);
+				Task* t = task.front();
+				task.pop();
+				t->execute(this);
+				delete t;
+			}
+
+			inline void skip() {
+				std::unique_lock<std::mutex> lk(taskMutex);
+				Task* t = task.front();
+				task.pop();
+				delete t;
+			}
+
+			inline void push(Task* t) {
+				std::unique_lock<std::mutex> lk(taskMutex);
+				task.push(t);
+			}
 
 		};
 

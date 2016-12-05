@@ -10,26 +10,28 @@ int CoreTest::onLoad() {
 	mesh.bbox(p, q);
 	octree.build(mesh);
 	bvh.build(octree);*/
-	
 	/*
-	cloud.loadObj("data/panther-mid.obj");
+	cloud.loadObj("data/cleaned.obj");
 	cloud.normalize();
-	cloud.saveRaw("data/panther-mid.glc"); //GeoLogCloud...because I can 8D
+	cloud.saveRaw("data/cleaned.glc"); //GeoLogCloud...because I can 8D
 	*/
-	if (!cloud.loadRaw("data/subsampledDense2.glc"))
+	if (!cloud.loadRaw("data/cleaned.glc"))
 		return 1;
 	cloud.bbox(p, q);
 	cloudTree.build(cloud);
 	pbvh.build(cloudTree);
-	pbvh.setRadius(pbvh.estimateRadius());
+	pbvh.setRadius(pbvh.estimateRadius()*1.2f);
 	pbvh.pointsPerBox();
+	//cleanup
 	cloudTree.dispose();
 	cloud.dispose();
 	return 0;
 }
 
 int CoreTest::onDispose() {
+	//in case I decide to comment the dispose in onLoad()
 	cloudTree.dispose();
+	cloud.dispose();
 	mesh.dispose();
 	octree.dispose();
 	return 0;
@@ -76,10 +78,7 @@ int CoreTest::main() {
 	while (!done) {
 		if (wnd.peekMessageAsync(done))
 			continue;
-		/*
-		if (GetAsyncKeyState(VK_ESCAPE))
-			done = true;*/
-		
+
 		rw.view.rotation.init().rotate(globalTimer.update()*0.0125f, 0.0f, 1.0f, 0.0f);
 		rw.view.updateMatrix();
 		rw.view.clear();
@@ -99,10 +98,6 @@ int CoreTest::main() {
 			while (core::Renderer::Worker::stop < threads - 1)
 				core::Renderer::Worker::cv.wait(lk);
 		}
-		//core::Renderer::raytrace(bvh, &rw.view);
-		//core::Renderer::raytrace(octree, &rw.view);
-		//core::Renderer::drawPointRange(cloud, &rw.view, 0, cloud.points.count());
-		//core::Renderer::raytrace(pbvh, &rw.view);
 		timer.stop();
 
 		renderTime += timer;
