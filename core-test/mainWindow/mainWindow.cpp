@@ -40,6 +40,11 @@ int MainWindow::onDropFiles(const core::eventInfo& e) {
 	if (DragQueryFileA((HDROP)e.wP, 0, path, 256)) {
 		DragFinish((HDROP)e.wP);
 		Storage::get().load(path);
+		rwnd.view.home();
+		Controller& c = Controller::get();
+		for (int i = 0; i < c.threads; ++i)
+			c.thread[i].push(new core::msRenderTask(&c.storage->pbvh, &rwnd.view, c.samples));
+		c.invalidate();
 	}
 	return e;
 }

@@ -60,8 +60,10 @@ int CoreTest::main() {
 	if (!rw)done = 1;
 
 	storage = new Storage;
+	/*
 	if (storage->load("data/testSample.cloud"))
 		done = 1;
+		*/
 	controller = new Controller(&rw, storage);
 	rw.attach(controller);
 
@@ -102,7 +104,7 @@ int CoreTest::main() {
 
 		renderTime += timer;
 		++nframes;
-		sprintf(text, "[Points: %d] [Avg: %.2fms (%.2f FPS)] [Cur: %.2fms (%.2f FPS)]", storage->cloud.points.count(), renderTime / nframes, (1000.0f*nframes)/renderTime, timer.ms(), 1000.0f/timer.ms());
+		sprintf(text, "[Points: %d] [Atom Radius: %.6f] [Avg: %.2fms (%.2f FPS)] [Cur: %.2fms (%.2f FPS)]", storage->cloud.points.count(), sqrt(storage->pbvh.radiusSquared), renderTime / nframes, (1000.0f*nframes)/renderTime, timer.ms(), 1000.0f/timer.ms());
 		core::Renderer::print(text, rw, 10, rw.height - 10 - core::Font::get().height());
 		core::Renderer::print("Left Click to Rotate", rw, 10, rw.height - 42 - 3 * core::Font::get().height());
 		core::Renderer::print("F11 to reset camera", rw, 10, rw.height - 38 - 2 * core::Font::get().height());

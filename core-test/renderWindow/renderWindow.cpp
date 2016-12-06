@@ -23,8 +23,12 @@ int RenderWindow::onResize(const core::eventInfo& e) {
 	view.make(width, height);
 	//view.home();
 	view.updateMatrix();
-	Controller::get().invalidate();
 	GL::ortho(*this);
+
+	Controller& c = Controller::get();
+	for (int i = 0; i < c.threads; ++i)
+		c.thread[i].push(new core::msRenderTask(&c.storage->pbvh, &view, c.samples));
+	c.invalidate();
 }
 
 

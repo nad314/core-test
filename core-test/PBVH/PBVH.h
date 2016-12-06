@@ -37,8 +37,9 @@ namespace core {
 		buffer<leafNode> leaf;
 		vec4s p, q;
 		float radiusSquared;
+		int pointCount = 0;
 
-		inline void dispose() { inner.clear(); leaf.clear(); p = q = _mm_setzero_ps(); radiusSquared = 0.0f; }
+		inline void dispose() { inner.clear(); leaf.clear(); p = q = _mm_setzero_ps(); radiusSquared = 0.0f; pointCount = 0; }
 		void build(const PointOctree& tree);
 		const float rayIntersectionTIt(OBVH::Ray& ray, std::pair<int, float>* stack, int* priority);
 		const float estimateRadius();

@@ -27,6 +27,8 @@ Controller::~Controller() {
 }
 
 int Controller::onLButtonDown(const core::eventInfo& e) {
+	if (storage->pbvh.pointCount < 1)
+		return e;
 	dragging = 1;
 	getPoint(e.x(), e.y());
 	for (int i = 0; i < threads; ++i)
@@ -37,6 +39,8 @@ int Controller::onLButtonDown(const core::eventInfo& e) {
 }
 
 int Controller::onLButtonUp(const core::eventInfo& e) {
+	if (storage->pbvh.pointCount < 1)
+		return e;
 	dragging = 0;
 	for (int i = 0; i < threads; ++i)
 		thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
@@ -46,6 +50,8 @@ int Controller::onLButtonUp(const core::eventInfo& e) {
 }
 
 int Controller::onMouseMove(const core::eventInfo& e) {
+	if (storage->pbvh.pointCount < 1)
+		return e;
 	if (dragging) {
 		matrixf mat;
 		clickPoint.w = 1.0f;
@@ -65,17 +71,36 @@ int Controller::onMouseMove(const core::eventInfo& e) {
 }
 
 int Controller::onKeyDown(const core::eventInfo& e) {
-	if (e.wP == VK_F12) {
+	switch (e.wP) {
+	case VK_F12: {
 		for (int i = 0; i < threads; ++i)
 			thread[i].push(new core::msRenderTask(&storage->pbvh, view, 4));
 		invalidate();
+		break;
 	}
-	else if (e.wP == VK_F11) {
+	case VK_F11: {
 		view->home();
 		view->updateMatrix();
 		for (int i = 0; i < threads; ++i)
 			thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
 		invalidate();
+		break;
+	}
+	case '1': {
+		storage->pbvh.setRadius(sqrt(storage->pbvh.radiusSquared) * 1.05f);
+		for (int i = 0; i < threads; ++i)
+			thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
+		invalidate();
+		break;
+	}
+	case '2': {
+		storage->pbvh.setRadius(sqrt(storage->pbvh.radiusSquared) / 1.05f);
+		for (int i = 0; i < threads; ++i)
+			thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
+		invalidate();
+		break;
+	}
+	default: break;
 	}
 	return e;
 }

@@ -75,6 +75,7 @@ namespace core {
 
 				int& c = leaf.count();
 				leaf[c].np = std::min(PointOctree::Node::maxPoints, tree.root[i].points.count());
+				pointCount += leaf[c].np;
 				for (int j = 0; j < PointOctree::Node::maxPoints/8; ++j) {
 					leaf[c].p[j] = vec3avx(pp[0] + j * 8, pp[1] + j * 8, pp[2] + j * 8);
 					leaf[c].n[j] = vec4avx(pp[3] + j * 8, pp[4] + j * 8, pp[5] + j * 8, pp[6] + j * 8);
