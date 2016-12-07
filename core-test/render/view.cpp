@@ -38,7 +38,7 @@ vec4 View::unproject(const vec4& v) {
 	vec4 r = v / vec4((float)img.width, (float)img.height, 1.0f, 1.0f) - vec4(0.5f, 0.5f, 0.0f, 0.0f);
 	r /= vec4(0.5f, 0.5f, 0.5f, 1.0f);
 	r.x /= r.w;
-	r.y /= r.w;
+	r.y /= r.w;	
 	r.z = (r.z - 1.0f) / r.w;
 	r.w = 1.0f;
 	return r;
@@ -55,7 +55,15 @@ __m128 View::projectSSE (const __m128 &v, const __m128 &viewVec, const __m128 &v
 }
 
 void View::updateMatrix() {
-	if (img.height)projection = projection.projection(fov, (float)img.width / img.height, 1.0f, 100.0f);
+	if (img.height)projection = projection.projection(fov, (float)img.width / img.height, 0.01f, 100.0f);
+	//parallel projection
+	/*
+	if (img.height) {
+		float ys = fov / 41.5f;
+		float xs = ys * img.width / img.height;
+		projection.ortho(-xs, xs, -ys, ys);
+	}
+	*/
 	mat = rotation*translation*projection;
 }
 
