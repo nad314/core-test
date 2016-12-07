@@ -8,12 +8,13 @@ void Storage::dispose() {
 }
 
 int Storage::load(const char* path) {
+	float rad = -1.0f;
 	dispose();
 	std::string ext = core::Path::getExt(path);
 	for (auto& i : ext)
 		i = toupper(i);
 	if (ext == "CLOUD") {
-		if (!cloud.loadRaw(path)) {
+		if (!cloud.loadAtomic(path, rad)) {
 			cloud.dispose();
 			return 1;
 		}
@@ -31,7 +32,18 @@ int Storage::load(const char* path) {
 	cloud.normalize();
 	cloudTree.build(cloud);
 	pbvh.build(cloudTree);
-	pbvh.setRadius(pbvh.estimateRadius()*0.8f);
+	if (rad < 0.0f)
+		rad = pbvh.estimateRadius();
+	pbvh.setRadius(rad);
 	cloudTree.dispose();
+
+	char title[256];
+	sprintf(title, "Core Renderer - %c%s%c", 39, core::Path::getFileName(path).c_str(), 39);
+	MainWindow::get().setFormTitle(title);
+
+	Controller& controller = Controller::get();
+	controller.view->home();
+	controller.view->updateMatrix();
+	controller.invalidate();
 	return 0;
 }

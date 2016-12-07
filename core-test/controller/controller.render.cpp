@@ -58,3 +58,23 @@ void Controller::getPoint(const float x, const float y) {
 	else clickPoint = vec4(0.0f);
 	delete[] priority;
 }
+
+core::Ray Controller::getRay(const float x, const float y) const {
+	View& view = *this->view;
+	matrixf inv = view.mat;
+	inv.invert();
+	matrixs sinv = inv;
+
+	core::Ray ray;
+	const float h = (float)view.img.height;
+
+	ray.sr0 = sinv*view.unproject(vec4s(vec4(x, (float)h - y, 0.0f, 1.0f)));
+	ray.sr0 /= _mm_permute_ps(ray.sr0, 0b11111111);
+	ray.sr1 = sinv*view.unproject(vec4s(vec4(x, (float)h - y, 1.0f, 1.0f)));
+	ray.sr1 /= _mm_permute_ps(ray.sr1, 0b11111111);
+	ray.sr1 = (ray.sr1 - ray.sr0);
+	ray.sr1 /= _mm_sqrt_ps(_mm_dp_ps(ray.sr1, ray.sr1, 0x7F));
+	ray.sinvr1 = _mm_rcp_ps(ray.sr1);
+
+	return ray;
+}

@@ -99,6 +99,57 @@ namespace core {
 		return 1;
 	}
 
+
+	bool PointCloud::saveAtomic(const char* path, const float& rad) {
+		FILE* f;
+		if (points.count() < 1 || !(f = fopen(path, "wb")))
+			return 0;
+		try {
+			fwrite(&points.count(), sizeof(points.count()), 1, f);
+			fwrite(points, sizeof(vec4s), points.count(), f);
+			fwrite(&normals.count(), sizeof(normals.count()), 1, f);
+			fwrite(normals, sizeof(vec4s), normals.count(), f);
+			fwrite(&rad, sizeof(rad), 1, f);
+		}
+		catch (std::exception e) {
+			core::Debug::print("%s\n", e.what());
+			fclose(f);
+			return 0;
+		}
+		fclose(f);
+		return 1;
+	}
+
+	bool PointCloud::loadAtomic(const char* path, float& rad) {
+		FILE* f;
+		dispose();
+		rad = -1.0f;
+		if (!(f = fopen(path, "rb")))
+			return 0;
+		try {
+			int n; //change to size_t for 64 bit or whatever
+			if (fread(&n, sizeof(n), 1, f) != 1) throw std::exception("Read Error");
+			points.reserve(n);
+			if (fread(points, sizeof(vec4s), n, f) != n) throw std::exception("Read Error");
+			points.count() = n;
+			if (fread(&n, sizeof(n), 1, f) != 1) throw std::exception("Read Error");
+			normals.reserve(n);
+			if (fread(normals, sizeof(vec4s), n, f) != n) throw std::exception("Read Error");
+			normals.count() = n;
+			if (fread(&rad, sizeof(rad), 1, f) != 1) core::Debug::print("Loading without radius\n");
+			core::Debug::print("Loaded %d points and %d normals\n", points.count(), normals.count());
+		}
+		catch (std::exception e) {
+			core::Debug::print("%s\n", e.what());
+			fclose(f);
+			dispose();
+			return 0;
+		}
+		fclose(f);
+		return 1;
+	}
+
+
 	void PointCloud::normalize() {
 		vec4s p, q; //bounding box
 		vec4s avg;

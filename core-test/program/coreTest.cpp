@@ -1,23 +1,8 @@
 #include <main>
 
 int CoreTest::loadData() {
-	/*
-	cloud.loadObj("data/pantherUniformHigh.obj");
-	cloud.normalize();
-	cloud.saveRaw("data/pantherUniformHigh.cloud");
-	*//*
-	if (!cloud.loadRaw("data/testSample.cloud"))
-		return 1;
-	cloud.bbox(p, q);
-	cloudTree.build(cloud);
-	pbvh.build(cloudTree);
-	pbvh.setRadius(pbvh.estimateRadius()*0.9f);
-	pbvh.pointsPerBox();
-	//cleanup
-	cloudTree.dispose();
-	//cloud.dispose();*/
-
-	return storage->load("data/testSample.cloud");
+	//return 0;
+	return storage->load("data/pantherUniform.cloud");
 	return 0;
 }
 
@@ -60,10 +45,6 @@ int CoreTest::main() {
 	if (!rw)done = 1;
 
 	storage = new Storage;
-	/*
-	if (storage->load("data/testSample.cloud"))
-		done = 1;
-		*/
 	controller = new Controller(&rw, storage);
 	rw.attach(controller);
 
@@ -72,6 +53,11 @@ int CoreTest::main() {
 
 	rw.view.rotation.init();
 	rw.view.updateMatrix();
+
+	wnd.setFormTitle("Core Renderer - Ready!");
+
+	if (loadData())
+		done = 1;
 
 	while (!done) {
 		if (wnd.peekMessageAsync(done))
@@ -99,7 +85,8 @@ int CoreTest::main() {
 				core::Renderer::Worker::cv.wait(lk);
 		}
 		*/
-		controller->render();
+		if (storage->pbvh.pointCount > 0)
+			controller->render();
 		timer.stop();
 
 		renderTime += timer;

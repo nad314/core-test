@@ -1,10 +1,13 @@
 #include <main>
 
+MainWindow* core::Getter<MainWindow>::getter = NULL;
+
 void MainWindow::onOpening() {
 	WindowForm::onOpening();
 	setTitle("Core Renderer");
 	setSize(1280, 720);
 	addExStyle(WS_EX_ACCEPTFILES);
+	set(*this);
 }
 
 void MainWindow::onOpened() {

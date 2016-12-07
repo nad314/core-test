@@ -1,6 +1,6 @@
 #pragma once
 
-class MainWindow final : public core::WindowForm {
+class MainWindow final : public core::WindowForm, public core::Getter<MainWindow> {
 private:
 	RenderWindow rwnd;
 public:
