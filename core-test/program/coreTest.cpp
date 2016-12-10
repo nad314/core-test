@@ -1,8 +1,7 @@
 #include <main>
 
 int CoreTest::loadData() {
-	//return 0;
-	return storage->load("data/pantherUniform.cloud");
+	//return storage->load("data/pantherUniform.cloud");
 	return 0;
 }
 
@@ -93,7 +92,8 @@ int CoreTest::main() {
 		++nframes;
 		sprintf(text, "[Points: %d] [Atom Radius: %.6f] [Avg: %.2fms (%.2f FPS)] [Cur: %.2fms (%.2f FPS)]", storage->cloud.points.count(), sqrt(storage->pbvh.radiusSquared), renderTime / nframes, (1000.0f*nframes)/renderTime, timer.ms(), 1000.0f/timer.ms());
 		core::Renderer::print(text, rw, 10, rw.height - 10 - core::Font::get().height());
-		core::Renderer::print("Left Click to Rotate", rw, 10, rw.height - 42 - 3 * core::Font::get().height());
+		core::Renderer::print("Left Click to Rotate, Right Click to Pan", rw, 10, rw.height - 46 - 4 * core::Font::get().height());
+		core::Renderer::print("Mousewheel to Zoom", rw, 10, rw.height - 42 - 3 * core::Font::get().height());
 		core::Renderer::print("F11 to reset camera", rw, 10, rw.height - 38 - 2 * core::Font::get().height());
 		core::Renderer::print("F12 to render x16 MSAA", rw, 10, rw.height - 34 - core::Font::get().height());
 

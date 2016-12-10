@@ -1,7 +1,7 @@
 #include <main>
 
 namespace core {
-	void PBVH::leafNode::rayIntersection(OBVH::Ray& ray, const int& node, const float& radiusSquared, const float& dd) const {
+	void __vectorcall PBVH::leafNode::rayIntersection(PBVH::Ray& ray, const int& node) const {
 		for (int j = 0; j < PointOctree::Node::maxPoints/8; ++j) {
 			if (j * 8 > np)
 				return;
@@ -19,7 +19,7 @@ namespace core {
 				_mm256_mul_ps(ly, ly)),
 				_mm256_mul_ps(lz, lz));
 			const __m256 d2 = _mm256_sub_ps(ldotl, _mm256_mul_ps(tca, tca));
-			const __m256 thc = _mm256_sqrt_ps(_mm256_sub_ps(_mm256_set1_ps(radiusSquared), d2));
+			const __m256 thc = _mm256_sqrt_ps(_mm256_sub_ps(_mm256_set1_ps(ray.rs), d2));
 			const __m256 dist = _mm256_sub_ps(tca, thc);
 			
 			/*
@@ -48,7 +48,7 @@ namespace core {
 			const int to = std::min(np - j * 8, 8);
 			for (int i = 0; i < to; ++i) {
 				
-				if (tca.m256_f32[i] < 0 || d2.m256_f32[i] > radiusSquared || ray.d <= dist.m256_f32[i])
+				if (tca.m256_f32[i] < 0 || d2.m256_f32[i] > ray.rs || ray.d <= dist.m256_f32[i])
 					continue;
 				
 				/*
@@ -62,13 +62,14 @@ namespace core {
 		}
 	}
 
-	const float PBVH::rayIntersectionTIt(OBVH::Ray& ray, std::pair<int, float>* stack, int* priority) {
+	const float PBVH::rayIntersectionTIt(PBVH::Ray& ray, std::pair<int, float>* stack, int* priority) {
 		typedef std::pair<int, float> SE;
 		SE* st = stack;
 		*st++ = SE(0, -1.0f);
 		SE* current = stack;
 		ray.d = 100.0f;
 		ray.node = 0;
+		ray.rs = radiusSquared;
 
 		while (st != stack) {
 			//test if distance to box is greater than previously found distance
@@ -108,7 +109,7 @@ namespace core {
 				if (n.node[i] > 0)
 					*st++ = SE(n.node[i], min.m256_f32[i]);
 				else
-					leaf[-n.node[i]].rayIntersection(ray, n.node[i], radiusSquared, min.m256_f32[i]);
+					leaf[-n.node[i]].rayIntersection(ray, n.node[i]);
 				//if (ray.d > min.m256_f32[i]) { ray.d = min.m256_f32[i]; ray.node = n.node[i]; }
 			}
 			//do the 0th element
@@ -117,7 +118,7 @@ namespace core {
 				if (n.node[i] > 0)
 					*st++ = SE(n.node[i], min.m256_f32[i]);
 				else
-					leaf[-n.node[i]].rayIntersection(ray, n.node[i], radiusSquared, min.m256_f32[i]);
+					leaf[-n.node[i]].rayIntersection(ray, n.node[i]);
 				//if (ray.d > min.m256_f32[i]) { ray.d = min.m256_f32[i]; ray.node = n.node[i]; }
 			}
 			current = st - 1;

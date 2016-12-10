@@ -23,7 +23,7 @@ namespace core {
 		vec4s lightPos = inv*vec4(0.0f, 0.0f, -5.0f, 1.0f);
 
 		Ray ray;
-		OBVH::Ray oray;
+		PBVH::Ray oray;
 		std::pair<int, float> stack[256];
 		int* priority = new int[bvh.inner.size()];
 		memset(priority, 0, bvh.inner.size() * sizeof(int));

@@ -6,6 +6,7 @@ namespace core {
 			vec3avx r1;
 			vec3avx inv;
 			vec4s plane;
+			float rs;
 			float d;
 			int node;
 		};
@@ -20,7 +21,7 @@ namespace core {
 			int pos;
 
 			innerNode() { memset(node, 0, sizeof(node)); nn = 0; priority = 0; parent = 0; pos = 0; }
-			const float rayIntersectionT(OBVH::Ray& ray, OBVH& bvh);
+			const float rayIntersectionT(PBVH::Ray& ray, OBVH& bvh);
 		};
 
 		struct leafNode : public SIMD {
@@ -30,7 +31,7 @@ namespace core {
 			int parent;
 			int pos;
 
-			void rayIntersection(OBVH::Ray& ray, const int& node, const float& radiusSquared, const float& dist) const;
+			void __vectorcall rayIntersection(PBVH::Ray& ray, const int& node) const;
 		};
 
 		buffer<innerNode> inner;
@@ -41,7 +42,7 @@ namespace core {
 
 		inline void dispose() { inner.clear(); leaf.clear(); p = q = _mm_setzero_ps(); radiusSquared = 0.0f; pointCount = 0; }
 		void build(const PointOctree& tree);
-		const float rayIntersectionTIt(OBVH::Ray& ray, std::pair<int, float>* stack, int* priority);
+		const float rayIntersectionTIt(PBVH::Ray& ray, std::pair<int, float>* stack, int* priority);
 		const float estimateRadius();
 		void setRadius(const float& rad);
 		void pointsPerBox();

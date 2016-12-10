@@ -14,7 +14,8 @@ namespace core {
 		for (int i = 0; i < cloud.points.count(); ++i) {
 			cloud.points[i].store(p);
 			points.push_back(p);
-			cloud.normals[i].store(n);
+			if (cloud.normals.count()>i)
+				cloud.normals[i].store(n);
 			n.w = -Math::dot3(n, p);
 			planes.push_back(n);
 		}

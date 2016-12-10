@@ -24,7 +24,7 @@ namespace core {
 		const float step = 1.0f / (float)samples;
 
 		Ray ray;
-		OBVH::Ray oray;
+		PBVH::Ray oray;
 		std::pair<int, float> stack[256];
 		int* priority = new int[bvh.inner.size()];
 		memset(priority, 0, bvh.inner.size() * sizeof(int));

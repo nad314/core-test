@@ -23,7 +23,7 @@ void Controller::getPoint(const float x, const float y) {
 	matrixs sinv = inv;
 
 	core::Ray ray;
-	core::OBVH::Ray oray;
+	core::PBVH::Ray oray;
 	const float h = (float)view.img.height;
 
 	ray.sr0 = sinv*view.unproject(vec4s(vec4(x, (float)h - y, 0.0f, 1.0f)));
