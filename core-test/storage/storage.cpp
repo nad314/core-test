@@ -30,11 +30,15 @@ int Storage::load(const char* path) {
 		return 1;
 	}
 	cloud.normalize();
+	if (rad > 0.0f)
+		cloudTree.radius = rad;
+	else cloudTree.radius = -1.0f;
 	cloudTree.build(cloud);
 	pbvh.build(cloudTree);
-	if (rad < 0.0f)
+	if (rad < 0.0f) {
 		rad = pbvh.estimateRadius();
-	pbvh.setRadius(rad);
+		pbvh.setRadius(rad);
+	} else pbvh.radiusSquared = rad*rad;
 	cloudTree.dispose();
 
 	char title[256];

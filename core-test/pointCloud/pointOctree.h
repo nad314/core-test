@@ -28,6 +28,7 @@ namespace core {
 			void multVecs();
 			int countNodes();
 			void expand();
+			void expand(const vec4s& rad);
 			void shrinkNodes();
 			void trunc();
 
@@ -52,8 +53,9 @@ namespace core {
 		Node* root;
 		void build(PointCloud& cloud);
 		void cacheSort();
+		float radius;
 
-		PointOctree() : root(NULL) {}
+		PointOctree() : root(NULL), radius(-1.0f) {}
 		~PointOctree() { dispose(); }
 		inline void dispose() { if (root)root->unlink(); delete[] root; root = NULL; size = 0; }
 	};

@@ -69,7 +69,7 @@ namespace core {
 								if (bvh.rayIntersectionTIt(oray, stack, priority) > 0.0f) {
 									const vec4s pminusl = (lightPos - (ray.sr0 + ray.sr1*vec4s(oray.d)));
 									const vec4s ndotl = oray.plane.dot3(pminusl / _mm_sqrt_ps(pminusl.dot3(pminusl)));
-									b += (byte)_mm_cvtss_si32(_mm_mul_ps(_mm_max_ps(_mm_sub_ps(_mm_setzero_ps(), ndotl), ndotl), _mm_set1_ps(255.0f)));
+									b += (byte)_mm_cvtss_si32(_mm_mul_ps(_mm_max_ps(_mm_set1_ps(0.3f), _mm_max_ps(_mm_sub_ps(_mm_setzero_ps(), ndotl), ndotl)), _mm_set1_ps(255.0f)));
 									++c;
 								}
 							}

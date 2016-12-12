@@ -25,8 +25,10 @@ namespace core {
 			root->sub();
 		root->countNodes();
 		root->trunc();
-		root->expand();
-		root->multVecs();
+		if (radius > 0.0f)
+			root->expand(radius);
+		else root->expand();
+		//root->multVecs();
 		root->shrinkNodes();
 		cacheSort();
 	}

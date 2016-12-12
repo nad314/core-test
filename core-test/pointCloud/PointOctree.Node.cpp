@@ -174,6 +174,33 @@ namespace core {
 
 	}
 
+	void PointOctree::Node::expand(const vec4s& rad) {
+		if (hasNodes) {
+			for (int i = 0; i < nnodes; ++i)
+				node[i]->expand(rad);
+			spp = node[0]->spp;
+			sqq = node[0]->sqq;
+			for (int i = 0; i < nnodes; ++i) {
+				spp = _mm_min_ps(spp, node[i]->spp);
+				sqq = _mm_max_ps(sqq, node[i]->sqq);
+			}
+		}
+		else {
+			std::swap(spp, sqq);
+			if (points.size() < 1)
+				return;
+			spp = vec4s(points[0]-rad);
+			sqq = vec4s(points[0]+rad);
+			for (int i = 1; i < points.size(); ++i) {
+				const vec4s p = vec4s(points[i]);
+				spp = _mm_min_ps(spp, p-rad);
+				sqq = _mm_max_ps(sqq, p+rad);
+			}
+		}
+
+	}
+
+
 	void PointOctree::Node::shrinkNodes() {
 		if (!hasNodes)
 			return;

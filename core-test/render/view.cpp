@@ -55,7 +55,7 @@ __m128 View::projectSSE (const __m128 &v, const __m128 &viewVec, const __m128 &v
 }
 
 void View::updateMatrix() {
-	if (img.height)projection = projection.projection(fov, (float)img.width / img.height, 0.01f, 100.0f);
+	if (img.height)projection = projection.projection(fov, (float)img.width / img.height, 0.001f, 100.0f);
 	//parallel projection
 	/*
 	if (img.height) {

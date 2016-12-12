@@ -42,7 +42,7 @@ namespace core {
 
 		inline void dispose() { inner.clear(); leaf.clear(); p = q = _mm_setzero_ps(); radiusSquared = 0.0f; pointCount = 0; }
 		void build(const PointOctree& tree);
-		const float rayIntersectionTIt(PBVH::Ray& ray, std::pair<int, float>* stack, int* priority);
+		const float __vectorcall rayIntersectionTIt(PBVH::Ray& ray, std::pair<int, float>* stack, int* priority);
 		const float estimateRadius();
 		void setRadius(const float& rad);
 		void pointsPerBox();

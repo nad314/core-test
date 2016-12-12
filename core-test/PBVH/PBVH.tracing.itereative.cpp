@@ -2,11 +2,8 @@
 
 namespace core {
 	void __vectorcall PBVH::leafNode::rayIntersection(PBVH::Ray& ray, const int& node) const {
-		for (int j = 0; j < PointOctree::Node::maxPoints/8; ++j) {
-			if (j * 8 > np)
-				return;
+		for (int j = 0; j < (np-1)/8+1; ++j) {
 			//ray sphere intersection
-			
 			const __m256 lx = _mm256_sub_ps(p[j].x, ray.r0.x);
 			const __m256 ly = _mm256_sub_ps(p[j].y, ray.r0.y);
 			const __m256 lz = _mm256_sub_ps(p[j].z, ray.r0.z);
@@ -52,9 +49,9 @@ namespace core {
 					continue;
 				
 				/*
-				if (pddot.m256_f32[i] > radiusSquared || dist.m256_f32[i] < 0  || ray.d <= dist.m256_f32[i])
+				if (dist.m256_f32[i] < 0  || ray.d <= dist.m256_f32[i] || pddot.m256_f32[i] > ray.rs)
 					continue;
-					*/
+				*/	
 				ray.d = dist.m256_f32[i];
 				ray.node = node;
 				ray.plane = vec4s(vec4(n[j].x.m256_f32[i], n[j].y.m256_f32[i], n[j].z.m256_f32[i], n[j].w.m256_f32[i]));
@@ -62,7 +59,7 @@ namespace core {
 		}
 	}
 
-	const float PBVH::rayIntersectionTIt(PBVH::Ray& ray, std::pair<int, float>* stack, int* priority) {
+	const float __vectorcall PBVH::rayIntersectionTIt(PBVH::Ray& ray, std::pair<int, float>* stack, int* priority) {
 		typedef std::pair<int, float> SE;
 		SE* st = stack;
 		*st++ = SE(0, -1.0f);
@@ -81,6 +78,14 @@ namespace core {
 
 			innerNode& n = inner[current->first];
 			const int pri = priority[current->first];
+
+			/*
+			if (n.node[pri] > 0)
+				_mm_prefetch(reinterpret_cast<const char*>(&inner[n.node[pri]]), _MM_HINT_T2);
+			else 				
+				_mm_prefetch(reinterpret_cast<const char*>(&leaf[n.node[-pri]]), _MM_HINT_T2);
+				*/
+
 			//ray box intersection test
 			const __m256 v0x = _mm256_mul_ps(_mm256_sub_ps(n.p.x, ray.r0.x), ray.inv.x);
 			const __m256 v1x = _mm256_mul_ps(_mm256_sub_ps(n.q.x, ray.r0.x), ray.inv.x);
