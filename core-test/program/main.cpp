@@ -3,5 +3,5 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR message, int nCmdShow) {
 //int main(void){
-	return core::Init()(new CoreTest);
+	return core::FormInit()(new CoreTest);
 }

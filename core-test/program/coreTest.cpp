@@ -13,6 +13,7 @@ int CoreTest::onLoad() {
 }
 
 int CoreTest::onDispose() {
+	GL::deleteContext();
 	return 0;
 }
 
