@@ -15,22 +15,19 @@ struct simdView : public core::SIMD {
 	matrixf rotation;
 	matrixf mat;
 	float fov;
-	vec4 viewVec;
+	int mode = 0;
+
 	core::Image img;
 	
 	void make (const int width, const int height);
 	void clear();
 	void home();
-	vec4 project (const vec4 &v);
-	vec4 unproject(const vec4 &v);
-	__m128 projectSSE (const __m128 &v, const __m128 &viewVec, const __m128 &v05) const;
 	void updateMatrix();
 	
 	inline vec4s project (const vec4s &v) const {
 		return (v*_mm_rcp_ps(_mm_shuffle_ps (v, v, _MM_SHUFFLE(3,3,3,3)))*v06 + v05)*simdViewVec;
 	}
 	
-	//needs testing
 	inline vec4s unproject(const vec4s &v) const {
 		const vec4s t = (v / v09 - v07) / v08;
 		return (t-v10)/_mm_permute_ps(t, 0xff);
