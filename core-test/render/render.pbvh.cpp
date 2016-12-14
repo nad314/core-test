@@ -1,7 +1,7 @@
 #include <main>
 namespace core {
-	void Renderer::raytrace(PBVH& bvh, View* pview) {
-		View &view = *pview;
+	void Renderer::raytrace(PBVH& bvh, simdView* pview) {
+		simdView &view = *pview;
 		Image &img = view.img;
 		int* mp = reinterpret_cast<int*>(img.data);
 		vec4 bp, bq; // bounding box projected coordinates

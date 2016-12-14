@@ -4,9 +4,9 @@ namespace core {
 
 	bool Renderer::valid = false;
 
-	void Renderer::drawPoints(simdMesh &mesh, View* pview) {
+	void Renderer::drawPoints(simdMesh &mesh, simdView* pview) {
 		if (!pview)return;
-		View &view = *pview;
+		simdView &view = *pview;
 		Image &img = view.img;
 		view.clear();
 		_mm_prefetch(reinterpret_cast<const char*>(static_cast<vec4s*>(mesh.vecs)), _MM_HINT_T0);
@@ -24,9 +24,9 @@ namespace core {
 		}
 	}
 
-	void Renderer::drawPointRange(simdMesh &mesh, View* pview, const int& start, const int& stop) {
+	void Renderer::drawPointRange(simdMesh &mesh, simdView* pview, const int& start, const int& stop) {
 		if (!pview)return;
-		View &view = *pview;
+		simdView &view = *pview;
 		Image &img = view.img;
 		//view.clear();
 		//_mm_prefetch(reinterpret_cast<const char*>(static_cast<vec4s*>(mesh.vecs)), _MM_HINT_T0);
@@ -45,9 +45,9 @@ namespace core {
 		}
 	}
 
-	void Renderer::drawPointRange(PointCloud &mesh, View* pview, const int& start, const int& stop) {
+	void Renderer::drawPointRange(PointCloud &mesh, simdView* pview, const int& start, const int& stop) {
 		if (!pview)return;
-		View &view = *pview;
+		simdView &view = *pview;
 		Image &img = view.img;
 		//view.clear();
 		//_mm_prefetch(reinterpret_cast<const char*>(static_cast<vec4s*>(mesh.vecs)), _MM_HINT_T0);
@@ -66,15 +66,15 @@ namespace core {
 		}
 	}
 
-	void Renderer::drawPointThread(simdMesh &mesh, View* pview, const int& start, const int& stop, bool* done) {
+	void Renderer::drawPointThread(simdMesh &mesh, simdView* pview, const int& start, const int& stop, bool* done) {
 		while (! *done) {
 			while (valid)Sleep(1);
 			drawPointRange(mesh, pview, start, stop);
 		}
 	}
 
-	void Renderer::raytrace(PolyOctree& octree, View* pview) {
-		View &view = *pview;
+	void Renderer::raytrace(PolyOctree& octree, simdView* pview) {
+		simdView &view = *pview;
 		Image &img = view.img;
 		uint* mp = reinterpret_cast<uint*>(img.data);
 		//vec4 pp, qq; //because SSE to non SSE conversion
@@ -176,12 +176,12 @@ namespace core {
 	}
 
 
-	void Renderer::projectedBox(const PolyOctree& octree, const View* pview, vec4& pOut, vec4& qOut) {
+	void Renderer::projectedBox(const PolyOctree& octree, const simdView* pview, vec4& pOut, vec4& qOut) {
 		vec4s pO, qO;
 		vec4 p, q;
 		octree.root->spp.store(p);
 		octree.root->sqq.store(q);
-		const View& view = *pview;
+		const simdView& view = *pview;
 
 		vec4s ps = view.project(vec4s(view.mat*p));
 		pO = qO = ps;
@@ -220,12 +220,12 @@ namespace core {
 		qO.store(qOut);
 	}
 
-	void Renderer::projectedBox(const OBVH& bvh, const View* pview, vec4& pOut, vec4& qOut) {
+	void Renderer::projectedBox(const OBVH& bvh, const simdView* pview, vec4& pOut, vec4& qOut) {
 		vec4s pO, qO;
 		vec4 p, q;
 		bvh.p.store(p);
 		bvh.q.store(q);
-		const View& view = *pview;
+		const simdView& view = *pview;
 
 		vec4s ps = view.project(vec4s(view.mat*p));
 		pO = qO = ps;
@@ -264,12 +264,12 @@ namespace core {
 		qO.store(qOut);
 	}
 
-	void Renderer::projectedBox(const PBVH& bvh, const View* pview, vec4& pOut, vec4& qOut) {
+	void Renderer::projectedBox(const PBVH& bvh, const simdView* pview, vec4& pOut, vec4& qOut) {
 		vec4s pO, qO;
 		vec4 p, q;
 		bvh.p.store(p);
 		bvh.q.store(q);
-		const View& view = *pview;
+		const simdView& view = *pview;
 
 		vec4s ps = view.project(vec4s(view.mat*p));
 		pO = qO = ps;

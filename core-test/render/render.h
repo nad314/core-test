@@ -27,14 +27,14 @@ namespace core {
 			Worker() { priority = NULL; };
 			~Worker() { if (priority)delete[] priority; priority = NULL; while (!task.empty()) { Task* t = task.front(); task.pop(); delete t; } }
 
-			void create(PBVH& bvh, View* view, const int& tn, const int& tc);
-			void render(PBVH& bvh, View* view);
+			void create(PBVH& bvh, simdView* view, const int& tn, const int& tc);
+			void render(PBVH& bvh, simdView* view);
 			void join();
 
 			void start();
 			void wait();
 
-			void threadFunc(PBVH& bvh, View* view);
+			void threadFunc(PBVH& bvh, simdView* view);
 
 			inline void empty() {
 				while (!task.empty()) {
@@ -69,14 +69,14 @@ namespace core {
 		};
 
 		inline static void invalidate() { valid = 0; }
-		static void drawPoints(simdMesh &mesh, View* view);
-		static void drawPointRange(simdMesh &mesh, View* view, const int& start, const int& stop);
-		static void drawPointRange(PointCloud &mesh, View* view, const int& start, const int& stop);
-		static void drawPointThread(simdMesh &mesh, View* view, const int& start, const int& stop, bool* done);
+		static void drawPoints(simdMesh &mesh, simdView* view);
+		static void drawPointRange(simdMesh &mesh, simdView* view, const int& start, const int& stop);
+		static void drawPointRange(PointCloud &mesh, simdView* view, const int& start, const int& stop);
+		static void drawPointThread(simdMesh &mesh, simdView* view, const int& start, const int& stop, bool* done);
 
-		static void raytrace(PolyOctree& octree, View* view);
-		static void raytrace(OBVH& bvh, View* view);
-		static void raytrace(PBVH& bvh, View* view);
+		static void raytrace(PolyOctree& octree, simdView* view);
+		static void raytrace(OBVH& bvh, simdView* view);
+		static void raytrace(PBVH& bvh, simdView* view);
 		/*
 		static inline bool rayBoxIntersectionTest(const Ray& ray, const vec4& p, const vec4& q) {
 			vec4 v0 = (p - ray.r0)*ray.invr1;
@@ -195,9 +195,9 @@ namespace core {
 			ray.svmin = t - _mm_sqrt_ps(r - d2);
 		}*/
 
-		static void projectedBox(const PolyOctree& octree, const View* view, vec4& pOut, vec4& qOut);
-		static void projectedBox(const OBVH& bvh, const View* view, vec4& pOut, vec4& qOut);
-		static void projectedBox(const PBVH& bvh, const View* view, vec4& pOut, vec4& qOut);
+		static void projectedBox(const PolyOctree& octree, const simdView* view, vec4& pOut, vec4& qOut);
+		static void projectedBox(const OBVH& bvh, const simdView* view, vec4& pOut, vec4& qOut);
+		static void projectedBox(const PBVH& bvh, const simdView* view, vec4& pOut, vec4& qOut);
 
 	};
 }

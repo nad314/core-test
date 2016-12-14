@@ -2,9 +2,9 @@
 namespace core {
 	struct subRenderTask : public Renderer::Worker::Task {
 		PBVH* pbvh;
-		View* pview;
+		simdView* pview;
 		~subRenderTask() {}
-		subRenderTask(PBVH* pB, View* pW) : pbvh(pB), pview(pW) {}
+		subRenderTask(PBVH* pB, simdView* pW) : pbvh(pB), pview(pW) {}
 		virtual void execute(Renderer::Worker* pWorker) override;
 	};
 }

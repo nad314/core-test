@@ -5,7 +5,7 @@ namespace core {
 	std::condition_variable Renderer::Worker::cv;
 	std::mutex Renderer::Worker::mutex;
 
-	void Renderer::Worker::create(PBVH& bvh, View* view, const int& tn, const int& tc) {
+	void Renderer::Worker::create(PBVH& bvh, simdView* view, const int& tn, const int& tc) {
 		threadNumber = tn;
 		threadCount = tc;
 		done = 0;
@@ -28,7 +28,7 @@ namespace core {
 			cv.wait(lk);
 	}
 
-	void Renderer::Worker::threadFunc(PBVH& bvh, View* view) {
+	void Renderer::Worker::threadFunc(PBVH& bvh, simdView* view) {
 		while (!done) {
 			/*
 			{
@@ -66,8 +66,8 @@ namespace core {
 
 
 
-	void Renderer::Worker::render(PBVH& bvh, View* pview) {
-		View &view = *pview;
+	void Renderer::Worker::render(PBVH& bvh, simdView* pview) {
+		simdView &view = *pview;
 		Image &img = view.img;
 		int* mp = reinterpret_cast<int*>(img.data);
 		vec4 bp, bq; // bounding box projected coordinates

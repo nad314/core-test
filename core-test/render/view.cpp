@@ -1,6 +1,6 @@
 #include <main>
 
-void View::make (const int width, const int height) {
+void simdView::make (const int width, const int height) {
 	img.free();
 	img.make (width, height, 32);
 	viewVec = vec4(width, height, 0.5f, 0.0f);
@@ -10,11 +10,11 @@ void View::make (const int width, const int height) {
 	v09 = vec4s(vec4(width, height, 1.0f, 1.0f));
 }
 
-void View::clear() {
+void simdView::clear() {
 	core::Renderer::clearImage(img, core::vec4b(51, 51, 51, 255));
 }
 
-void View::home() {
+void simdView::home() {
 	fov = 41.5;
 	translation.init();
 	rotation.init();
@@ -22,7 +22,7 @@ void View::home() {
 	translation.translate( 0.0f, 0.0f, -2.0f );
 }
 
-vec4 View::project (const vec4 &v) {
+vec4 simdView::project (const vec4 &v) {
 	vec4 r(0,0,0,0);
 	if (v.w==0.0f)return r;
 	r.w=1.0f/v.w;
@@ -32,7 +32,7 @@ vec4 View::project (const vec4 &v) {
 	return r;
 }
 
-vec4 View::unproject(const vec4& v) {
+vec4 simdView::unproject(const vec4& v) {
 	if (v.w == 0.0f)
 		return vec4(0.0f);
 	vec4 r = v / vec4((float)img.width, (float)img.height, 1.0f, 1.0f) - vec4(0.5f, 0.5f, 0.0f, 0.0f);
@@ -44,7 +44,7 @@ vec4 View::unproject(const vec4& v) {
 	return r;
 }
 
-__m128 View::projectSSE (const __m128 &v, const __m128 &viewVec, const __m128 &v05) const{
+__m128 simdView::projectSSE (const __m128 &v, const __m128 &viewVec, const __m128 &v05) const{
 	return _mm_mul_ps (_mm_add_ps(
 											_mm_mul_ps(
 												_mm_mul_ps(v,
@@ -54,7 +54,7 @@ __m128 View::projectSSE (const __m128 &v, const __m128 &viewVec, const __m128 &v
 										viewVec);
 }
 
-void View::updateMatrix() {
+void simdView::updateMatrix() {
 	if (img.height)projection = projection.projection(fov, (float)img.width / img.height, 0.001f, 100.0f);
 	//parallel projection
 	/*

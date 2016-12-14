@@ -3,7 +3,7 @@ class Controller: public core::SIMD, public core::EventListener, public::core::G
 public:
 	Storage* storage;
 	core::Window* parent;
-	View* view;
+	simdView* view;
 	bool valid = 0;
 	core::vec2i mouse;
 	bool rotating = 0;

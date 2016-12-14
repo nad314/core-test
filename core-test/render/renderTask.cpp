@@ -6,7 +6,7 @@ namespace core {
 			return;
 		Renderer::Worker& worker = *pWorker;
 		PBVH& bvh = *pbvh;
-		View &view = *pview;
+		simdView &view = *pview;
 		Image &img = view.img;
 		int* mp = reinterpret_cast<int*>(img.data);
 		vec4 bp, bq; // bounding box projected coordinates

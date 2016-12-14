@@ -2,9 +2,9 @@
 class RenderWindow final : public core::Window, public core::SIMD{
 private:
 public:
-	View view;
+	simdView view;
 
-	inline operator View&() { return view; }
+	inline operator simdView&() { return view; }
 	inline operator core::Image&() { return view.img; }
 
 	void onOpening() override;

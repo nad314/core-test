@@ -146,7 +146,7 @@ int Controller::onKeyDown(const core::eventInfo& e) {
 	switch (e.wP) {
 	case VK_F12: {
 		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::msRenderTask(&storage->pbvh, view, 4));
+			thread[i].push(new core::msRenderTask(&storage->pbvh, view, 16));
 		invalidate();
 		break;
 	}
