@@ -15,67 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="render\render.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\view.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="program\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="program\coreTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="model\simdMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="renderWindow\renderWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mainWindow\mainWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="model\polyOctree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="model\polyOctree.Node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="model\polyOctree.Node.Raytracing.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OBVH\OBHV.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OBVH\OBVH.tracing..cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\render.obvh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OBVH\OBVH.tracing.iterative.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\render.worker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pointCloud\pointCloud.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pointCloud\pointOctree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pointCloud\PointOctree.Node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PBVH\PBVH.tracing.itereative.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="render\render.pbvh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PBVH\PBVH.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="render\renderTask.cpp">
@@ -98,40 +47,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="render\render.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render\view.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="program\main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="program\coreTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="model\simdMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="renderWindow\renderWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mainWindow\mainWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="model\polyOctree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OBVH\OBVH.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pointCloud\pointCloud.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pointCloud\pointOctree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PBVH\PBVH.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="render\renderTask.h">
