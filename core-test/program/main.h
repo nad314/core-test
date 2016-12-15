@@ -8,8 +8,8 @@
 
 #include <core>
 #include <core-forms>
-using namespace coreTypes;
 #include <core-tracing>
+using namespace coreTypes;
 using namespace core::opengl;
 
 //core components

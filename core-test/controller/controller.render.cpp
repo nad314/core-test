@@ -16,7 +16,7 @@ void Controller::render() {
 }
 
 void Controller::getPoint(const float x, const float y) {
-	simdView& view = (static_cast<RenderWindow*>(parent))->view;
+	core::simdView& view = (static_cast<RenderWindow*>(parent))->view;
 	core::PBVH& bvh = storage->pbvh;
 	matrixf inv = view.mat;
 	inv.invert();
@@ -60,7 +60,7 @@ void Controller::getPoint(const float x, const float y) {
 }
 
 core::Ray Controller::getRay(const float x, const float y) const {
-	simdView& view = *this->view;
+	core::simdView& view = *this->view;
 	matrixf inv = view.mat;
 	inv.invert();
 	matrixs sinv = inv;
