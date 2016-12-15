@@ -1,8 +1,10 @@
 #include <main>
 
 int CoreTest::loadData() {
-	//return storage->load("data/pantherUniform.cloud");
-	return 0;
+	if (controller->benchMode)
+		return storage->load("data/pantherUniform.cloud");
+	else
+		return 0;
 }
 
 int CoreTest::onLoad() {
@@ -47,6 +49,7 @@ int CoreTest::main() {
 	storage = new Storage;
 	controller = new Controller(&rw, storage);
 	rw.attach(controller);
+	controller->benchMode = true;
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	GL::swapBuffers(rw);
@@ -88,6 +91,13 @@ int CoreTest::main() {
 		if (storage->pbvh.pointCount > 0)
 			controller->render();
 		timer.stop();
+		if (controller->benchMode) {
+			controller->view->rotation.init();
+			controller->view->rotation.rotate(core::elapsedTime()*50.0f, 0.0f, 1.0f, 0.0f);
+			controller->view->updateMatrix();
+			controller->wg->pushTask<core::RenderTask>(&storage->pbvh, controller->view);
+		} else 
+			controller->validate();
 
 		renderTime += timer;
 		++nframes;
@@ -100,7 +110,7 @@ int CoreTest::main() {
 
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);
-		controller->validate();
+		
 	}
 	rw.detach();
 	delete controller;

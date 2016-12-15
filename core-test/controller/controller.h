@@ -8,10 +8,11 @@ public:
 	core::vec2i mouse;
 	bool rotating = 0;
 	bool dragging = 0;
-	int threads;
-	core::Renderer::Worker* thread;
+	core::Renderer::WorkerGroup* wg;
 	int samples = 2;
 	vec4 clickPoint;
+
+	bool benchMode = false;
 	
 	Controller(core::Window* p, Storage* st);
 	~Controller();

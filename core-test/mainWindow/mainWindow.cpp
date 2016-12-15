@@ -45,8 +45,7 @@ int MainWindow::onDropFiles(const core::eventInfo& e) {
 		Storage::get().load(path);
 		rwnd.view.home();
 		Controller& c = Controller::get();
-		for (int i = 0; i < c.threads; ++i)
-			c.thread[i].push(new core::msRenderTask(&c.storage->pbvh, &rwnd.view, c.samples));
+		c.wg->pushTask<core::msRenderTask>(&c.storage->pbvh, &rwnd.view, c.samples);
 		c.invalidate();
 	}
 	return e;

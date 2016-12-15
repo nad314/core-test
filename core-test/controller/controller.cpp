@@ -8,76 +8,62 @@ Controller::Controller(core::Window* p, Storage* st) {
 	parent = p;
 	view = &(static_cast<RenderWindow*>(parent))->view;
 	samples = 2;
-	threads = std::thread::hardware_concurrency();
-	//threads = 4;
-	thread = new core::Renderer::Worker[threads];
-	for (int i = 0; i < threads - 1; ++i)
-		thread[i].create(storage->pbvh, view, i, threads);
-	thread[threads - 1].threadNumber = threads - 1;
-	thread[threads - 1].threadCount = threads;
-	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
-	invalidate();
+	wg = new core::Renderer::WorkerGroup;
+
 }
 
 Controller::~Controller() {
-	for (int i = 0; i < threads - 1; ++i)
-		thread[i].join();
-	delete[] thread;
+	delete wg;
 }
 
 int Controller::onLButtonDown(const core::eventInfo& e) {
-	if (storage->pbvh.pointCount < 1 || dragging)
+	if (storage->pbvh.pointCount < 1 || dragging || benchMode)
 		return e;
 	rotating = 1;
 	getPoint(e.x(), e.y());
 	mouse.x = e.x();
 	mouse.y = e.y();
-	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::subRenderTask(&storage->pbvh, view));
+	wg->pushTask<core::subRenderTask>(&storage->pbvh, view);
 	invalidate();
 	SetCapture(*parent);
 	return e;
 }
 
 int Controller::onLButtonUp(const core::eventInfo& e) {
-	if (storage->pbvh.pointCount < 1)
+	if (storage->pbvh.pointCount < 1 || benchMode)
 		return e;
-	rotating = 0;
-	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
+	rotating = 0; 
+	wg->pushTask<core::msRenderTask>(&storage->pbvh, view, samples);
 	invalidate();
 	ReleaseCapture();
 	return e;
 }
 
 int Controller::onRButtonDown(const core::eventInfo& e) {
-	if (storage->pbvh.pointCount < 1 || rotating)
+	if (storage->pbvh.pointCount < 1 || rotating || benchMode)
 		return e;
 	dragging = 1;
 	getPoint(e.x(), e.y());
 	mouse.x = e.x();
 	mouse.y = e.y();
-	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::subRenderTask(&storage->pbvh, view));
+	wg->pushTask<core::subRenderTask>(&storage->pbvh, view);
 	invalidate();
 	SetCapture(*parent);
 	return e;
 }
 
 int Controller::onRButtonUp(const core::eventInfo& e) {
-	if (storage->pbvh.pointCount < 1)
+	if (storage->pbvh.pointCount < 1 || benchMode)
 		return e;
 	dragging = 0;
-	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
+	wg->pushTask<core::msRenderTask>(&storage->pbvh, view, samples);
 	invalidate();
 	ReleaseCapture();
 	return e;
 }
 
 int Controller::onMousewheel(const core::eventInfo& e) {
-	if (storage->pbvh.pointCount < 1)
+	if (storage->pbvh.pointCount < 1 || benchMode)
 		return e;
 	if (e.delta() < 0) {
 		if (view->fov > 41.5f)
@@ -88,14 +74,13 @@ int Controller::onMousewheel(const core::eventInfo& e) {
 		view->fov -= 2.0f;
 	else view->fov /= 1.2f;
 	view->updateMatrix();
-	for (int i = 0; i < threads; ++i)
-		thread[i].push(new core::subRenderTask(&storage->pbvh, view));
+	wg->pushTask<core::subRenderTask>(&storage->pbvh, view);
 	invalidate();
 	return e;
 }
 
 int Controller::onMouseMove(const core::eventInfo& e) {
-	if (storage->pbvh.pointCount < 1)
+	if (storage->pbvh.pointCount < 1 || benchMode)
 		return e;
 	if (rotating) {
 		matrixf mat;
@@ -108,8 +93,7 @@ int Controller::onMouseMove(const core::eventInfo& e) {
 		view->rotation = view->rotation*mat;
 		view->updateMatrix();
 		invalidate();
-		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::subRenderTask(&storage->pbvh, view));
+		wg->pushTask<core::subRenderTask>(&storage->pbvh, view);
 	}
 	else if (dragging) {
 		vec4 d;
@@ -134,8 +118,7 @@ int Controller::onMouseMove(const core::eventInfo& e) {
 		mat.translate(d.x, d.y, d.z);
 		view->rotation = mat*view->rotation;
 		view->updateMatrix();
-		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::subRenderTask(&storage->pbvh, view));
+		wg->pushTask<core::subRenderTask>(&storage->pbvh, view);
 		invalidate();
 	}
 	mouse = core::vec2i(e.x(), e.y());
@@ -143,32 +126,40 @@ int Controller::onMouseMove(const core::eventInfo& e) {
 }
 
 int Controller::onKeyDown(const core::eventInfo& e) {
+	if (benchMode)
+		return e;
 	switch (e.wP) {
 	case VK_F12: {
-		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::msRenderTask(&storage->pbvh, view, 16));
-		invalidate();
+		view->clear();
+		wg->clearTasks().pushTask<core::msRenderTask>(&storage->pbvh, view, 64).executeLocal();
+		//invalidate();
+		GL::drawImageInverted(view->img);
+		GL::swapBuffers(*parent);
+		core::Image img = view->img;
+		img.flipV();
+		std::string path = core::Path::getSaveFileName("PNG\0*.png\0\0");
+		if (path != "") {
+			path = core::Path::pushExt("png", path);
+			img.savePng(path.c_str());
+		}
 		break;
 	}
 	case VK_F11: {
 		view->home();
 		view->updateMatrix();
-		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
+		wg->clearTasks().pushTask<core::msRenderTask>(&storage->pbvh, view, samples);
 		invalidate();
 		break;
 	}
 	case '1': {
 		storage->pbvh.setRadius(sqrt(storage->pbvh.radiusSquared) * 1.05f);
-		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
+		wg->pushTask<core::msRenderTask>(&storage->pbvh, view, samples);
 		invalidate();
 		break;
 	}
 	case '2': {
 		storage->pbvh.setRadius(sqrt(storage->pbvh.radiusSquared) / 1.05f);
-		for (int i = 0; i < threads; ++i)
-			thread[i].push(new core::msRenderTask(&storage->pbvh, view, samples));
+		wg->pushTask<core::msRenderTask>(&storage->pbvh, view, samples);
 		invalidate();
 		break;
 	}
