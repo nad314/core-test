@@ -28,7 +28,7 @@ namespace core {
 		int* priority = new int[bvh.inner.size()];
 		memset(priority, 0, bvh.inner.size() * sizeof(int));
 
-		__m128 svmin;
+		//__m128 svmin;
 		for (int gy = 0; gy < img.height; gy += square) {
 			if (gy > bq.y || (gy + square) < bp.y)
 				continue;

@@ -9,7 +9,6 @@ Controller::Controller(core::Window* p, Storage* st) {
 	view = &(static_cast<RenderWindow*>(parent))->view;
 	samples = 2;
 	wg = new core::Renderer::WorkerGroup;
-
 }
 
 Controller::~Controller() {
