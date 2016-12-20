@@ -45,6 +45,12 @@
     <ClCompile Include="storage\storage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="render\imageRenderTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render\volumetricShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\main.h">
@@ -72,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="storage\storage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render\imageRenderTask.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -128,11 +128,13 @@
     <ClCompile Include="controller\controller.render.cpp" />
     <ClCompile Include="program\coreTest.cpp" />
     <ClCompile Include="program\main.cpp" />
+    <ClCompile Include="render\imageRenderTask.cpp" />
     <ClCompile Include="render\msRenderTask.cpp" />
     <ClCompile Include="render\renderTask.cpp" />
     <ClCompile Include="render\subRenderTask.cpp" />
     <ClCompile Include="mainWindow\mainWindow.cpp" />
     <ClCompile Include="renderWindow\renderWindow.cpp" />
+    <ClCompile Include="render\volumetricShader.cpp" />
     <ClCompile Include="storage\storage.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +142,7 @@
     <ClInclude Include="program\coreTest.h" />
     <ClInclude Include="mainWindow\mainWindow.h" />
     <ClInclude Include="program\main.h" />
+    <ClInclude Include="render\imageRenderTask.h" />
     <ClInclude Include="render\msRenderTask.h" />
     <ClInclude Include="render\renderTask.h" />
     <ClInclude Include="render\subRenderTask.h" />

@@ -16,6 +16,7 @@ using namespace core::opengl;
 #include <render/renderTask.h>
 #include <render/msRenderTask.h>
 #include <render/subRenderTask.h>
+#include <render/imageRenderTask.h>
 
 //CoreTest components
 #include <storage/storage.h>

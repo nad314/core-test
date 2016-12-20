@@ -129,18 +129,40 @@ int Controller::onKeyDown(const core::eventInfo& e) {
 		return e;
 	switch (e.wP) {
 	case VK_F12: {
+		bool done = false;
 		view->clear();
-		wg->clearTasks().pushTask<core::msRenderTask>(&storage->pbvh, view, 64).executeLocal();
-		//invalidate();
+		core::renderShowTask task(view, 16);
+		core::RenderShader shader(*view);
+		core::VolumetricShader vs(*view, 64);
+		wg->clearTasks().pushTask<core::imageRenderTask>(&storage->pbvh, view, 8, &vs);
+		std::thread t0 = std::thread(&core::Renderer::WorkerGroup::executeAsync, wg, &done);
+		t0.detach();
+		while (true) {
+			std::unique_lock<std::mutex> lk(task.mutex);
+			if (done == true)
+				break;
+			task.cv.wait(lk);
+			GL::drawImageInverted(task.img);
+			GL::swapBuffers(*parent);
+		}
+		if (t0.joinable())
+			t0.join();
 		GL::drawImageInverted(view->img);
 		GL::swapBuffers(*parent);
+
+		core::Path::pushDir();
+		core::Path::goHome();
+		view->saveTransform("data/view.transform");
+		core::Path::popDir();
 		core::Image img = view->img;
 		img.flipV();
+		/*
 		std::string path = core::Path::getSaveFileName("PNG\0*.png\0\0");
 		if (path != "") {
 			path = core::Path::pushExt("png", path);
 			img.savePng(path.c_str());
 		}
+		*/
 		break;
 	}
 	case VK_F11: {
@@ -150,6 +172,13 @@ int Controller::onKeyDown(const core::eventInfo& e) {
 		invalidate();
 		break;
 	}
+	case VK_F8: {
+		view->mode = view->mode == 1 ? 0 : 1;
+		view->updateMatrix();
+		wg->clearTasks().pushTask<core::msRenderTask>(&storage->pbvh, view, samples);
+		invalidate();
+	}
+
 	case '1': {
 		storage->pbvh.setRadius(sqrt(storage->pbvh.radiusSquared) * 1.05f);
 		wg->pushTask<core::msRenderTask>(&storage->pbvh, view, samples);

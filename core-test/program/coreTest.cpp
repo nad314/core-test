@@ -2,7 +2,7 @@
 
 int CoreTest::loadData() {
 	if (controller->benchMode)
-		return storage->load("data/pantherUniformUltra.cloud");
+		return storage->load("data/pantherUniform.cloud");
 	else
 		return 0;
 }
@@ -49,7 +49,7 @@ int CoreTest::main() {
 	storage = new Storage;
 	controller = new Controller(&rw, storage);
 	rw.attach(controller);
-	controller->benchMode = true;
+	//controller->benchMode = true;
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	GL::swapBuffers(rw);
@@ -106,7 +106,7 @@ int CoreTest::main() {
 		core::Renderer::print("Left Click to Rotate, Right Click to Pan", rw, 10, rw.height - 46 - 4 * core::Font::get().height());
 		core::Renderer::print("Mousewheel to Zoom", rw, 10, rw.height - 42 - 3 * core::Font::get().height());
 		core::Renderer::print("F11 to reset camera", rw, 10, rw.height - 38 - 2 * core::Font::get().height());
-		core::Renderer::print("F12 to render x16 MSAA", rw, 10, rw.height - 34 - core::Font::get().height());
+		core::Renderer::print("F12 to render volumetric", rw, 10, rw.height - 34 - core::Font::get().height());
 
 		GL::drawImageInverted(rw);
 		GL::swapBuffers(rw);

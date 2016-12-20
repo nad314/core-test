@@ -40,7 +40,7 @@ void Controller::getPoint(const float x, const float y) {
 	int* priority = new int[bvh.inner.size()];
 	memset(priority, 0, bvh.inner.size() * sizeof(int));
 
-	if (bvh.rayIntersectionTIt(oray, stack, priority) > 0.0f) {
+	if (bvh.findFirst(oray, stack, priority, false) > 0.0f) {
 		const vec4s point = ray.sr0 + ray.sr1*vec4s(oray.d);
 		point.store(clickPoint);
 	}

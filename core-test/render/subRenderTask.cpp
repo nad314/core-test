@@ -60,8 +60,7 @@ namespace core {
 						oray.inv.z = _mm256_broadcast_ss(&ray.sinvr1.m.m128_f32[2]);
 						oray.d = 100.0f;
 
-						//if (bvh.inner[0].rayIntersectionT(oray, bvh) > 0.0f) {
-						if (bvh.rayIntersectionTIt(oray, stack, priority) > 0.0f) {
+						if (bvh.findFirst(oray, stack, priority, true) > 0.0f) {
 							const vec4s pminusl = (lightPos - (ray.sr0 + ray.sr1*vec4s(oray.d)));
 							const vec4s ndotl = oray.plane.dot3(pminusl / _mm_sqrt_ps(pminusl.dot3(pminusl)));
 							const byte b = (byte)_mm_cvtss_si32(_mm_mul_ps(_mm_max_ps(_mm_set1_ps(0.3f), _mm_max_ps(_mm_sub_ps(_mm_setzero_ps(), ndotl), ndotl)), _mm_set1_ps(255.0f)));
